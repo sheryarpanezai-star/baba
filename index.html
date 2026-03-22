@@ -325,7 +325,7 @@
           <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">◀ PREV</button>
             <span class="font-bold text-sm" style="color:#ff9900;">${formatDate(state.currentDate)}</span>
-            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">NEXT ▶</button>
+            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed;" disabled' : ''}>NEXT ▶</button>
           </div>
         `;
         html += renderDailyView();
@@ -1272,6 +1272,8 @@
       const nextDayBtn = rebind('nextDayBtn');
       if (nextDayBtn) {
         nextDayBtn.addEventListener('click', () => {
+          const today = (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })();
+          if (state.currentDate >= today) return; // Can't go past today
           state.currentDate = addDays(state.currentDate, 1);
           loadDayData();
         });
