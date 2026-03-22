@@ -534,6 +534,22 @@
     function renderMedicationsCard(data) {
       const amMeds = ['Loprin 75mg','Lasix 40mg','Epleron 50mg','Uperio 50mg','Concor 2.5mg','Nexium 40mg'];
       const pmMeds = ['Ebixa 20mg','Lipiget 10mg','Uperio 50mg','Brintillix 10mg','Exelon Patch 9.5mg'];
+      const stock = JSON.parse(localStorage.getItem('medicineStock') || '[]');
+      function getStockForMed(medName) {
+        const name = medName.replace(/\s*\d+(\.\d+)?\s*mg/i, '').trim().toLowerCase();
+        const match = stock.find(s => s.name.toLowerCase().includes(name) || name.includes(s.name.toLowerCase()));
+        return match ? match : null;
+      }
+      function medWithStock(m) {
+        const s = getStockForMed(m);
+        if (!s) return '<p style="font-size:10px; color:#ccc; padding:1px 0;">• ' + m + '</p>';
+        const daysLeft = s.dailyUse > 0 ? Math.floor(s.qty / s.dailyUse) : null;
+        const qtyColor = s.qty <= 0 ? '#ff3333' : (daysLeft !== null && daysLeft <= 7) ? '#ff9900' : '#00ff00';
+        return '<div style="display:flex; justify-content:space-between; align-items:center; padding:1px 0;">' +
+          '<span style="font-size:10px; color:#ccc;">• ' + m + '</span>' +
+          '<span style="font-size:9px; font-weight:700; color:' + qtyColor + ';">' + s.qty + '</span>' +
+          '</div>';
+      }
       return `
         <div class="space-y-3">
           <div class="flex gap-3">
@@ -548,11 +564,11 @@
           <div class="grid grid-cols-2 gap-2">
             <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
               <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">☀️ AM MEDICINES</p>
-              ${amMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
+              ${amMeds.map(m => medWithStock(m)).join('')}
             </div>
             <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
               <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">🌙 PM MEDICINES</p>
-              ${pmMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
+              ${pmMeds.map(m => medWithStock(m)).join('')}
             </div>
           </div>
           <div class="pt-3 space-y-3" style="border-top:1px solid #333;">
@@ -964,6 +980,44 @@
             </div>
           </div>
           <button id="saveBiPAPBtn" class="bb-btn w-full px-2 py-1 text-xs">UPDATE</button>
+
+          <!-- BiPAP Maintenance -->
+          <div class="pt-3" style="border-top:1px solid #333;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">BIPAP MAINTENANCE</p>
+            <!-- Daily: Clean Mask -->
+            <button id="toggleBipapCleanMask" class="w-full font-bold text-xs mb-1 ${data.bipapCleanMask ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+              <span>🧼 CLEAN MASK</span>
+              <span style="font-size:9px;">${data.bipapCleanMask ? '✓ DONE' : 'DAILY'}</span>
+            </button>
+            <!-- Daily: Check Water -->
+            <button id="toggleBipapCheckWater" class="w-full font-bold text-xs mb-1 ${data.bipapCheckWater ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+              <span>💧 CHECK WATER LEVEL</span>
+              <span style="font-size:9px;">${data.bipapCheckWater ? '✓ DONE' : 'DAILY'}</span>
+            </button>
+            <!-- Weekly: Wash Mask + Tube -->
+            ${(() => {
+              const lastWash = localStorage.getItem('lastBipapWashDate') || '';
+              const lastWashDate = lastWash ? new Date(lastWash + 'T00:00:00') : null;
+              const today = new Date(state.currentDate + 'T00:00:00');
+              const washDiff = lastWashDate ? Math.floor((today - lastWashDate) / (1000 * 60 * 60 * 24)) : 999;
+              const washRemaining = 7 - washDiff;
+              const washColor = washRemaining <= 0 ? '#ff3333' : washRemaining <= 2 ? '#ff9900' : '#00ff00';
+              const washedToday = data.bipapWashMaskTube || false;
+              return `
+                <div style="background:#1a1a1a; border:1px solid ${washRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; margin-bottom:4px;">
+                  <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span class="text-xs font-bold" style="color:#ff9900;">🚿 WASH MASK + TUBE</span>
+                    <span class="text-xs font-bold" style="color:${washColor};">${washRemaining <= 0 ? 'OVERDUE' : washRemaining + ' days'}</span>
+                  </div>
+                  <p style="font-size:9px; color:#555; margin-top:2px;">${lastWashDate ? 'Last: ' + lastWash : 'Not recorded'} · Weekly</p>
+                </div>
+                <button id="logBipapWash" class="w-full font-bold text-xs ${washedToday ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+                  <span>🚿 WASHED TODAY</span>
+                  <span style="font-size:9px;">${washedToday ? '✓ DONE' : 'WEEKLY'}</span>
+                </button>
+              `;
+            })()}
+          </div>
         </div>
       `;
     }
@@ -1899,6 +1953,32 @@
           state.dailyData.sleepDay = parseFloat(document.getElementById('sleepDayInput').value) || 0;
           state.dailyData.sleepNight = parseFloat(document.getElementById('sleepNightInput').value) || 0;
           saveDayData();
+        });
+      }
+
+      // BiPAP Maintenance toggles
+      if (document.getElementById('toggleBipapCleanMask')) {
+        document.getElementById('toggleBipapCleanMask').addEventListener('click', () => {
+          state.dailyData.bipapCleanMask = !state.dailyData.bipapCleanMask;
+          saveDayData();
+          render();
+        });
+      }
+      if (document.getElementById('toggleBipapCheckWater')) {
+        document.getElementById('toggleBipapCheckWater').addEventListener('click', () => {
+          state.dailyData.bipapCheckWater = !state.dailyData.bipapCheckWater;
+          saveDayData();
+          render();
+        });
+      }
+      if (document.getElementById('logBipapWash')) {
+        document.getElementById('logBipapWash').addEventListener('click', () => {
+          state.dailyData.bipapWashMaskTube = !state.dailyData.bipapWashMaskTube;
+          if (state.dailyData.bipapWashMaskTube) {
+            localStorage.setItem('lastBipapWashDate', state.currentDate);
+          }
+          saveDayData();
+          render();
         });
       }
 
