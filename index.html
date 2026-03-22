@@ -954,18 +954,20 @@
             <p style="font-size:18px; font-weight:700; color:${doneCount > 0 ? '#00ff00' : '#555'};">${doneCount}</p>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-            ${items.map(i => `
+            ${items.map(i => {
+              const time = act[i.id + '_time'] || '';
+              return `
               <button id="toggleActivity_${i.id}" class="w-full font-bold text-xs ${act[i.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
                 <span>${i.label}</span>
-                <span>${act[i.id] ? '✓' : '—'}</span>
-              </button>
-            `).join('')}
+                <span>${act[i.id] ? '✓' + (time ? ' <span style="font-size:9px; font-weight:400; color:#888;">' + time + '</span>' : '') : '—'}</span>
+              </button>`;
+            }).join('')}
           </div>
           <div>
             <input type="text" id="activityNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-2 text-xs" value="${act.note || ''}">
             <button id="saveActivityNote" class="bb-btn w-full px-2 py-2 text-xs mt-2">SAVE NOTE</button>
           </div>
-          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}</p>` : ''}
+          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}${act.noteTime ? ' <span style="color:#555;">· ' + act.noteTime + '</span>' : ''}</p>` : ''}
         </div>
       `;
     }
@@ -1006,7 +1008,7 @@
         <div class="space-y-2">
           ${notes.length > 0 ? `
             <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
-              ${notes.map((n, i) => `<div class="p-2" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${n.author}:</strong> <span style="color:#ccc;">${n.text}</span></div>`).join('')}
+              ${notes.map((n, i) => `<div class="p-2" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:#ff9900;">${n.author}</strong><span style="font-size:9px; color:#555;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span></div><span style="color:#ccc;">${n.text}</span></div>`).join('')}
             </div>
           ` : '<p class="text-xs" style="color:#555;">No notes yet</p>'}
           <form id="notesForm" class="space-y-1 pt-2" style="border-top:1px solid #333;">
@@ -1552,6 +1554,11 @@
           btn.addEventListener('click', () => {
             if (!state.dailyData.activities) state.dailyData.activities = {};
             state.dailyData.activities[id] = !state.dailyData.activities[id];
+            if (state.dailyData.activities[id]) {
+              state.dailyData.activities[id + '_time'] = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+            } else {
+              delete state.dailyData.activities[id + '_time'];
+            }
             saveDayData();
           });
         }
@@ -1560,6 +1567,7 @@
         document.getElementById('saveActivityNote').addEventListener('click', () => {
           if (!state.dailyData.activities) state.dailyData.activities = {};
           state.dailyData.activities.note = document.getElementById('activityNote').value.trim();
+          state.dailyData.activities.noteTime = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
           saveDayData();
         });
       }
