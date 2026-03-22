@@ -1180,7 +1180,21 @@
               </div>
             ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No medicines tracked</p>'}
             <div class="mt-2" style="display:flex; flex-direction:column; gap:4px;">
-              <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-1 text-xs" style="min-width:0;">
+              <select id="stockMedSelect" class="w-full border rounded px-2 py-1 text-xs" style="min-width:0;">
+                <option value="">-- Select Medicine --</option>
+                <option value="Loprin 75mg|tablets|1">Loprin 75mg</option>
+                <option value="Lasix 40mg|tablets|1">Lasix 40mg</option>
+                <option value="Epleron 50mg|tablets|1">Epleron 50mg</option>
+                <option value="Uperio 50mg|tablets|2">Uperio 50mg (x2/day)</option>
+                <option value="Concor 2.5mg|tablets|1">Concor 2.5mg</option>
+                <option value="Nexium 40mg|capsules|1">Nexium 40mg</option>
+                <option value="Ebixa 20mg|tablets|1">Ebixa 20mg</option>
+                <option value="Lipiget 10mg|tablets|1">Lipiget 10mg</option>
+                <option value="Brintillix 10mg|tablets|1">Brintillix 10mg</option>
+                <option value="Exelon Patch 9.5mg|patches|1">Exelon Patch 9.5mg</option>
+                <option value="custom">Other (custom)</option>
+              </select>
+              <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-1 text-xs" style="min-width:0; display:none;">
               <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; min-width:0;">
                 <input type="number" id="stockMedQty" placeholder="Qty" class="border rounded px-2 py-1 text-xs" style="min-width:0; width:100%;">
                 <input type="text" id="stockMedUnit" placeholder="Unit" value="tablets" class="border rounded px-2 py-1 text-xs" style="min-width:0; width:100%;">
@@ -2212,15 +2226,53 @@
       });
 
       // Medicine Stock
+      if (document.getElementById('stockMedSelect')) {
+        document.getElementById('stockMedSelect').addEventListener('change', () => {
+          const sel = document.getElementById('stockMedSelect');
+          const customInput = document.getElementById('stockMedName');
+          const unitInput = document.getElementById('stockMedUnit');
+          const dailyInput = document.getElementById('stockMedDaily');
+          if (sel.value === 'custom') {
+            customInput.style.display = 'block';
+            customInput.value = '';
+            unitInput.value = 'tablets';
+            dailyInput.value = '';
+          } else if (sel.value) {
+            customInput.style.display = 'none';
+            const parts = sel.value.split('|');
+            unitInput.value = parts[1] || 'tablets';
+            dailyInput.value = parts[2] || '';
+          } else {
+            customInput.style.display = 'none';
+            unitInput.value = 'tablets';
+            dailyInput.value = '';
+          }
+        });
+      }
       if (document.getElementById('addStockBtn')) {
         document.getElementById('addStockBtn').addEventListener('click', () => {
-          const name = document.getElementById('stockMedName').value.trim();
+          const sel = document.getElementById('stockMedSelect');
+          const customInput = document.getElementById('stockMedName');
+          let name = '';
+          if (sel && sel.value === 'custom') {
+            name = customInput.value.trim();
+          } else if (sel && sel.value) {
+            name = sel.value.split('|')[0];
+          }
           if (!name) return;
           const qty = parseInt(document.getElementById('stockMedQty').value) || 0;
           const unit = document.getElementById('stockMedUnit').value.trim() || 'tablets';
           const dailyUse = parseFloat(document.getElementById('stockMedDaily').value) || 0;
           const stock = JSON.parse(localStorage.getItem('medicineStock') || '[]');
-          stock.push({ name, qty, unit, dailyUse, addedDate: state.currentDate });
+          // Check if medicine already exists — update qty instead of duplicating
+          const existing = stock.findIndex(s => s.name.toLowerCase() === name.toLowerCase());
+          if (existing >= 0) {
+            stock[existing].qty += qty;
+            stock[existing].unit = unit;
+            stock[existing].dailyUse = dailyUse;
+          } else {
+            stock.push({ name, qty, unit, dailyUse, addedDate: state.currentDate });
+          }
           localStorage.setItem('medicineStock', JSON.stringify(stock));
           saveToFirebase('medicineStock', stock);
           render();
