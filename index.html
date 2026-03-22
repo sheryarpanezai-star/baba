@@ -107,7 +107,7 @@
   <script>
     // ============= STATE MANAGEMENT =============
     const state = {
-      currentDate: new Date().toISOString().split('T')[0],
+      currentDate: (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })(),
       view: 'daily', // 'daily', 'weekly', 'monthly'
       firebase: { configured: false, db: null },
       alerts: {
@@ -206,7 +206,11 @@
     function addDays(dateStr, days) {
       const d = new Date(dateStr + 'T00:00:00');
       d.setDate(d.getDate() + days);
-      return d.toISOString().split('T')[0];
+      // Use local date parts (not toISOString which converts to UTC and causes off-by-one in UTC+ timezones)
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
     }
 
     function getVitalStatus(metric, value) {
@@ -774,7 +778,7 @@
                 <div style="background:#1a1a1a; border:1px solid ${bagRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; text-align:center; margin-bottom:6px;">
                   <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE BAG CHANGE</span>
                   <p style="font-size:20px; font-weight:700; color:${bagColor};">${bagRemaining <= 0 ? 'OVERDUE' : bagRemaining + ' days'}</p>
-                  <span style="font-size:9px; color:#555;">Next: ${nextBag.toISOString().split('T')[0]} · Last: ${lastBag}</span>
+                  <span style="font-size:9px; color:#555;">Next: ${nextBag.getFullYear()}-${String(nextBag.getMonth()+1).padStart(2,'0')}-${String(nextBag.getDate()).padStart(2,'0')} · Last: ${lastBag}</span>
                 </div>
                 <button id="toggleUrineBag" class="w-full p-2 font-bold text-xs ${hyg.urineBagChanged ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; margin-bottom:6px;">
                   🔄 URINE BAG CHANGED ${hyg.urineBagChanged ? '✓' : ''}
@@ -902,7 +906,7 @@
       const cathColor = cathRemaining <= 0 ? '#ff3333' : cathRemaining <= 3 ? '#ff3333' : cathRemaining <= 7 ? '#ff9900' : '#00ff00';
       const cathNextDate = new Date(lastCathDate);
       cathNextDate.setDate(cathNextDate.getDate() + 28);
-      const cathNextStr = cathNextDate.toISOString().split('T')[0];
+      const cathNextStr = cathNextDate.getFullYear() + '-' + String(cathNextDate.getMonth()+1).padStart(2,'0') + '-' + String(cathNextDate.getDate()).padStart(2,'0');
 
       // Vitamin D — 1st of every month
       let vitDTarget = new Date(now.getFullYear(), now.getMonth(), 1);
@@ -1911,7 +1915,7 @@
     setInterval(() => {
       const now = new Date();
       const timeStr = now.toTimeString().slice(0, 5);
-      const today = now.toISOString().split('T')[0];
+      const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
       // Auto-send daily report
       if (timeStr === state.alerts.reportTime && state.alerts.lastReportSent.slice(0, 10) !== today) {
