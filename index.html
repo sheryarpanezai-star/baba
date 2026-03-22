@@ -1306,6 +1306,7 @@
           }
           state.dailyData.morningMed = !state.dailyData.morningMed;
           saveDayData();
+          render();
         });
       }
 
@@ -1318,6 +1319,7 @@
           }
           state.dailyData.eveningMed = !state.dailyData.eveningMed;
           saveDayData();
+          render();
         });
       }
 
@@ -1658,20 +1660,55 @@
     }
 
     function compressImage(file, maxWidth, quality) {
-      return new Promise((resolve) => {
+      return new Promise((resolve, reject) => {
         const img = new Image();
         const reader = new FileReader();
+        // Timeout: if compression takes >15s on mobile, fall back to raw data URL
+        let resolved = false;
+        const timeout = setTimeout(() => {
+          if (!resolved) {
+            resolved = true;
+            // Fall back to reading as raw data URL (no compression)
+            const fallbackReader = new FileReader();
+            fallbackReader.onload = (ev) => resolve(ev.target.result);
+            fallbackReader.onerror = () => reject(new Error('File read failed'));
+            fallbackReader.readAsDataURL(file);
+          }
+        }, 15000);
         reader.onload = (e) => {
+          img.onerror = () => {
+            if (!resolved) {
+              resolved = true;
+              clearTimeout(timeout);
+              // Image failed to load, use raw data URL
+              resolve(e.target.result);
+            }
+          };
           img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const scale = Math.min(maxWidth / img.width, 1);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            resolve(canvas.toDataURL('image/jpeg', quality));
+            if (resolved) return;
+            resolved = true;
+            clearTimeout(timeout);
+            try {
+              const canvas = document.createElement('canvas');
+              const scale = Math.min(maxWidth / img.width, 1);
+              canvas.width = img.width * scale;
+              canvas.height = img.height * scale;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            } catch (err) {
+              // Canvas failed (e.g., mobile memory limit), use raw data URL
+              resolve(e.target.result);
+            }
           };
           img.src = e.target.result;
+        };
+        reader.onerror = () => {
+          if (!resolved) {
+            resolved = true;
+            clearTimeout(timeout);
+            reject(new Error('File read failed'));
+          }
         };
         reader.readAsDataURL(file);
       });
@@ -1681,42 +1718,57 @@
       const file = event.target.files[0];
       if (!file) return;
 
+      function savePhoto(dataUrl, photoTime) {
+        state.dailyData[fieldName] = dataUrl;
+        state.dailyData[fieldName + 'Time'] = photoTime;
+        saveDayData();
+        render();
+      }
+
       // Compress to max 800px wide, 60% quality (~50-100KB per photo)
       compressImage(file, 800, 0.6).then((compressedDataUrl) => {
-        const dateKey = state.currentDate.replace(/-/g, '');
         const photoTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 
         // Upload to Firebase Storage if configured
         if (state.firebase.configured && state.firebase.storage) {
-          const storagePath = `photos/${dateKey}/${fieldName}_${Date.now()}.jpg`;
-          const storageRef = state.firebase.storage.ref(storagePath);
+          try {
+            const dateKey = state.currentDate.replace(/-/g, '');
+            const storagePath = `photos/${dateKey}/${fieldName}_${Date.now()}.jpg`;
+            const storageRef = state.firebase.storage.ref(storagePath);
 
-          // Convert data URL to blob for upload
-          fetch(compressedDataUrl).then(r => r.blob()).then(blob => {
+            // Convert data URL to blob for upload
+            const byteString = atob(compressedDataUrl.split(',')[1]);
+            const mimeType = compressedDataUrl.split(',')[0].split(':')[1].split(';')[0];
+            const ab = new ArrayBuffer(byteString.length);
+            const ia = new Uint8Array(ab);
+            for (let i = 0; i < byteString.length; i++) ia[i] = byteString.charCodeAt(i);
+            const blob = new Blob([ab], { type: mimeType });
+
             storageRef.put(blob, { contentType: 'image/jpeg' }).then(snapshot => {
               snapshot.ref.getDownloadURL().then(url => {
-                // Store the Firebase Storage URL (permanent, accessible by all)
-                state.dailyData[fieldName] = url;
-                state.dailyData[fieldName + 'Time'] = photoTime;
-                saveDayData();
-                render();
-              });
+                savePhoto(url, photoTime);
+              }).catch(() => savePhoto(compressedDataUrl, photoTime));
             }).catch(err => {
               console.error('Storage upload failed, saving locally:', err);
-              // Fallback: save compressed data URL locally
-              state.dailyData[fieldName] = compressedDataUrl;
-              state.dailyData[fieldName + 'Time'] = photoTime;
-              saveDayData();
-              render();
+              savePhoto(compressedDataUrl, photoTime);
             });
-          });
+          } catch (err) {
+            console.error('Firebase photo upload error:', err);
+            savePhoto(compressedDataUrl, photoTime);
+          }
         } else {
-          // No Firebase: save compressed data URL to localStorage
-          state.dailyData[fieldName] = compressedDataUrl;
-          state.dailyData[fieldName + 'Time'] = photoTime;
-          saveDayData();
-          render();
+          // No Firebase Storage: save compressed data URL to localStorage
+          savePhoto(compressedDataUrl, photoTime);
         }
+      }).catch((err) => {
+        console.error('Photo compression failed:', err);
+        // Last resort: try to read file as raw data URL
+        const fallbackReader = new FileReader();
+        fallbackReader.onload = (e) => {
+          const photoTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          savePhoto(e.target.result, photoTime);
+        };
+        fallbackReader.readAsDataURL(file);
       });
     }
 
