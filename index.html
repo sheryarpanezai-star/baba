@@ -1435,9 +1435,17 @@
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.urineBagChanged = !state.dailyData.hygiene.urineBagChanged;
           if (state.dailyData.hygiene.urineBagChanged) {
+            // Store previous date before overwriting so we can revert on untoggle
+            const prev = localStorage.getItem('lastUrineBagDate') || '2025-03-17';
+            localStorage.setItem('prevUrineBagDate', prev);
             localStorage.setItem('lastUrineBagDate', state.currentDate);
+          } else {
+            // Revert to previous date on untoggle
+            const prev = localStorage.getItem('prevUrineBagDate');
+            if (prev) localStorage.setItem('lastUrineBagDate', prev);
           }
           saveDayData();
+          render();
         });
       }
       if (document.getElementById('toggleShave')) {
@@ -1532,9 +1540,17 @@
           if (!state.monthlyTasks[ym]) state.monthlyTasks[ym] = {};
           state.monthlyTasks[ym].catheter = !state.monthlyTasks[ym].catheter;
           if (state.monthlyTasks[ym].catheter) {
+            // Store previous date before overwriting so we can revert on untoggle
+            const prev = localStorage.getItem('lastCatheterDate') || '2025-02-17';
+            localStorage.setItem('prevCatheterDate', prev);
             localStorage.setItem('lastCatheterDate', state.currentDate);
+          } else {
+            // Revert to previous date on untoggle
+            const prev = localStorage.getItem('prevCatheterDate');
+            if (prev) localStorage.setItem('lastCatheterDate', prev);
           }
           saveMonthlyTasks();
+          render();
         });
       }
 
