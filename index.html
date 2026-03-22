@@ -1000,7 +1000,7 @@
               const lastWashDate = lastWash ? new Date(lastWash + 'T00:00:00') : null;
               const today = new Date(state.currentDate + 'T00:00:00');
               const washDiff = lastWashDate ? Math.floor((today - lastWashDate) / (1000 * 60 * 60 * 24)) : 999;
-              const washRemaining = 7 - washDiff;
+              const washRemaining = 5 - washDiff;
               const washColor = washRemaining <= 0 ? '#ff3333' : washRemaining <= 2 ? '#ff9900' : '#00ff00';
               const washedToday = data.bipapWashMaskTube || false;
               return `
@@ -1009,11 +1009,11 @@
                     <span class="text-xs font-bold" style="color:#ff9900;">🚿 WASH MASK + TUBE</span>
                     <span class="text-xs font-bold" style="color:${washColor};">${washRemaining <= 0 ? 'OVERDUE' : washRemaining + ' days'}</span>
                   </div>
-                  <p style="font-size:9px; color:#555; margin-top:2px;">${lastWashDate ? 'Last: ' + lastWash : 'Not recorded'} · Weekly</p>
+                  <p style="font-size:9px; color:#555; margin-top:2px;">${lastWashDate ? 'Last: ' + lastWash : 'Not recorded'} · Every 5 days</p>
                 </div>
                 <button id="logBipapWash" class="w-full font-bold text-xs ${washedToday ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
                   <span>🚿 WASHED TODAY</span>
-                  <span style="font-size:9px;">${washedToday ? '✓ DONE' : 'WEEKLY'}</span>
+                  <span style="font-size:9px;">${washedToday ? '✓ DONE' : '5 DAYS'}</span>
                 </button>
               `;
             })()}
