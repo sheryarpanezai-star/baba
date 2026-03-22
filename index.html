@@ -1166,6 +1166,15 @@
 
     // ============= EVENT LISTENERS =============
     function attachEventListeners() {
+      // Helper: clone+replace element to strip ALL old event listeners (prevents stacking on re-render)
+      function rebind(id) {
+        const el = document.getElementById(id);
+        if (!el) return null;
+        const clone = el.cloneNode(true);
+        el.parentNode.replaceChild(clone, el);
+        return clone;
+      }
+
       // Tab navigation
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
@@ -1247,16 +1256,18 @@
         });
       }
 
-      // Date navigation
-      if (document.getElementById('prevDayBtn')) {
-        document.getElementById('prevDayBtn').addEventListener('click', () => {
+      // Date navigation (use rebind to prevent duplicate listeners on re-render)
+      const prevDayBtn = rebind('prevDayBtn');
+      if (prevDayBtn) {
+        prevDayBtn.addEventListener('click', () => {
           state.currentDate = addDays(state.currentDate, -1);
           loadDayData();
         });
       }
 
-      if (document.getElementById('nextDayBtn')) {
-        document.getElementById('nextDayBtn').addEventListener('click', () => {
+      const nextDayBtn = rebind('nextDayBtn');
+      if (nextDayBtn) {
+        nextDayBtn.addEventListener('click', () => {
           state.currentDate = addDays(state.currentDate, 1);
           loadDayData();
         });
