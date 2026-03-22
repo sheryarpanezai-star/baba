@@ -1345,7 +1345,6 @@
       const nurseName = shift.nurseName || '';
       const startTime = shift.startTime || '';
       const endTime = shift.endTime || '';
-      const exelonPatch = shift.exelonPatch || false;
 
       return `
         <div class="space-y-2">
@@ -1356,13 +1355,9 @@
                 <span class="text-xs" style="color:#888;">${startTime}</span>
               </div>
               <p class="text-sm font-bold mt-1" style="color:#ff9900;">${nurseName}</p>
-              ${exelonPatch ? '<span class="text-xs" style="color:#00ff00;">✓ Exelon Patch Applied</span>' : '<span class="text-xs" style="color:#ff9900;">⚠ Exelon Patch NOT confirmed</span>'}
             </div>
             <div class="pt-2 space-y-2" style="border-top:1px solid #333;">
               <label class="block text-xs font-bold" style="color:#888;">END SHIFT</label>
-              <button id="toggleExelonPatch" class="w-full p-2 font-bold text-xs ${exelonPatch ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-                💊 EXELON PATCH APPLIED ${exelonPatch ? '✓' : ''}
-              </button>
               <button id="endShiftBtn" class="w-full p-2 font-bold text-xs" style="background:#1f0a0a; border:2px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">
                 🔴 END SHIFT & CONFIRM DATA
               </button>
@@ -1392,7 +1387,7 @@
                     <strong style="color:#ff9900;">${h.name}</strong>
                     <span style="color:#555;">${h.start} - ${h.end || 'ongoing'}</span>
                   </div>
-                  <span style="color:${h.exelonPatch ? '#00ff00' : '#ff3333'};">${h.exelonPatch ? '✓ Exelon' : '✗ No Exelon'} · ${h.dataConfirmed ? '✓ Data confirmed' : '✗ Not confirmed'}</span>
+                  <span style="color:${h.dataConfirmed ? '#00ff00' : '#ff3333'};">${h.dataConfirmed ? '✓ Data confirmed' : '✗ Missing data'}</span>
                 </div>
               `).join('')}
             </div>
@@ -2150,15 +2145,6 @@
           state.dailyData.nurseShift.active = true;
           state.dailyData.nurseShift.nurseName = name;
           state.dailyData.nurseShift.startTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-          state.dailyData.nurseShift.exelonPatch = false;
-          saveDayData();
-          render();
-        });
-      }
-      if (document.getElementById('toggleExelonPatch')) {
-        document.getElementById('toggleExelonPatch').addEventListener('click', () => {
-          if (!state.dailyData.nurseShift) return;
-          state.dailyData.nurseShift.exelonPatch = !state.dailyData.nurseShift.exelonPatch;
           saveDayData();
           render();
         });
@@ -2172,7 +2158,6 @@
           const missing = [];
           if (!d.vitals || !d.vitals.day) missing.push('Day Vitals');
           if (!d.waterDay && !d.waterNight) missing.push('Fluid intake');
-          if (!shift.exelonPatch) missing.push('Exelon Patch');
           if (missing.length > 0) {
             if (!confirm('Missing data: ' + missing.join(', ') + '\\n\\nEnd shift anyway?')) return;
           }
@@ -2182,7 +2167,6 @@
             name: shift.nurseName,
             start: shift.startTime,
             end: endTime,
-            exelonPatch: shift.exelonPatch,
             dataConfirmed: missing.length === 0
           });
           shift.active = false;
