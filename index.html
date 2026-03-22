@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Baba Care Shared">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Baba Care Dashboard - Shared</title>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+    * { -webkit-user-select: none; user-select: none; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+    input, textarea, select { -webkit-user-select: text; user-select: text; }
+    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #0a0a0a !important; color: #ff9900; }
+    .safe-area-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
+    @supports (padding: max(0px)) {
+      body { padding-left: max(0px, env(safe-area-inset-left)); padding-right: max(0px, env(safe-area-inset-right)); }
+    }
+    button { min-height: 44px; }
+    input, textarea, select { min-height: 44px; font-size: 16px !important; background: #1a1a1a !important; color: #ff9900 !important; border-color: #333 !important; }
+    input::placeholder, textarea::placeholder { color: #555 !important; }
+    .compliance-ring { display: flex; align-items: center; justify-content: center; }
+    .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .5; }
+    }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 40; }
+    .modal { position: fixed; bottom: 0; left: 0; right: 0; background: #111; border-radius: 0.5rem 0.5rem 0 0; max-height: 90vh; overflow-y: auto; z-index: 50; border-top: 2px solid #ff9900; }
+    .grid-responsive { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; }
+    @media (max-width: 768px) {
+      .grid-responsive { grid-template-columns: 1fr; }
+    }
+    /* Bloomberg card overrides */
+    .bb-card { background: #111 !important; border: 1px solid #222 !important; border-left: 3px solid #ff9900 !important; border-radius: 4px !important; }
+    .bb-card-header { background: #1a1a1a !important; border-bottom: 1px solid #222 !important; }
+    .bb-btn { background: #ff9900 !important; color: #000 !important; font-weight: 700; border-radius: 2px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bb-btn:active { background: #cc7a00 !important; }
+    .bb-btn-secondary { background: #1a1a1a !important; color: #ff9900 !important; border: 1px solid #333 !important; border-radius: 2px !important; }
+    .bb-toggle-on { background: #0a2e0a !important; border-color: #00cc00 !important; color: #00ff00 !important; }
+    .bb-toggle-off { background: #1a1a1a !important; border-color: #333 !important; color: #666 !important; }
+    .bb-progress-track { background: #1a1a1a !important; border-radius: 2px !important; }
+    .bb-progress-fill { border-radius: 2px !important; }
+    .bb-vital-green { background: #0a1f0a !important; color: #00ff00 !important; }
+    .bb-vital-orange { background: #1f1a0a !important; color: #ff9900 !important; }
+    .bb-vital-red { background: #1f0a0a !important; color: #ff3333 !important; }
+    .bb-vital-gray { background: #1a1a1a !important; color: #555 !important; }
+    /* Table overrides for weekly view */
+    table { border-collapse: collapse; }
+    th, td { border-color: #333 !important; }
+    th { background: #1a1a1a !important; color: #ff9900 !important; }
+    td { background: #111 !important; }
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0a0a0a; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    /* Alert banner */
+    .bb-alert { background: #1f0a0a !important; border-left: 3px solid #ff3333 !important; }
+    .bb-setup { background: #1f1a0a !important; border-left: 3px solid #ff9900 !important; }
+    /* Global overrides for remaining Tailwind light classes */
+    .bg-white, .bg-gray-50, .bg-gray-100 { background: #111 !important; }
+    .bg-green-50, .bg-green-100 { background: #0a1f0a !important; }
+    .bg-amber-50, .bg-yellow-50 { background: #1f1a0a !important; }
+    .bg-red-50, .bg-red-100 { background: #1f0a0a !important; }
+    .bg-blue-50, .bg-indigo-50, .bg-purple-50 { background: #0a0a1f !important; }
+    .text-gray-800, .text-gray-700, .text-gray-600 { color: #ccc !important; }
+    .text-gray-500, .text-gray-400, .text-gray-300 { color: #888 !important; }
+    .text-green-500, .text-green-600, .text-green-700 { color: #00ff00 !important; }
+    .text-amber-600, .text-amber-700, .text-yellow-700 { color: #ff9900 !important; }
+    .text-red-500, .text-red-600, .text-red-800, .text-red-900 { color: #ff3333 !important; }
+    .text-blue-600, .text-blue-700, .text-violet-600 { color: #00ccff !important; }
+    .text-indigo-700, .text-purple-700 { color: #9999ff !important; }
+    .border-gray-200, .border-gray-300, .border-gray-100 { border-color: #333 !important; }
+    .border-green-500, .border-green-200 { border-color: #00cc00 !important; }
+    .border-amber-200 { border-color: #cc7a00 !important; }
+    .border-red-200 { border-color: #cc3333 !important; }
+    .bg-blue-500, .bg-blue-400, .bg-blue-600 { background: #ff9900 !important; color: #000 !important; }
+    .bg-green-500 { background: #00cc00 !important; color: #000 !important; }
+    .bg-purple-500 { background: #9966ff !important; color: #000 !important; }
+    .bg-amber-500 { background: #ff9900 !important; color: #000 !important; }
+    .bg-teal-500 { background: #00cc99 !important; color: #000 !important; }
+    .bg-gray-200 { background: #1a1a1a !important; }
+    .border-t { border-color: #333 !important; }
+    .border-b { border-color: #333 !important; }
+    .border { border-color: #333 !important; }
+    .rounded-lg, .rounded-xl { border-radius: 2px !important; }
+    .rounded-full { border-radius: 2px !important; }
+    .shadow-sm { box-shadow: none !important; }
+    label { color: #ccc; }
+    a { color: #00ccff !important; }
+    /* Font overrides */
+    h1, h2, h3, p, span, button, label, td, th, div { font-family: 'JetBrains Mono', 'Courier New', monospace !important; }
+    /* Settings modal */
+    .modal .sticky { background: #111 !important; border-color: #333 !important; }
+    .modal h2 { color: #ff9900 !important; }
+    .modal label { color: #ccc !important; }
+  </style>
+</head>
+<body class="bg-black">
+  <div id="app"></div>
+
+  <script>
+    // ============= STATE MANAGEMENT =============
+    const state = {
+      currentDate: new Date().toISOString().split('T')[0],
+      view: 'daily', // 'daily', 'weekly', 'monthly'
+      firebase: { configured: false, db: null },
+      alerts: {
+        phone: localStorage.getItem('alerts_phone') || '',
+        apiKey: localStorage.getItem('alerts_apiKey') || '',
+        recipients: JSON.parse(localStorage.getItem('alerts_recipients') || '[]'),
+        reportTime: localStorage.getItem('alerts_reportTime') || '21:00',
+        medTime: localStorage.getItem('alerts_medTime') || '10:00',
+        waterNoon: localStorage.getItem('alerts_waterNoon') || '500',
+        waterEod: localStorage.getItem('alerts_waterEod') || '1500',
+        vitalDayTime: localStorage.getItem('alerts_vitalDayTime') || '08:00',
+        vitalNightTime: localStorage.getItem('alerts_vitalNightTime') || '20:00',
+        lastReportSent: localStorage.getItem('alerts_lastReportSent') || ''
+      },
+      settings: {
+        setupExpanded: false,
+        settingsOpen: false,
+        firebaseApiKey: localStorage.getItem('firebase_apiKey') || 'AIzaSyC8ghzzMf9UVjMLEahJYNMhgdFkgjl1tO4',
+        firebaseProjectId: localStorage.getItem('firebase_projectId') || 'babacare-5ace3',
+        firebaseDbUrl: localStorage.getItem('firebase_dbUrl') || 'https://babacare-5ace3-default-rtdb.asia-southeast1.firebasedatabase.app'
+      },
+      dailyData: {},
+      monthlyTasks: {},
+      lastAlertCheck: 0
+    };
+
+    // ============= FIREBASE SETUP =============
+    function initFirebase() {
+      if (!state.settings.firebaseApiKey || !state.settings.firebaseDbUrl) return;
+
+      try {
+        const config = {
+          apiKey: state.settings.firebaseApiKey,
+          projectId: state.settings.firebaseProjectId,
+          databaseURL: state.settings.firebaseDbUrl
+        };
+
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+
+        state.firebase.db = firebase.database();
+        state.firebase.storage = firebase.storage();
+        state.firebase.configured = true;
+
+        // Listen for changes
+        const dateKey = state.currentDate.replace(/-/g, '');
+        const ref = state.firebase.db.ref(`days/${dateKey}`);
+        ref.on('value', (snapshot) => {
+          if (snapshot.val()) {
+            state.dailyData = snapshot.val();
+            render();
+          }
+        });
+      } catch (e) {
+        console.error('Firebase error:', e);
+        state.firebase.configured = false;
+      }
+    }
+
+    function saveToFirebase(path, data) {
+      if (!state.firebase.configured || !state.firebase.db) {
+        localStorage.setItem(`cached_${path}`, JSON.stringify(data));
+        return;
+      }
+      try {
+        state.firebase.db.ref(path).set(data);
+      } catch (e) {
+        console.error('Firebase save error:', e);
+      }
+    }
+
+    function loadFromLocalStorage(key, defaultVal = {}) {
+      try {
+        return JSON.parse(localStorage.getItem(key) || JSON.stringify(defaultVal));
+      } catch {
+        return defaultVal;
+      }
+    }
+
+    // ============= UTILITY FUNCTIONS =============
+    function formatDate(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+    }
+
+    function getDayOfWeek(dateStr) {
+      const d = new Date(dateStr + 'T00:00:00');
+      return d.toLocaleDateString('en-US', { weekday: 'short' });
+    }
+
+    function getYearMonth(dateStr) {
+      return dateStr.substring(0, 7);
+    }
+
+    function addDays(dateStr, days) {
+      const d = new Date(dateStr + 'T00:00:00');
+      d.setDate(d.getDate() + days);
+      return d.toISOString().split('T')[0];
+    }
+
+    function getVitalStatus(metric, value) {
+      if (metric === 'bp') {
+        if (!value || value === '--') return 'gray';
+        const parts = value.split('/');
+        if (parts.length === 2) {
+          const sys = parseInt(parts[0]), dia = parseInt(parts[1]);
+          if (sys >= 180 || dia >= 120) return 'red';
+          if (sys >= 140 || dia >= 90) return 'orange';
+          if (sys < 90 || dia < 60) return 'orange';
+        }
+        return 'green';
+      }
+      if (metric === 'hr') return value > 100 || value < 60 ? 'orange' : 'green';
+      if (metric === 'o2') return value < 95 ? 'red' : 'green';
+      if (metric === 'temp') return value > 99.5 || value < 96.8 ? 'orange' : 'green';
+      if (metric === 'sugar') return value > 180 || value < 80 ? 'orange' : 'green';
+      if (metric === 'urine') {
+        if (!value || value === 0) return 'gray';
+        return value < 200 ? 'red' : value < 400 ? 'orange' : 'green';
+      }
+      return 'gray';
+    }
+
+    function calculateCompliance() {
+      const data = state.dailyData;
+      const checks = [
+        data.morningMed, data.eveningMed, !!data.vitals?.day, !!data.vitals?.night,
+        (data.waterDay || 0) + (data.waterNight || 0) + (data.waterIntake || 0) >= 1200, (data.bipapDay || 0) + (data.bipapNight || 0) >= 8
+      ];
+      const completed = checks.filter(Boolean).length;
+      return completed / checks.length;
+    }
+
+    function getRedFlags() {
+      const data = state.dailyData;
+      const flags = [];
+
+      if (data.morningMed === false) flags.push({ type: 'med', msg: '⚠ Morning medication not given' });
+      if (data.eveningMed === false) flags.push({ type: 'med', msg: '⚠ Evening medication not given' });
+      const totalFluid = (data.waterDay || 0) + (data.waterNight || 0) + (data.waterIntake || 0);
+      if (totalFluid < 500) flags.push({ type: 'water', msg: '⚠ Low water intake (' + totalFluid + ' mL)' });
+      ['day', 'night'].forEach(shift => {
+        const v = (data.vitals || {})[shift];
+        if (v) {
+          if (getVitalStatus('o2', v.o2) === 'red') flags.push({ type: 'vital', msg: `⚠ Low oxygen (${shift} shift)` });
+          if (getVitalStatus('hr', v.hr) === 'red') flags.push({ type: 'vital', msg: `⚠ Abnormal heart rate (${shift} shift)` });
+          if (getVitalStatus('bp', v.bp) === 'red') flags.push({ type: 'vital', msg: `⚠ High BP (${shift} shift)` });
+        }
+      });
+      const totalUrine = (data.urineDay || 0) + (data.urineNight || 0);
+      if (totalUrine > 0 && totalUrine < 500) flags.push({ type: 'fluid', msg: '⚠ Daily urine output low (' + totalUrine + ' mL)' });
+      const totalBipap = (data.bipapDay || 0) + (data.bipapNight || 0);
+      if (totalBipap < 8 && new Date().getHours() >= 20) flags.push({ type: 'bipap', msg: '⚠ BiPAP below 8hr target (' + totalBipap + ' hrs)' });
+      const hr = new Date().getHours();
+      if (!data.vitals?.day && hr >= 10) flags.push({ type: 'vital', msg: '⚠ Day shift vitals not recorded' });
+      if (!data.vitals?.night && hr >= 22) flags.push({ type: 'vital', msg: '⚠ Night shift vitals not recorded' });
+
+      return flags;
+    }
+
+    // ============= RENDER FUNCTIONS =============
+    function render() {
+      const html = renderApp();
+      document.getElementById('app').innerHTML = html;
+      attachEventListeners();
+    }
+
+    function renderApp() {
+      const flags = getRedFlags();
+      let html = '';
+
+      // Header
+      html += `
+        <div class="sticky top-0 z-30" style="background:#0a0a0a; border-bottom: 1px solid #333;">
+          <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div>
+              <h1 class="text-lg font-bold" style="color:#ff9900; letter-spacing:2px;">BABA CARE <span style="color:#00cc00;">TERMINAL</span></h1>
+              <p class="text-xs" style="color:#555;">SHARED HEALTH MONITORING SYSTEM</p>
+            </div>
+            <button id="settingsBtn" class="text-xl p-2" style="color:#ff9900;">⚙</button>
+          </div>
+          <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-1">
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'daily' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'daily' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="daily">Daily</button>
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'weekly' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'weekly' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="weekly">Weekly</button>
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'monthly' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'monthly' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="monthly">Monthly</button>
+          </div>
+        </div>
+      `;
+
+      // Firebase setup banner
+      if (!state.firebase.configured) {
+        html += renderFirebaseSetupBanner();
+      }
+
+      // Red flag alerts
+      if (flags.length > 0) {
+        html += `
+          <div class="bb-alert p-3 max-w-6xl mx-auto mt-2">
+            <p class="font-bold text-xs uppercase mb-2" style="color:#ff3333; letter-spacing:1px;">▸ ALERTS</p>
+            <div class="space-y-1">
+              ${flags.map(f => `<p class="text-xs" style="color:#ff6666;">${f.msg}</p>`).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      // Date navigation for daily view
+      if (state.view === 'daily') {
+        html += `
+          <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+            <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">◀ PREV</button>
+            <span class="font-bold text-sm" style="color:#ff9900;">${formatDate(state.currentDate)}</span>
+            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">NEXT ▶</button>
+          </div>
+        `;
+        html += renderDailyView();
+      } else if (state.view === 'weekly') {
+        html += renderWeeklyView();
+      } else if (state.view === 'monthly') {
+        html += renderMonthlyView();
+      }
+
+      // Settings modal
+      if (state.settings.settingsOpen) {
+        html += renderSettingsModal();
+      }
+
+      return html;
+    }
+
+    function renderFirebaseSetupBanner() {
+      return `
+        <div class="bb-setup p-4 sticky top-20 z-20">
+          <div class="flex items-center justify-between cursor-pointer" id="setupToggle">
+            <div class="flex items-center gap-3 flex-1">
+              <span class="text-2xl">⚙️</span>
+              <div>
+                <p class="font-semibold" style="color:#ff9900;">SETUP REQUIRED: Firebase Not Configured</p>
+                <p class="text-sm text-amber-800">This app uses Firebase for real-time data sync. Click to configure.</p>
+              </div>
+            </div>
+            <span class="text-xl">${state.settings.setupExpanded ? '▼' : '▶'}</span>
+          </div>
+          ${state.settings.setupExpanded ? `
+            <div class="mt-4 bg-white rounded-lg p-4 space-y-3">
+              <div class="text-sm text-gray-700 space-y-2">
+                <p class="font-semibold">Steps to set up Firebase:</p>
+                <ol class="list-decimal list-inside space-y-1">
+                  <li>Go to <a href="https://console.firebase.google.com" target="_blank" class="text-blue-600 underline">Firebase Console</a></li>
+                  <li>Create a new project or select existing</li>
+                  <li>Enable Realtime Database (test mode)</li>
+                  <li>Enable Storage (for medicine photos)</li>
+                  <li>Get API Key from Settings > Project Settings</li>
+                  <li>Get Project ID and Database URL</li>
+                </ol>
+              </div>
+              <input type="text" id="firebaseApiKey" placeholder="API Key" value="${state.settings.firebaseApiKey}" class="w-full border rounded px-3 py-2 text-sm">
+              <input type="text" id="firebaseProjectId" placeholder="Project ID" value="${state.settings.firebaseProjectId}" class="w-full border rounded px-3 py-2 text-sm">
+              <input type="text" id="firebaseDbUrl" placeholder="Database URL (https://...firebaseio.com)" value="${state.settings.firebaseDbUrl}" class="w-full border rounded px-3 py-2 text-sm">
+              <button id="setupBtn" class="bb-btn w-full px-3 py-2 text-xs">CONNECT FIREBASE</button>
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    function renderSettingsModal() {
+      return `
+        <div class="modal-backdrop" id="settingsBackdrop"></div>
+        <div class="modal">
+          <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#111; border-bottom:1px solid #333;">
+            <h2 class="text-sm font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">⚙ SETTINGS & ALERTS</h2>
+            <button id="closeSettingsBtn" style="color:#ff9900; font-size:20px;">✕</button>
+          </div>
+          <div class="p-4 space-y-4 safe-area-pb">
+            <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">DAILY REPORT (WHATSAPP)</p>
+            <div>
+              <label class="block text-xs font-semibold mb-1" style="color:#888;">Family Recipients (one per line: Name,Phone,APIKey)</label>
+              <textarea id="recipientsInput" rows="4" placeholder="Sheryar,+923001234567,apikey123&#10;Ahmed,+923009876543,apikey456" class="w-full border rounded px-3 py-2 text-xs" style="font-family:monospace;">${state.alerts.recipients.map(r => r.name + ',' + r.phone + ',' + r.apiKey).join('\\n')}</textarea>
+              <p style="font-size:9px; color:#555; margin-top:4px;">Each person needs their own CallMeBot API key. Send "I allow callmebot to send me messages" to +34 644 71 98 38 on WhatsApp to get one.</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1" style="color:#888;">Auto-send Report Time</label>
+              <input type="time" id="reportTimeInput" value="${state.alerts.reportTime}" class="w-full border rounded px-3 py-2">
+            </div>
+            <button id="sendReportNowBtn" class="w-full px-3 py-2 text-xs font-bold" style="background:#1a3a1a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer;">📤 SEND REPORT NOW</button>
+
+            <div style="border-top:1px solid #333; padding-top:12px;">
+              <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">REMINDERS</p>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1" style="color:#888;">Day Shift Vitals Reminder</label>
+              <input type="time" id="vitalDayTimeInput" value="${state.alerts.vitalDayTime || '08:00'}" class="w-full border rounded px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1" style="color:#888;">Night Shift Vitals Reminder</label>
+              <input type="time" id="vitalNightTimeInput" value="${state.alerts.vitalNightTime || '20:00'}" class="w-full border rounded px-3 py-2">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold mb-1" style="color:#888;">Medication Reminder</label>
+              <input type="time" id="medTimeInput" value="${state.alerts.medTime}" class="w-full border rounded px-3 py-2">
+            </div>
+            <button id="saveSettingsBtn" class="bb-btn w-full px-3 py-2 text-xs">SAVE SETTINGS</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderDailyView() {
+      const data = state.dailyData || {};
+      const compliance = calculateCompliance();
+
+      return `
+        <div class="max-w-6xl mx-auto px-4 pt-3">
+          ${renderComplianceBar(compliance)}
+        </div>
+        <div class="max-w-6xl mx-auto px-4 py-3 grid-responsive">
+          ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
+          ${renderCard('Medications', '💊', renderMedicationsCard(data))}
+          ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
+          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
+          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
+          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
+          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
+          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
+          ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
+          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+        </div>
+      `;
+    }
+
+    function renderCard(title, icon, content, accent = '') {
+      return `
+        <div class="bb-card">
+          <div class="bb-card-header px-4 py-2 flex items-center gap-2">
+            <span class="text-sm">${icon}</span>
+            <h3 class="font-bold text-xs uppercase" style="color:#ff9900; letter-spacing:1px;">${title}</h3>
+          </div>
+          <div class="p-3" style="color:#ccc;">${content}</div>
+        </div>
+      `;
+    }
+
+    function renderComplianceBar(pct) {
+      const color = pct > 0.8 ? '#00ff00' : pct > 0.5 ? '#ff9900' : '#ff3333';
+      return `
+        <div style="background:#111; border:1px solid #333; border-radius:2px; padding:8px 12px; display:flex; align-items:center; gap:12px;">
+          <span style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; white-space:nowrap;">COMPLIANCE</span>
+          <div style="flex:1; background:#1a1a1a; height:8px; border-radius:2px; overflow:hidden;">
+            <div style="height:100%; width:${Math.round(pct * 100)}%; background:${color}; border-radius:2px; transition:width 0.7s;"></div>
+          </div>
+          <span style="font-size:13px; font-weight:700; color:${color}; min-width:40px; text-align:right;">${Math.round(pct * 100)}%</span>
+        </div>
+      `;
+    }
+
+    function renderVitalsCard(data) {
+      const vitals = data.vitals || {};
+      const dayV = vitals.day || null;
+      const nightV = vitals.night || null;
+
+      function renderShiftBlock(label, emoji, v) {
+        if (!v) return `<div style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#555;">${emoji} ${label} — NOT RECORDED</span></div>`;
+        return `
+          <div style="background:#111; border:1px solid #333; border-radius:2px; padding:8px;">
+            <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:4px;">${emoji} ${label} <span style="color:#555; font-weight:400;">${v.time || ''}</span></p>
+            <div class="grid grid-cols-3 gap-1">
+              ${renderVitalReading('BP', v.bp || '--', 'mmHg', getVitalStatus('bp', v.bp))}
+              ${renderVitalReading('HR', v.hr || '0', 'bpm', getVitalStatus('hr', v.hr))}
+              ${renderVitalReading('O₂', v.o2 || '0', '%', getVitalStatus('o2', v.o2))}
+              ${renderVitalReading('Temp', v.temp || '0', '°F', getVitalStatus('temp', v.temp))}
+              ${renderVitalReading('Sugar', v.sugar || '0', 'mg/dL', getVitalStatus('sugar', v.sugar))}
+            </div>
+          </div>`;
+      }
+
+      return `
+        <div class="space-y-3">
+          ${renderShiftBlock('Day Shift', '☀️', dayV)}
+          ${renderShiftBlock('Night Shift', '🌙', nightV)}
+          <form id="vitalsForm" class="space-y-2 mt-3 pt-3" style="border-top:1px solid #333;">
+            <select id="vitals_shift" class="w-full border rounded px-2 py-2 text-xs font-bold">
+              <option value="day"${dayV ? ' disabled' : ''}>☀️ DAY SHIFT${dayV ? ' (RECORDED)' : ''}</option>
+              <option value="night"${nightV ? ' disabled' : ''}>🌙 NIGHT SHIFT${nightV ? ' (RECORDED)' : ''}</option>
+            </select>
+            <input type="text" id="vitals_bp" placeholder="BP (e.g., 120/80)" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_hr" placeholder="Heart Rate (bpm)" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_o2" placeholder="O₂ %" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_temp" placeholder="Temp °F (e.g., 98.6)" step="0.1" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_sugar" placeholder="Blood Sugar (mg/dL)" class="w-full border rounded px-2 py-1 text-xs">
+            <button type="button" id="addVitalsBtn" class="bb-btn w-full px-2 py-2 text-xs"${dayV && nightV ? ' disabled style="opacity:0.3"' : ''}>SAVE VITALS</button>
+          </form>
+        </div>
+      `;
+    }
+
+    function renderVitalReading(label, value, unit, status) {
+      const cls = status === 'green' ? 'bb-vital-green' : status === 'orange' ? 'bb-vital-orange' : status === 'red' ? 'bb-vital-red' : 'bb-vital-gray';
+      return `
+        <div class="${cls}" style="border-radius:2px; padding:6px; display:flex; flex-direction:column; align-items:center; gap:1px;">
+          <span style="font-size:10px; color:#888;">${label}</span>
+          <span style="font-size:13px; font-weight:700;">${value}</span>
+          <span style="font-size:9px; color:#555;">${unit}</span>
+        </div>
+      `;
+    }
+
+    function renderMedicationsCard(data) {
+      const amMeds = ['Loprin 75mg','Lasix 40mg','Epleron 50mg','Uperio 50mg','Concor 2.5mg','Nexium 40mg'];
+      const pmMeds = ['Ebixa 20mg','Lipiget 10mg','Uperio 50mg','Brintillix 10mg','Exelon Patch 9.5mg'];
+      return `
+        <div class="space-y-3">
+          <div class="flex gap-3">
+            <button id="toggleMorningMed" class="flex-1 p-3 font-bold text-xs ${data.morningMed ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
+              ☀️ MORNING ${data.morningMed ? '✓' : ''}
+            </button>
+            <button id="toggleEveningMed" class="flex-1 p-3 font-bold text-xs ${data.eveningMed ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
+              🌙 EVENING ${data.eveningMed ? '✓' : ''}
+            </button>
+          </div>
+          <!-- Medicine List -->
+          <div class="grid grid-cols-2 gap-2">
+            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
+              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">☀️ AM MEDICINES</p>
+              ${amMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
+            </div>
+            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
+              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">🌙 PM MEDICINES</p>
+              ${pmMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
+            </div>
+          </div>
+          <div class="pt-3 space-y-3" style="border-top:1px solid #333;">
+            <p class="text-xs flex items-center gap-1" style="color:#888;">📷 PHOTO REQUIRED BEFORE MARKING</p>
+            <!-- Morning Photo -->
+            <div class="p-2" style="border-radius:2px; background:${data.morningMedPhoto ? (data.morningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.morningMedPhoto ? (data.morningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
+              <p class="text-xs font-bold mb-1" style="color:#ff9900;">☀️ MORNING MEDS PHOTO</p>
+              ${data.morningMedPhoto
+                ? `<div class="flex items-center gap-2">
+                    <img src="${data.morningMedPhoto}" alt="Morning meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
+                    <span class="text-xs" style="color:#555;">${data.morningMedPhotoTime || 'Uploaded'}</span>
+                  </div>`
+                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
+                    <span class="text-xs font-bold" style="color:#ff9900;">📷 TAKE / UPLOAD PHOTO</span>
+                    <input type="file" id="morningMedPhoto" accept="image/*" capture="environment" class="hidden">
+                  </label>`}
+            </div>
+            <!-- Evening Photo -->
+            <div class="p-2" style="border-radius:2px; background:${data.eveningMedPhoto ? (data.eveningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.eveningMedPhoto ? (data.eveningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
+              <p class="text-xs font-bold mb-1" style="color:#ff9900;">🌙 EVENING MEDS PHOTO</p>
+              ${data.eveningMedPhoto
+                ? `<div class="flex items-center gap-2">
+                    <img src="${data.eveningMedPhoto}" alt="Evening meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
+                    <span class="text-xs" style="color:#555;">${data.eveningMedPhotoTime || 'Uploaded'}</span>
+                  </div>`
+                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
+                    <span class="text-xs font-medium text-violet-600">📷 Take / Upload Photo</span>
+                    <input type="file" id="eveningMedPhoto" accept="image/*" capture="environment" class="hidden">
+                  </label>`}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSupplementsCard(data) {
+      const sup = data.supplements || {};
+      return `
+        <div class="space-y-2">
+          <!-- K-Lyte -->
+          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+            <p style="font-size:11px; font-weight:700; color:#ff9900;">K-LYTE</p>
+            <div style="display:flex; align-items:center; gap:6px;">
+              ${sup.klyte ? `<span style="font-size:14px; font-weight:700; color:#00ff00;">${sup.klyte} mL</span>` : ''}
+              <input type="number" id="sup_klyte" placeholder="mL" class="border rounded px-2 py-1 text-xs" style="width:70px;" value="${sup.klyte || ''}">
+            </div>
+          </div>
+          <button type="button" id="saveSupplementsBtn" class="bb-btn w-full px-2 py-2 text-xs">SAVE</button>
+          <!-- Omega-3 -->
+          <button id="toggleOmega3" class="w-full font-bold text-xs ${sup.omega3 ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
+            <span>OMEGA-3</span>
+            <span>${sup.omega3 ? '✓ GIVEN' : '—'}</span>
+          </button>
+          <!-- Magnesium -->
+          <button id="toggleMagnesium" class="w-full font-bold text-xs ${sup.magnesium ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
+            <span>MAGNESIUM L-THREONATE</span>
+            <span>${sup.magnesium ? '✓ GIVEN' : '—'}</span>
+          </button>
+          <!-- Ensure -->
+          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
+            <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:6px;">ENSURE</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <button id="toggleEnsureDay" class="font-bold text-xs ${sup.ensureDay ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+                <span>☀️ DAY</span>
+                <span>${sup.ensureDay ? '✓' : '—'}</span>
+              </button>
+              <button id="toggleEnsureNight" class="font-bold text-xs ${sup.ensureNight ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+                <span>🌙 NIGHT</span>
+                <span>${sup.ensureNight ? '✓' : '—'}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFluidBalanceCard(data) {
+      const waterDay = data.waterDay || 0;
+      const waterNight = data.waterNight || 0;
+      const totalWater = waterDay + waterNight + (data.waterIntake || 0);
+      const target = 1200;
+      const pct = Math.min(totalWater / target, 1);
+      const urineDay = data.urineDay || 0;
+      const urineNight = data.urineNight || 0;
+      const totalUrine = urineDay + urineNight;
+      const netBalance = totalWater - totalUrine;
+
+      return `
+        <div class="space-y-3">
+          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">FLUID INTAKE</p>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold" style="color:#00ccff;">💧 ${totalWater} / ${target} mL</span>
+            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
+          </div>
+          <div class="w-full h-3 bb-progress-track">
+            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#00ff00' : '#00ccff'};"></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
+              <input type="number" id="waterDayInput" placeholder="mL" value="${waterDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
+            </div>
+            <div>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
+              <input type="number" id="waterNightInput" placeholder="mL" value="${waterNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
+            </div>
+          </div>
+
+          <div class="pt-3 mt-2" style="border-top:1px solid #333;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE OUTPUT</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
+                <input type="number" id="urineDayInput" placeholder="mL" value="${urineDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
+              </div>
+              <div>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
+                <input type="number" id="urineNightInput" placeholder="mL" value="${urineNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
+              </div>
+            </div>
+          </div>
+
+          <button id="saveFluidBtn" class="bb-btn w-full px-2 py-2 text-xs">SAVE</button>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
+              <span style="font-size:10px; color:#888;">TOTAL INTAKE</span>
+              <p class="text-sm font-bold" style="color:${totalWater >= target ? '#00ff00' : totalWater > 0 ? '#00ccff' : '#555'};">${totalWater || '--'} mL</p>
+            </div>
+            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
+              <span style="font-size:10px; color:#888;">TOTAL OUTPUT</span>
+              <p class="text-sm font-bold" style="color:${totalUrine < 500 && totalUrine > 0 ? '#ff3333' : totalUrine >= 500 ? '#00ff00' : '#555'};">${totalUrine || '--'} mL</p>
+            </div>
+          </div>
+          <div style="background:${netBalance >= 0 ? '#0a1f0a' : '#1f0a0a'}; border:1px solid ${netBalance >= 0 ? '#00cc00' : '#cc3333'}; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#888;">NET FLUID BALANCE</span>
+            <p class="text-sm font-bold" style="color:${netBalance >= 0 ? '#00ff00' : '#ff3333'};">${netBalance >= 0 ? '+' : ''}${netBalance} mL</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNutritionCard(data) {
+      const meals = data.meals || {};
+      const sections = [
+        { id: 'breakfast', label: '🌅 BREAKFAST' },
+        { id: 'lunch', label: '☀️ LUNCH' },
+        { id: 'dinner', label: '🌙 DINNER' },
+        { id: 'snacks', label: '🍎 SNACKS' }
+      ];
+      const pctOptions = [100, 75, 50, 25, 0];
+      const pctLabels = { 100: 'All', 75: '¾', 50: '½', 25: '¼', 0: 'Refused' };
+      const recorded = sections.filter(s => meals[s.id]?.pct !== undefined).length;
+
+      return `
+        <div class="space-y-3">
+          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#888;">MEALS RECORDED</span>
+            <p style="font-size:18px; font-weight:700; color:${recorded >= 3 ? '#00ff00' : recorded > 0 ? '#ff9900' : '#555'};">${recorded} / ${sections.length}</p>
+          </div>
+          ${sections.map(s => {
+            const m = meals[s.id];
+            const hasPct = m && m.pct !== undefined;
+            const pctColor = !hasPct ? '#555' : m.pct >= 75 ? '#00ff00' : m.pct >= 50 ? '#ff9900' : '#ff3333';
+            return `
+              <div style="background:#111; border:1px solid ${hasPct ? '#333' : '#222'}; border-radius:2px; padding:8px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+                  <p style="font-size:11px; font-weight:700; color:#ff9900;">${s.label}</p>
+                  ${hasPct ? `<span style="font-size:11px; font-weight:700; color:${pctColor};">${m.pct}% ${m.time ? '· ' + m.time : ''}</span>` : ''}
+                </div>
+                ${hasPct ? `
+                  <div style="background:#1a1a1a; border-radius:2px; height:6px; overflow:hidden; margin-bottom:${m.note ? '6' : '0'}px;">
+                    <div style="height:100%; width:${m.pct}%; background:${pctColor}; border-radius:2px;"></div>
+                  </div>
+                  ${m.note ? `<p style="font-size:10px; color:#888; margin-top:4px;">${m.note}</p>` : ''}
+                ` : `
+                  <div style="display:flex; gap:4px; margin-bottom:6px;">
+                    ${pctOptions.map(p => `
+                      <button type="button" class="mealPctBtn" data-meal="${s.id}" data-pct="${p}" style="flex:1; padding:6px 2px; font-size:${p === 0 ? '8px' : '10px'}; font-weight:700; background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ccc; cursor:pointer;">${pctLabels[p]}</button>
+                    `).join('')}
+                  </div>
+                  <input type="text" id="meal_${s.id}_note" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs">
+                `}
+              </div>`;
+          }).join('')}
+        </div>
+      `;
+    }
+
+    function renderHygieneCard(data) {
+      const hyg = data.hygiene || {};
+      const repoLog = hyg.repositioning || [];
+      return `
+        <div class="space-y-3">
+          <!-- Daily tasks -->
+          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">DAILY</p>
+          <div class="grid grid-cols-2 gap-1 text-xs">
+            <button id="toggleOralCare" class="p-2 rounded border-2 ${hyg.oralCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🦷 Oral Care ${hyg.oralCare ? '✓' : ''}</button>
+            <button id="toggleSkinCare" class="p-2 rounded border-2 ${hyg.skinCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💅 Skin Care ${hyg.skinCare ? '✓' : ''}</button>
+          </div>
+          <!-- Diaper Change -->
+          <div class="text-xs space-y-1 pt-2 border-t">
+            <label class="block font-semibold">🩹 Diaper Change</label>
+            <div class="flex gap-1">
+              <button id="toggleDiaperAM" class="flex-1 p-2 rounded border-2 ${hyg.diaperAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">☀️ AM ${hyg.diaperAM ? '✓' : ''}</button>
+              <button id="toggleDiaperPM" class="flex-1 p-2 rounded border-2 ${hyg.diaperPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🌙 PM ${hyg.diaperPM ? '✓' : ''}</button>
+            </div>
+          </div>
+
+          <!-- Brush Teeth -->
+          <div class="text-xs space-y-1 pt-2 border-t">
+            <label class="block font-semibold">🪥 Brush Teeth</label>
+            <div class="flex gap-1">
+              <button id="toggleBrushAM" class="flex-1 p-2 rounded border-2 ${hyg.brushAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">☀️ AM ${hyg.brushAM ? '✓' : ''}</button>
+              <button id="toggleBrushPM" class="flex-1 p-2 rounded border-2 ${hyg.brushPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🌙 PM ${hyg.brushPM ? '✓' : ''}</button>
+            </div>
+          </div>
+
+          <!-- Periodic -->
+          <div class="text-xs space-y-1 pt-2 border-t">
+            <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">PERIODIC</p>
+            <!-- Urine Bag countdown -->
+            ${(() => {
+              const lastBag = localStorage.getItem('lastUrineBagDate') || '2025-03-17';
+              const lastBagDate = new Date(lastBag + 'T00:00:00');
+              const today = new Date(state.currentDate + 'T00:00:00');
+              const bagDiff = Math.floor((today - lastBagDate) / (1000 * 60 * 60 * 24));
+              const bagRemaining = 7 - bagDiff;
+              const bagColor = bagRemaining <= 0 ? '#ff3333' : bagRemaining <= 2 ? '#ff9900' : '#00ff00';
+              const nextBag = new Date(lastBagDate); nextBag.setDate(nextBag.getDate() + 7);
+              return `
+                <div style="background:#1a1a1a; border:1px solid ${bagRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; text-align:center; margin-bottom:6px;">
+                  <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE BAG CHANGE</span>
+                  <p style="font-size:20px; font-weight:700; color:${bagColor};">${bagRemaining <= 0 ? 'OVERDUE' : bagRemaining + ' days'}</p>
+                  <span style="font-size:9px; color:#555;">Next: ${nextBag.toISOString().split('T')[0]} · Last: ${lastBag}</span>
+                </div>
+                <button id="toggleUrineBag" class="w-full p-2 font-bold text-xs ${hyg.urineBagChanged ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; margin-bottom:6px;">
+                  🔄 URINE BAG CHANGED ${hyg.urineBagChanged ? '✓' : ''}
+                </button>`;
+            })()}
+            <div class="grid grid-cols-2 gap-1">
+              <button id="toggleShave" class="p-2 rounded border-2 ${hyg.shaved ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🪒 Shave ${hyg.shaved ? '✓' : ''}</button>
+              <button id="toggleFullBath" class="p-2 rounded border-2 ${hyg.fullBath ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🛁 Bath ${hyg.fullBath ? '✓' : ''}</button>
+              <button id="toggleCleanNoseEars" class="p-2 rounded border-2 ${hyg.cleanNoseEars ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">👂 Clean Nose & Ears ${hyg.cleanNoseEars ? '✓' : ''}</button>
+              <button id="toggleTrimNails" class="p-2 rounded border-2 ${hyg.trimNails ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">✂️ Trim Nails ${hyg.trimNails ? '✓' : ''}</button>
+              <button id="toggleHaircut" class="p-2 rounded border-2 ${hyg.haircut ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💇 Haircut ${hyg.haircut ? '✓' : ''}</button>
+            </div>
+          </div>
+
+          <!-- Repositioning log -->
+          <div class="text-xs space-y-1 pt-2 border-t">
+            <div class="flex items-center justify-between">
+              <label class="font-semibold">🔄 Repositioning</label>
+              <button id="addRepoBtn" class="px-2 py-1 bg-teal-500 text-white rounded font-semibold">+ Log</button>
+            </div>
+            <div class="flex gap-1 flex-wrap">
+              ${repoLog.length > 0
+                ? repoLog.map(t => `<span class="px-2 py-0.5 bg-teal-50 text-teal-700 rounded font-mono">${t}</span>`).join('')
+                : '<span class="text-gray-400">No repositioning logged</span>'}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderPhysioCard(data) {
+      const physio = data.physio || {};
+      const exercises = [
+        { id: 'rom', label: '🦵 Range of Motion', desc: 'Passive ROM exercises' },
+        { id: 'chest', label: '🚴 Cycling', desc: 'Bed cycling exercise' },
+        { id: 'stretch', label: '🤸 Stretching', desc: 'Limb stretches' },
+        { id: 'massage', label: '💆 Massage', desc: 'Circulation & comfort' }
+      ];
+      const log = physio.log || [];
+      return `
+        <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-2">
+            ${exercises.map(ex => `
+              <button id="togglePhysio_${ex.id}" class="p-2 text-left text-xs font-bold ${physio[ex.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
+                ${ex.label} ${physio[ex.id] ? '✓' : ''}
+                <p style="color:#555; font-weight:400; font-size:10px;">${ex.desc}</p>
+              </button>
+            `).join('')}
+          </div>
+          <div class="text-xs text-center" style="color:#888;">${Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length} / ${exercises.length} COMPLETED</div>
+          ${log.length > 0 ? `
+            <div class="space-y-1 text-xs">
+              ${log.map(l => `<div class="p-1.5" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${l.time}</strong> <span style="color:#ccc;">— ${l.note}</span></div>`).join('')}
+            </div>
+          ` : ''}
+          <div class="pt-2" style="border-top:1px solid #333;">
+            <input type="text" id="physio_note" placeholder="Session notes (e.g., 15 min ROM, tolerated well)" class="w-full border rounded px-2 py-1 text-xs">
+            <button type="button" id="addPhysioNoteBtn" class="bb-btn w-full mt-1 px-2 py-2 text-xs">ADD PHYSIO NOTE</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderBiPAPCard(data) {
+      const bipapDay = data.bipapDay || 0;
+      const bipapNight = data.bipapNight || 0;
+      const totalHrs = bipapDay + bipapNight;
+      const target = 8;
+      const pct = Math.min(totalHrs / target, 1);
+      const sleepDay = data.sleepDay || 0;
+      const sleepNight = data.sleepNight || 0;
+      const totalSleep = sleepDay + sleepNight + (data.hoursSlept || 0);
+      return `
+        <div class="space-y-3">
+          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">BIPAP</p>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold" style="color:#9966ff;">🌬️ ${totalHrs} / ${target} hrs</span>
+            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
+          </div>
+          <div class="w-full h-3 bb-progress-track">
+            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#00ff00' : '#9966ff'};"></div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
+              <input type="number" id="bipapDayInput" placeholder="hrs" step="0.5" value="${bipapDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
+            </div>
+            <div>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
+              <input type="number" id="bipapNightInput" placeholder="hrs" step="0.5" value="${bipapNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
+            </div>
+          </div>
+          <div class="pt-3" style="border-top:1px solid #333;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">SLEEP</p>
+            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:10px; text-align:center; margin-bottom:8px;">
+              <span style="font-size:10px; color:#888;">TOTAL HOURS SLEPT</span>
+              <p style="font-size:20px; font-weight:700; color:${totalSleep >= 7 ? '#00ff00' : totalSleep >= 5 ? '#ff9900' : totalSleep > 0 ? '#ff3333' : '#555'};">${totalSleep || '--'} <span style="font-size:11px; color:#555;">hrs</span></p>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
+                <input type="number" id="sleepDayInput" placeholder="hrs" step="0.5" value="${sleepDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
+              </div>
+              <div>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
+                <input type="number" id="sleepNightInput" placeholder="hrs" step="0.5" value="${sleepNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
+              </div>
+            </div>
+          </div>
+          <button id="saveBiPAPBtn" class="bb-btn w-full px-2 py-1 text-xs">UPDATE</button>
+        </div>
+      `;
+    }
+
+    function renderMonthlyTasksCard(data) {
+      const ym = getYearMonth(state.currentDate);
+      const tasks = state.monthlyTasks[ym] || { catheter: false, vitaminD: false };
+      const now = new Date(state.currentDate + 'T00:00:00');
+
+      // Catheter countdown — every 4 weeks (28 days)
+      const lastCatheter = localStorage.getItem('lastCatheterDate') || '2025-02-17';
+      const lastCathDate = new Date(lastCatheter + 'T00:00:00');
+      const cathDiffDays = Math.floor((now - lastCathDate) / (1000 * 60 * 60 * 24));
+      const cathRemaining = 28 - cathDiffDays;
+      const cathColor = cathRemaining <= 0 ? '#ff3333' : cathRemaining <= 3 ? '#ff3333' : cathRemaining <= 7 ? '#ff9900' : '#00ff00';
+      const cathNextDate = new Date(lastCathDate);
+      cathNextDate.setDate(cathNextDate.getDate() + 28);
+      const cathNextStr = cathNextDate.toISOString().split('T')[0];
+
+      // Vitamin D — 1st of every month
+      let vitDTarget = new Date(now.getFullYear(), now.getMonth(), 1);
+      if (now > vitDTarget) {
+        vitDTarget = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+      }
+      const vitDDiff = Math.floor((vitDTarget - now) / (1000 * 60 * 60 * 24));
+      const vitDColor = vitDDiff <= 0 ? '#ff3333' : vitDDiff <= 3 ? '#ff9900' : '#00ff00';
+      const isVitDToday = vitDDiff === 0 || (now.getDate() === 1);
+
+      return `
+        <div class="space-y-3">
+          <!-- Catheter -->
+          <div style="background:#1a1a1a; border:1px solid ${cathRemaining <= 3 ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center;">
+            <span style="font-size:10px; color:#888; letter-spacing:1px;">CATHETER CHANGE</span>
+            <p style="font-size:24px; font-weight:700; color:${cathColor};">${cathRemaining <= 0 ? 'OVERDUE' : cathRemaining + ' days'}</p>
+            <span style="font-size:9px; color:#555;">Next: ${cathNextStr} &middot; Last: ${lastCatheter}</span>
+          </div>
+          <button id="toggleCatheter" class="w-full p-2 font-bold text-xs ${tasks.catheter ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
+            🔄 CATHETER CHANGED ${tasks.catheter ? '✓' : ''}
+          </button>
+          <!-- Vitamin D -->
+          <div style="background:#1a1a1a; border:1px solid ${isVitDToday ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center;">
+            <span style="font-size:10px; color:#888; letter-spacing:1px;">VITAMIN D</span>
+            <p style="font-size:24px; font-weight:700; color:${isVitDToday ? '#ff3333' : vitDColor};">${isVitDToday ? 'TODAY' : vitDDiff + ' days'}</p>
+            <span style="font-size:9px; color:#555;">Due: 1st of every month</span>
+          </div>
+          <button id="toggleVitaminD" class="w-full p-2 font-bold text-xs ${tasks.vitaminD ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
+            💊 VITAMIN D GIVEN ${tasks.vitaminD ? '✓' : ''}
+          </button>
+        </div>
+      `;
+    }
+
+    function renderActivitiesCard(data) {
+      const act = data.activities || {};
+      const items = [
+        { id: 'lounge', label: '🛋️ LOUNGE', icon: '🛋️' },
+        { id: 'garden', label: '🌳 GARDEN', icon: '🌳' },
+        { id: 'park', label: '🏞️ PARK', icon: '🏞️' },
+        { id: 'drive', label: '🚗 DRIVE', icon: '🚗' },
+        { id: 'friends', label: '👥 FRIENDS', icon: '👥' }
+      ];
+      const doneCount = items.filter(i => act[i.id]).length;
+      return `
+        <div class="space-y-3">
+          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#888;">TODAY'S ACTIVITIES</span>
+            <p style="font-size:18px; font-weight:700; color:${doneCount > 0 ? '#00ff00' : '#555'};">${doneCount}</p>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+            ${items.map(i => `
+              <button id="toggleActivity_${i.id}" class="w-full font-bold text-xs ${act[i.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
+                <span>${i.label}</span>
+                <span>${act[i.id] ? '✓' : '—'}</span>
+              </button>
+            `).join('')}
+          </div>
+          <div>
+            <input type="text" id="activityNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-2 text-xs" value="${act.note || ''}">
+            <button id="saveActivityNote" class="bb-btn w-full px-2 py-2 text-xs mt-2">SAVE NOTE</button>
+          </div>
+          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}</p>` : ''}
+        </div>
+      `;
+    }
+
+    function renderPharmacyCard(data) {
+      const items = data.pharmacy || [];
+      return `
+        <div class="space-y-2">
+          ${items.length > 0 ? `
+            <div class="space-y-1 text-xs">
+              ${items.map((item, i) => `
+                <div style="background:#1a1a1a; border:1px solid ${item.urgent ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+                  <div style="flex:1;">
+                    <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
+                    ${item.note ? `<p style="font-size:9px; color:#666; margin-top:2px;">${item.note}</p>` : ''}
+                    <p style="font-size:9px; color:#555;">${item.author} · ${item.time}</p>
+                  </div>
+                  <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">✕</button>
+                </div>
+              `).join('')}
+            </div>
+          ` : `<p style="font-size:11px; color:#555; text-align:center; padding:8px;">No items needed</p>`}
+          <div style="border-top:1px solid #333; padding-top:8px;">
+            <input type="text" id="pharmacyItem" placeholder="Item name" class="w-full border rounded px-2 py-2 text-xs mb-1">
+            <input type="text" id="pharmacyNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs mb-1">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+              <button id="addPharmacyBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD</button>
+              <button id="addPharmacyUrgentBtn" class="w-full px-2 py-2 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">🔴 URGENT</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNursingNotesCard(data) {
+      const notes = data.notes || [];
+      return `
+        <div class="space-y-2">
+          ${notes.length > 0 ? `
+            <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
+              ${notes.map((n, i) => `<div class="p-2" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${n.author}:</strong> <span style="color:#ccc;">${n.text}</span></div>`).join('')}
+            </div>
+          ` : '<p class="text-xs" style="color:#555;">No notes yet</p>'}
+          <form id="notesForm" class="space-y-1 pt-2" style="border-top:1px solid #333;">
+            <select id="notes_author" class="w-full border rounded px-2 py-1 text-xs">
+              <option>Day Nurse</option>
+              <option>Night Nurse</option>
+              <option>Family</option>
+              <option>Doctor</option>
+            </select>
+            <textarea id="notes_text" placeholder="Add note..." class="w-full border rounded px-2 py-1 text-xs" rows="2"></textarea>
+            <button type="button" id="addNoteBtn" class="bb-btn w-full px-2 py-1 text-xs">ADD NOTE</button>
+          </form>
+        </div>
+      `;
+    }
+
+    function renderWeeklyView() {
+      const days = [];
+      for (let i = 0; i < 7; i++) {
+        days.push(addDays(state.currentDate, i - 3));
+      }
+
+      return `
+        <div class="max-w-6xl mx-auto px-4 py-4 overflow-x-auto">
+          <table class="w-full text-xs border-collapse" style="border:1px solid #333;">
+            <thead>
+              <tr>
+                <th class="p-2 font-bold uppercase" style="background:#1a1a1a; color:#ff9900; border:1px solid #333;">METRIC</th>
+                ${days.map(d => `<th class="p-2 font-bold" style="background:#1a1a1a; color:#ff9900; border:1px solid #333;">${getDayOfWeek(d)}<br><span style="color:#888;">${d.substring(5)}</span></th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${renderWeeklyRow('💊 Meds AM', 'morningMed', days)}
+              ${renderWeeklyRow('💊 Meds PM', 'eveningMed', days)}
+              ${renderWeeklyRow('💧 Water Day', 'waterDay', days)}
+              ${renderWeeklyRow('💧 Water Night', 'waterNight', days)}
+              ${renderWeeklyRow('☀️ BP', 'vitals.day.bp', days)}
+              ${renderWeeklyRow('🌙 BP', 'vitals.night.bp', days)}
+              ${renderWeeklyRow('☀️ O₂', 'vitals.day.o2', days)}
+              ${renderWeeklyRow('🌙 O₂', 'vitals.night.o2', days)}
+              ${renderWeeklyRow('☀️ Urine', 'urineDay', days)}
+              ${renderWeeklyRow('🌙 Urine', 'urineNight', days)}
+              ${renderWeeklyRow('🦵 ROM', 'physio.rom', days)}
+              ${renderWeeklyRow('🚴 Cycling', 'physio.chest', days)}
+              ${renderWeeklyRow('🤸 Stretch', 'physio.stretch', days)}
+              ${renderWeeklyRow('💆 Massage', 'physio.massage', days)}
+              ${renderWeeklyRow('🌬 BiPAP Day', 'bipapDay', days)}
+              ${renderWeeklyRow('🌬 BiPAP Night', 'bipapNight', days)}
+              ${renderWeeklyRow('😴 Sleep Day', 'sleepDay', days)}
+              ${renderWeeklyRow('😴 Sleep Night', 'sleepNight', days)}
+              ${renderWeeklyRow('💊 K-Lyte', 'supplements.klyte', days)}
+              ${renderWeeklyRow('💊 Mg', 'supplements.magnesium', days)}
+              ${renderWeeklyRow('💊 Omega3', 'supplements.omega3', days)}
+              ${renderWeeklyRow('🩹 Diaper AM', 'hygiene.diaperAM', days)}
+              ${renderWeeklyRow('🩹 Diaper PM', 'hygiene.diaperPM', days)}
+              ${renderWeeklyRow('🪥 Brush', 'hygiene.brushCount', days)}
+              ${renderWeeklyRow('🪒 Shave', 'hygiene.shaved', days)}
+              ${renderWeeklyRow('🛁 Bath', 'hygiene.fullBath', days)}
+              ${renderWeeklyRow('👂 Nose/Ears', 'hygiene.cleanNoseEars', days)}
+              ${renderWeeklyRow('✂️ Nails', 'hygiene.trimNails', days)}
+              ${renderWeeklyRow('💇 Haircut', 'hygiene.haircut', days)}
+            </tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function getWeekDayData(dateStr) {
+      const dateKey = dateStr.replace(/-/g, '');
+      const cached = localStorage.getItem('day_' + dateKey);
+      return cached ? JSON.parse(cached) : {};
+    }
+
+    function renderWeeklyRow(label, path, days) {
+      return `
+        <tr>
+          <td style="border:1px solid #333; padding:4px; font-weight:700; font-size:11px; white-space:nowrap; color:#ff9900; background:#1a1a1a;">${label}</td>
+          ${days.map(d => {
+            const dd = getWeekDayData(d);
+            let val = '-';
+            let color = '';
+            const parts = path.split('.');
+            let obj = dd;
+            for (const p of parts) { obj = obj ? obj[p] : undefined; }
+
+            if (path === 'hygiene.brushCount') {
+              const hyg = dd.hygiene || {};
+              const count = (hyg.brushAM ? 1 : 0) + (hyg.brushPM ? 1 : 0);
+              val = count + '/2';
+              color = count === 2 ? 'text-green-600' : count === 1 ? 'text-amber-600' : 'text-red-500';
+            } else if (typeof obj === 'boolean') {
+              val = obj ? '✓' : '—';
+              color = obj ? 'text-green-600' : 'text-gray-300';
+            } else if (typeof obj === 'number') {
+              val = obj;
+              if (path === 'waterDay' || path === 'waterNight') color = obj >= 600 ? 'text-green-600' : obj >= 300 ? 'text-amber-600' : 'text-red-500';
+              if (path === 'bipapMinutes') color = obj >= 480 ? 'text-green-600' : obj >= 300 ? 'text-amber-600' : 'text-red-500';
+            } else if (typeof obj === 'string' && obj) {
+              val = obj;
+            }
+
+            return '<td style="border:1px solid #333; padding:4px; text-align:center; font-size:11px; font-weight:600; background:#111;" class="' + color + '">' + val + '</td>';
+          }).join('')}
+        </tr>
+      `;
+    }
+
+    function renderMonthlyView() {
+      const ym = getYearMonth(state.currentDate);
+      const date = new Date(state.currentDate + 'T00:00:00');
+      const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+      const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+      const daysInMonth = lastDay.getDate();
+      const startDay = firstDay.getDay();
+
+      let calendarHtml = '';
+      const weeks = [];
+      let week = Array(startDay).fill(null);
+
+      for (let i = 1; i <= daysInMonth; i++) {
+        const dayStr = `${ym}-${String(i).padStart(2, '0')}`;
+        week.push(dayStr);
+        if (week.length === 7) {
+          weeks.push(week);
+          week = [];
+        }
+      }
+      if (week.length > 0) {
+        while (week.length < 7) week.push(null);
+        weeks.push(week);
+      }
+
+      calendarHtml = `
+        <div class="max-w-6xl mx-auto px-4 py-4">
+          <h3 class="text-sm font-bold mb-4 uppercase" style="color:#ff9900; letter-spacing:1px;">${new Date(state.currentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+          <div class="grid grid-cols-7 gap-1 mb-4">
+            ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="text-center font-bold text-xs p-2" style="color:#888;">${d}</div>`).join('')}
+          </div>
+          <div class="grid grid-cols-7 gap-1">
+            ${weeks.map(w => w.map(d => {
+              if (!d) return '<div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:2px;" class="aspect-square"></div>';
+              return `
+                <button class="monthly-day aspect-square flex flex-col items-center justify-center text-xs font-bold" style="background:#111; border:1px solid #333; border-radius:2px; color:#ff9900;" data-date="${d}">
+                  <span>${d.substring(8)}</span>
+                  <span style="font-size:9px; color:#555;">--%</span>
+                </button>
+              `;
+            }).join('')).join('')}
+          </div>
+        </div>
+      `;
+
+      return calendarHtml;
+    }
+
+    // ============= EVENT LISTENERS =============
+    function attachEventListeners() {
+      // Tab navigation
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          state.view = e.target.dataset.view;
+          render();
+        });
+      });
+
+      // Settings
+      document.getElementById('settingsBtn').addEventListener('click', () => {
+        state.settings.settingsOpen = !state.settings.settingsOpen;
+        render();
+      });
+
+      if (document.getElementById('closeSettingsBtn')) {
+        document.getElementById('closeSettingsBtn').addEventListener('click', () => {
+          state.settings.settingsOpen = false;
+          render();
+        });
+      }
+
+      if (document.getElementById('settingsBackdrop')) {
+        document.getElementById('settingsBackdrop').addEventListener('click', () => {
+          state.settings.settingsOpen = false;
+          render();
+        });
+      }
+
+      if (document.getElementById('saveSettingsBtn')) {
+        document.getElementById('saveSettingsBtn').addEventListener('click', () => {
+          // Parse recipients
+          const lines = document.getElementById('recipientsInput').value.split('\n').filter(l => l.trim());
+          state.alerts.recipients = lines.map(l => {
+            const parts = l.split(',').map(s => s.trim());
+            return { name: parts[0] || '', phone: parts[1] || '', apiKey: parts[2] || '' };
+          }).filter(r => r.phone && r.apiKey);
+          state.alerts.reportTime = document.getElementById('reportTimeInput').value;
+          state.alerts.medTime = document.getElementById('medTimeInput').value;
+          state.alerts.vitalDayTime = document.getElementById('vitalDayTimeInput').value;
+          state.alerts.vitalNightTime = document.getElementById('vitalNightTimeInput').value;
+
+          localStorage.setItem('alerts_recipients', JSON.stringify(state.alerts.recipients));
+          localStorage.setItem('alerts_reportTime', state.alerts.reportTime);
+          localStorage.setItem('alerts_medTime', state.alerts.medTime);
+          localStorage.setItem('alerts_vitalDayTime', state.alerts.vitalDayTime);
+          localStorage.setItem('alerts_vitalNightTime', state.alerts.vitalNightTime);
+
+          state.settings.settingsOpen = false;
+          render();
+        });
+      }
+      if (document.getElementById('sendReportNowBtn')) {
+        document.getElementById('sendReportNowBtn').addEventListener('click', () => {
+          sendDailyReport();
+        });
+      }
+
+      // Firebase setup
+      if (document.getElementById('setupToggle')) {
+        document.getElementById('setupToggle').addEventListener('click', () => {
+          state.settings.setupExpanded = !state.settings.setupExpanded;
+          render();
+        });
+      }
+
+      if (document.getElementById('setupBtn')) {
+        document.getElementById('setupBtn').addEventListener('click', () => {
+          state.settings.firebaseApiKey = document.getElementById('firebaseApiKey').value;
+          state.settings.firebaseProjectId = document.getElementById('firebaseProjectId').value;
+          state.settings.firebaseDbUrl = document.getElementById('firebaseDbUrl').value;
+
+          localStorage.setItem('firebase_apiKey', state.settings.firebaseApiKey);
+          localStorage.setItem('firebase_projectId', state.settings.firebaseProjectId);
+          localStorage.setItem('firebase_dbUrl', state.settings.firebaseDbUrl);
+
+          initFirebase();
+          state.settings.setupExpanded = false;
+          render();
+        });
+      }
+
+      // Date navigation
+      if (document.getElementById('prevDayBtn')) {
+        document.getElementById('prevDayBtn').addEventListener('click', () => {
+          state.currentDate = addDays(state.currentDate, -1);
+          loadDayData();
+        });
+      }
+
+      if (document.getElementById('nextDayBtn')) {
+        document.getElementById('nextDayBtn').addEventListener('click', () => {
+          state.currentDate = addDays(state.currentDate, 1);
+          loadDayData();
+        });
+      }
+
+      // Vitals
+      if (document.getElementById('addVitalsBtn')) {
+        document.getElementById('addVitalsBtn').addEventListener('click', () => {
+          const shift = document.getElementById('vitals_shift').value;
+          const bp = document.getElementById('vitals_bp').value;
+          const hr = parseInt(document.getElementById('vitals_hr').value) || 0;
+          const o2 = parseInt(document.getElementById('vitals_o2').value) || 0;
+          const temp = parseFloat(document.getElementById('vitals_temp').value) || 0;
+          const sugar = parseInt(document.getElementById('vitals_sugar').value) || 0;
+
+          if (bp || hr || o2 || temp || sugar) {
+            if (!state.dailyData.vitals) state.dailyData.vitals = {};
+            const now = new Date();
+            state.dailyData.vitals[shift] = { bp, hr, o2, temp, sugar, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+            saveDayData();
+          }
+        });
+      }
+
+      // Medications
+      if (document.getElementById('toggleMorningMed')) {
+        document.getElementById('toggleMorningMed').addEventListener('click', () => {
+          const hasPhoto = state.dailyData.morningMedPhoto;
+          if (!hasPhoto) {
+            alert('Please upload a photo before marking as given');
+            return;
+          }
+          state.dailyData.morningMed = !state.dailyData.morningMed;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleEveningMed')) {
+        document.getElementById('toggleEveningMed').addEventListener('click', () => {
+          const hasPhoto = state.dailyData.eveningMedPhoto;
+          if (!hasPhoto) {
+            alert('Please upload a photo before marking as given');
+            return;
+          }
+          state.dailyData.eveningMed = !state.dailyData.eveningMed;
+          saveDayData();
+        });
+      }
+
+      // Medicine photos
+      if (document.getElementById('morningMedPhoto')) {
+        document.getElementById('morningMedPhoto').addEventListener('change', (e) => {
+          handlePhotoUpload(e, 'morningMedPhoto');
+        });
+      }
+
+      if (document.getElementById('eveningMedPhoto')) {
+        document.getElementById('eveningMedPhoto').addEventListener('change', (e) => {
+          handlePhotoUpload(e, 'eveningMedPhoto');
+        });
+      }
+
+      // Supplements & Sleep
+      if (document.getElementById('saveSupplementsBtn')) {
+        document.getElementById('saveSupplementsBtn').addEventListener('click', () => {
+          if (!state.dailyData.supplements) state.dailyData.supplements = {};
+          const klyte = parseFloat(document.getElementById('sup_klyte').value) || 0;
+          if (klyte) state.dailyData.supplements.klyte = klyte;
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleOmega3')) {
+        document.getElementById('toggleOmega3').addEventListener('click', () => {
+          if (!state.dailyData.supplements) state.dailyData.supplements = {};
+          state.dailyData.supplements.omega3 = !state.dailyData.supplements.omega3;
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleMagnesium')) {
+        document.getElementById('toggleMagnesium').addEventListener('click', () => {
+          if (!state.dailyData.supplements) state.dailyData.supplements = {};
+          state.dailyData.supplements.magnesium = !state.dailyData.supplements.magnesium;
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleEnsureDay')) {
+        document.getElementById('toggleEnsureDay').addEventListener('click', () => {
+          if (!state.dailyData.supplements) state.dailyData.supplements = {};
+          state.dailyData.supplements.ensureDay = !state.dailyData.supplements.ensureDay;
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleEnsureNight')) {
+        document.getElementById('toggleEnsureNight').addEventListener('click', () => {
+          if (!state.dailyData.supplements) state.dailyData.supplements = {};
+          state.dailyData.supplements.ensureNight = !state.dailyData.supplements.ensureNight;
+          saveDayData();
+        });
+      }
+
+      // Fluid Balance
+      if (document.getElementById('saveFluidBtn')) {
+        document.getElementById('saveFluidBtn').addEventListener('click', () => {
+          state.dailyData.waterDay = parseInt(document.getElementById('waterDayInput').value) || 0;
+          state.dailyData.waterNight = parseInt(document.getElementById('waterNightInput').value) || 0;
+          state.dailyData.urineDay = parseInt(document.getElementById('urineDayInput').value) || 0;
+          state.dailyData.urineNight = parseInt(document.getElementById('urineNightInput').value) || 0;
+          saveDayData();
+        });
+      }
+
+      // Nutrition — % eaten buttons
+      document.querySelectorAll('.mealPctBtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const mealId = btn.dataset.meal;
+          const pct = parseInt(btn.dataset.pct);
+          if (!state.dailyData.meals) state.dailyData.meals = {};
+          const noteEl = document.getElementById('meal_' + mealId + '_note');
+          const note = noteEl ? noteEl.value.trim() : '';
+          const now = new Date();
+          state.dailyData.meals[mealId] = { pct, note, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+          saveDayData();
+        });
+      });
+
+      // Hygiene
+      if (document.getElementById('toggleDiaperAM')) {
+        document.getElementById('toggleDiaperAM').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.diaperAM = !state.dailyData.hygiene.diaperAM;
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleDiaperPM')) {
+        document.getElementById('toggleDiaperPM').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.diaperPM = !state.dailyData.hygiene.diaperPM;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleOralCare')) {
+        document.getElementById('toggleOralCare').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.oralCare = !state.dailyData.hygiene.oralCare;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleSkinCare')) {
+        document.getElementById('toggleSkinCare').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.skinCare = !state.dailyData.hygiene.skinCare;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleBrushAM')) {
+        document.getElementById('toggleBrushAM').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.brushAM = !state.dailyData.hygiene.brushAM;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleBrushPM')) {
+        document.getElementById('toggleBrushPM').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.brushPM = !state.dailyData.hygiene.brushPM;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleUrineBag')) {
+        document.getElementById('toggleUrineBag').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.urineBagChanged = !state.dailyData.hygiene.urineBagChanged;
+          if (state.dailyData.hygiene.urineBagChanged) {
+            localStorage.setItem('lastUrineBagDate', state.currentDate);
+          }
+          saveDayData();
+        });
+      }
+      if (document.getElementById('toggleShave')) {
+        document.getElementById('toggleShave').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.shaved = !state.dailyData.hygiene.shaved;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleFullBath')) {
+        document.getElementById('toggleFullBath').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.fullBath = !state.dailyData.hygiene.fullBath;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleCleanNoseEars')) {
+        document.getElementById('toggleCleanNoseEars').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.cleanNoseEars = !state.dailyData.hygiene.cleanNoseEars;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleTrimNails')) {
+        document.getElementById('toggleTrimNails').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.trimNails = !state.dailyData.hygiene.trimNails;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('toggleHaircut')) {
+        document.getElementById('toggleHaircut').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          state.dailyData.hygiene.haircut = !state.dailyData.hygiene.haircut;
+          saveDayData();
+        });
+      }
+
+      if (document.getElementById('addRepoBtn')) {
+        document.getElementById('addRepoBtn').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          if (!state.dailyData.hygiene.repositioning) state.dailyData.hygiene.repositioning = [];
+          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          state.dailyData.hygiene.repositioning.push(now);
+          saveDayData();
+        });
+      }
+
+      // Physiotherapy
+      ['rom', 'chest', 'stretch', 'massage'].forEach(id => {
+        const btn = document.getElementById('togglePhysio_' + id);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            if (!state.dailyData.physio) state.dailyData.physio = {};
+            state.dailyData.physio[id] = !state.dailyData.physio[id];
+            saveDayData();
+          });
+        }
+      });
+      if (document.getElementById('addPhysioNoteBtn')) {
+        document.getElementById('addPhysioNoteBtn').addEventListener('click', () => {
+          const note = document.getElementById('physio_note').value.trim();
+          if (note) {
+            if (!state.dailyData.physio) state.dailyData.physio = {};
+            if (!state.dailyData.physio.log) state.dailyData.physio.log = [];
+            const now = new Date();
+            state.dailyData.physio.log.push({ time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), note });
+            saveDayData();
+          }
+        });
+      }
+
+      // BiPAP & Sleep
+      if (document.getElementById('saveBiPAPBtn')) {
+        document.getElementById('saveBiPAPBtn').addEventListener('click', () => {
+          state.dailyData.bipapDay = parseFloat(document.getElementById('bipapDayInput').value) || 0;
+          state.dailyData.bipapNight = parseFloat(document.getElementById('bipapNightInput').value) || 0;
+          state.dailyData.sleepDay = parseFloat(document.getElementById('sleepDayInput').value) || 0;
+          state.dailyData.sleepNight = parseFloat(document.getElementById('sleepNightInput').value) || 0;
+          saveDayData();
+        });
+      }
+
+      // Monthly tasks
+      if (document.getElementById('toggleCatheter')) {
+        document.getElementById('toggleCatheter').addEventListener('click', () => {
+          const ym = getYearMonth(state.currentDate);
+          if (!state.monthlyTasks[ym]) state.monthlyTasks[ym] = {};
+          state.monthlyTasks[ym].catheter = !state.monthlyTasks[ym].catheter;
+          if (state.monthlyTasks[ym].catheter) {
+            localStorage.setItem('lastCatheterDate', state.currentDate);
+          }
+          saveMonthlyTasks();
+        });
+      }
+
+      if (document.getElementById('toggleVitaminD')) {
+        document.getElementById('toggleVitaminD').addEventListener('click', () => {
+          const ym = getYearMonth(state.currentDate);
+          if (!state.monthlyTasks[ym]) state.monthlyTasks[ym] = {};
+          state.monthlyTasks[ym].vitaminD = !state.monthlyTasks[ym].vitaminD;
+          saveMonthlyTasks();
+        });
+      }
+
+      // Activities
+      ['lounge', 'garden', 'park', 'drive', 'friends'].forEach(id => {
+        const btn = document.getElementById('toggleActivity_' + id);
+        if (btn) {
+          btn.addEventListener('click', () => {
+            if (!state.dailyData.activities) state.dailyData.activities = {};
+            state.dailyData.activities[id] = !state.dailyData.activities[id];
+            saveDayData();
+          });
+        }
+      });
+      if (document.getElementById('saveActivityNote')) {
+        document.getElementById('saveActivityNote').addEventListener('click', () => {
+          if (!state.dailyData.activities) state.dailyData.activities = {};
+          state.dailyData.activities.note = document.getElementById('activityNote').value.trim();
+          saveDayData();
+        });
+      }
+
+      // Pharmacy & Supplies
+      function addPharmacyItem(urgent) {
+        const name = document.getElementById('pharmacyItem').value.trim();
+        if (!name) return;
+        const note = document.getElementById('pharmacyNote').value.trim();
+        if (!state.dailyData.pharmacy) state.dailyData.pharmacy = [];
+        const now = new Date();
+        const hr = now.getHours();
+        const author = hr >= 8 && hr < 20 ? 'Day Nurse' : 'Night Nurse';
+        state.dailyData.pharmacy.push({ name, note, urgent, author, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+        saveDayData();
+      }
+      if (document.getElementById('addPharmacyBtn')) {
+        document.getElementById('addPharmacyBtn').addEventListener('click', () => addPharmacyItem(false));
+      }
+      if (document.getElementById('addPharmacyUrgentBtn')) {
+        document.getElementById('addPharmacyUrgentBtn').addEventListener('click', () => addPharmacyItem(true));
+      }
+      document.querySelectorAll('.removePharmacyItem').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const idx = parseInt(btn.dataset.idx);
+          if (state.dailyData.pharmacy) {
+            state.dailyData.pharmacy.splice(idx, 1);
+            saveDayData();
+          }
+        });
+      });
+
+      // Nursing notes
+      if (document.getElementById('addNoteBtn')) {
+        document.getElementById('addNoteBtn').addEventListener('click', () => {
+          const author = document.getElementById('notes_author').value;
+          const text = document.getElementById('notes_text').value;
+
+          if (text) {
+            if (!state.dailyData.notes) state.dailyData.notes = [];
+            state.dailyData.notes.push({ author, text, timestamp: new Date().toISOString() });
+            saveDayData();
+          }
+        });
+      }
+
+      // Monthly view
+      document.querySelectorAll('.monthly-day').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const date = e.currentTarget.dataset.date;
+          state.currentDate = date;
+          state.view = 'daily';
+          loadDayData();
+        });
+      });
+    }
+
+    function compressImage(file, maxWidth, quality) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const scale = Math.min(maxWidth / img.width, 1);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            resolve(canvas.toDataURL('image/jpeg', quality));
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function handlePhotoUpload(event, fieldName) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      // Compress to max 800px wide, 60% quality (~50-100KB per photo)
+      compressImage(file, 800, 0.6).then((compressedDataUrl) => {
+        const dateKey = state.currentDate.replace(/-/g, '');
+        const photoTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+
+        // Upload to Firebase Storage if configured
+        if (state.firebase.configured && state.firebase.storage) {
+          const storagePath = `photos/${dateKey}/${fieldName}_${Date.now()}.jpg`;
+          const storageRef = state.firebase.storage.ref(storagePath);
+
+          // Convert data URL to blob for upload
+          fetch(compressedDataUrl).then(r => r.blob()).then(blob => {
+            storageRef.put(blob, { contentType: 'image/jpeg' }).then(snapshot => {
+              snapshot.ref.getDownloadURL().then(url => {
+                // Store the Firebase Storage URL (permanent, accessible by all)
+                state.dailyData[fieldName] = url;
+                state.dailyData[fieldName + 'Time'] = photoTime;
+                saveDayData();
+                render();
+              });
+            }).catch(err => {
+              console.error('Storage upload failed, saving locally:', err);
+              // Fallback: save compressed data URL locally
+              state.dailyData[fieldName] = compressedDataUrl;
+              state.dailyData[fieldName + 'Time'] = photoTime;
+              saveDayData();
+              render();
+            });
+          });
+        } else {
+          // No Firebase: save compressed data URL to localStorage
+          state.dailyData[fieldName] = compressedDataUrl;
+          state.dailyData[fieldName + 'Time'] = photoTime;
+          saveDayData();
+          render();
+        }
+      });
+    }
+
+    function saveDayData() {
+      const dateKey = state.currentDate.replace(/-/g, '');
+      localStorage.setItem(`day_${dateKey}`, JSON.stringify(state.dailyData));
+      saveToFirebase(`days/${dateKey}`, state.dailyData);
+    }
+
+    function loadDayData() {
+      const dateKey = state.currentDate.replace(/-/g, '');
+      const cached = localStorage.getItem(`day_${dateKey}`);
+      if (cached) {
+        state.dailyData = JSON.parse(cached);
+      } else {
+        state.dailyData = {};
+      }
+      render();
+    }
+
+    function saveMonthlyTasks() {
+      localStorage.setItem('monthlyTasks', JSON.stringify(state.monthlyTasks));
+      const ym = getYearMonth(state.currentDate);
+      saveToFirebase(`monthlyTasks/${ym}`, state.monthlyTasks[ym]);
+    }
+
+    function loadMonthlyTasks() {
+      const cached = localStorage.getItem('monthlyTasks');
+      if (cached) {
+        state.monthlyTasks = JSON.parse(cached);
+      } else {
+        state.monthlyTasks = {};
+      }
+    }
+
+    // ============= DAILY REPORT =============
+    function generateDailyReport() {
+      const d = state.dailyData;
+      const date = state.currentDate;
+      const compliance = Math.round(calculateCompliance() * 100);
+      const lines = [];
+      lines.push('📋 *BABA DAILY REPORT*');
+      lines.push('📅 ' + date);
+      lines.push('━━━━━━━━━━━━━━━');
+
+      // Compliance
+      lines.push('✅ Compliance: ' + compliance + '%');
+      lines.push('');
+
+      // Vitals
+      lines.push('♥️ *VITALS*');
+      if (d.vitals?.day) {
+        const v = d.vitals.day;
+        lines.push('☀️ Day: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + '°F | Sugar ' + (v.sugar || '--'));
+      } else { lines.push('☀️ Day: Not recorded'); }
+      if (d.vitals?.night) {
+        const v = d.vitals.night;
+        lines.push('🌙 Night: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + '°F | Sugar ' + (v.sugar || '--'));
+      } else { lines.push('🌙 Night: Not recorded'); }
+      lines.push('');
+
+      // Medications
+      lines.push('💊 *MEDICATIONS*');
+      lines.push('AM: ' + (d.morningMed ? '✅ Given' : '❌ Not given'));
+      lines.push('PM: ' + (d.eveningMed ? '✅ Given' : '❌ Not given'));
+      lines.push('');
+
+      // Supplements
+      const sup = d.supplements || {};
+      lines.push('💊 *SUPPLEMENTS*');
+      lines.push('K-Lyte: ' + (sup.klyte ? sup.klyte + ' mL' : '❌'));
+      lines.push('Omega-3: ' + (sup.omega3 ? '✅' : '❌'));
+      lines.push('Magnesium: ' + (sup.magnesium ? '✅' : '❌'));
+      lines.push('Ensure: ' + (sup.ensureDay ? '☀️✅' : '☀️❌') + ' ' + (sup.ensureNight ? '🌙✅' : '🌙❌'));
+      lines.push('');
+
+      // Fluids
+      const wDay = d.waterDay || 0, wNight = d.waterNight || 0;
+      const totalW = wDay + wNight + (d.waterIntake || 0);
+      const uDay = d.urineDay || 0, uNight = d.urineNight || 0;
+      const totalU = uDay + uNight;
+      lines.push('💧 *FLUIDS*');
+      lines.push('Intake: ' + totalW + '/1200 mL (☀️' + wDay + ' 🌙' + wNight + ')');
+      lines.push('Output: ' + totalU + ' mL (☀️' + uDay + ' 🌙' + uNight + ')');
+      lines.push('Net: ' + (totalW - totalU >= 0 ? '+' : '') + (totalW - totalU) + ' mL');
+      lines.push('');
+
+      // Nutrition
+      const meals = d.meals || {};
+      lines.push('🍽️ *NUTRITION*');
+      ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(m => {
+        const meal = meals[m];
+        const label = m.charAt(0).toUpperCase() + m.slice(1);
+        if (meal && meal.pct !== undefined) {
+          lines.push(label + ': ' + meal.pct + '%' + (meal.note ? ' (' + meal.note + ')' : ''));
+        } else {
+          lines.push(label + ': Not recorded');
+        }
+      });
+      lines.push('');
+
+      // BiPAP & Sleep
+      const bDay = d.bipapDay || 0, bNight = d.bipapNight || 0;
+      const sDay = d.sleepDay || 0, sNight = d.sleepNight || 0;
+      lines.push('🌬️ *BIPAP & SLEEP*');
+      lines.push('BiPAP: ' + (bDay + bNight) + '/8 hrs (☀️' + bDay + ' 🌙' + bNight + ')');
+      lines.push('Sleep: ' + (sDay + sNight) + ' hrs (☀️' + sDay + ' 🌙' + sNight + ')');
+      lines.push('');
+
+      // Activities
+      const act = d.activities || {};
+      const actDone = ['lounge','garden','park','drive','friends'].filter(a => act[a]);
+      if (actDone.length > 0) {
+        lines.push('🌳 *ACTIVITIES*');
+        lines.push(actDone.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', '));
+        if (act.note) lines.push('Note: ' + act.note);
+        lines.push('');
+      }
+
+      // Hygiene
+      const hyg = d.hygiene || {};
+      const hygDone = [];
+      if (hyg.diaperAM) hygDone.push('Diaper AM');
+      if (hyg.diaperPM) hygDone.push('Diaper PM');
+      if (hyg.oralCare) hygDone.push('Oral Care');
+      if (hyg.skinCare) hygDone.push('Skin Care');
+      if (hyg.brushAM) hygDone.push('Brush AM');
+      if (hyg.brushPM) hygDone.push('Brush PM');
+      if (hygDone.length > 0) {
+        lines.push('🚿 *HYGIENE*');
+        lines.push(hygDone.join(', '));
+        lines.push('');
+      }
+
+      // Red flags
+      const flags = getRedFlags();
+      if (flags.length > 0) {
+        lines.push('🚨 *ALERTS*');
+        flags.forEach(f => lines.push(f.msg));
+        lines.push('');
+      }
+
+      // Pharmacy
+      const pharmacy = d.pharmacy || [];
+      if (pharmacy.length > 0) {
+        lines.push('🏥 *PHARMACY & SUPPLIES*');
+        pharmacy.forEach(p => lines.push((p.urgent ? '🔴 ' : '• ') + p.name + (p.note ? ' (' + p.note + ')' : '')));
+        lines.push('');
+      }
+
+      // Notes
+      const notes = d.notes || [];
+      if (notes.length > 0) {
+        lines.push('📝 *NOTES*');
+        notes.forEach(n => lines.push(n.author + ': ' + n.text));
+      }
+
+      return lines.join('\n');
+    }
+
+    function sendViaCallMeBot(phone, apiKey, message) {
+      const encoded = encodeURIComponent(message);
+      const url = 'https://api.callmebot.com/whatsapp.php?phone=' + encodeURIComponent(phone) + '&text=' + encoded + '&apikey=' + encodeURIComponent(apiKey);
+      return fetch(url).then(r => {
+        if (!r.ok) throw new Error('CallMeBot error: ' + r.status);
+        return r;
+      });
+    }
+
+    async function sendDailyReport() {
+      const recipients = state.alerts.recipients;
+      if (!recipients || recipients.length === 0) {
+        alert('No recipients configured. Go to Settings to add family members.');
+        return;
+      }
+      const report = generateDailyReport();
+      let sent = 0, failed = 0;
+      for (const r of recipients) {
+        try {
+          await sendViaCallMeBot(r.phone, r.apiKey, report);
+          sent++;
+          // Small delay between sends to avoid rate limiting
+          if (recipients.length > 1) await new Promise(res => setTimeout(res, 2000));
+        } catch (e) {
+          console.error('Failed to send to ' + r.name + ':', e);
+          failed++;
+        }
+      }
+      const status = '📤 Report sent to ' + sent + '/' + recipients.length + ' recipients' + (failed > 0 ? ' (' + failed + ' failed)' : '');
+      alert(status);
+      state.alerts.lastReportSent = new Date().toISOString();
+      localStorage.setItem('alerts_lastReportSent', state.alerts.lastReportSent);
+    }
+
+    // Auto-send check every minute
+    setInterval(() => {
+      const now = new Date();
+      const timeStr = now.toTimeString().slice(0, 5);
+      const today = now.toISOString().split('T')[0];
+
+      // Auto-send daily report
+      if (timeStr === state.alerts.reportTime && state.alerts.lastReportSent.slice(0, 10) !== today) {
+        if (state.alerts.recipients && state.alerts.recipients.length > 0) {
+          sendDailyReport();
+        }
+      }
+    }, 60000);
+
+    // ============= INITIALIZATION =============
+    initFirebase();
+    loadDayData();
+    loadMonthlyTasks();
+    render();
+  </script>
+</body>
+</html>
