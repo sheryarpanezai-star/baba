@@ -451,7 +451,6 @@
           ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
           ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
           ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
-          ${renderCard('Medicine Stock', '💊', renderMedicineStockCard())}
         </div>
       `;
     }
@@ -1079,29 +1078,104 @@
 
     function renderPharmacyCard(data) {
       const items = data.pharmacy || [];
+      const stock = JSON.parse(localStorage.getItem('medicineStock') || '[]');
+      const lowStockThreshold = 7;
+      const lowItems = stock.filter(s => s.qty <= lowStockThreshold && s.qty > 0);
+      const outItems = stock.filter(s => s.qty <= 0);
+
       return `
-        <div class="space-y-2">
-          ${items.length > 0 ? `
-            <div class="space-y-1 text-xs">
-              ${items.map((item, i) => `
-                <div style="background:#1a1a1a; border:1px solid ${item.urgent ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
-                  <div style="flex:1;">
-                    <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
-                    ${item.note ? `<p style="font-size:9px; color:#666; margin-top:2px;">${item.note}</p>` : ''}
-                    <p style="font-size:9px; color:#555;">${item.author} · ${item.time}</p>
-                  </div>
-                  <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">✕</button>
-                </div>
-              `).join('')}
+        <div class="space-y-3">
+          <!-- Stock Alerts -->
+          ${outItems.length > 0 ? `
+            <div style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; padding:8px;">
+              <span class="text-xs font-bold" style="color:#ff3333;">🚨 OUT OF STOCK</span>
+              <div class="mt-1">${outItems.map(s => `<span class="text-xs" style="color:#ff3333;">${s.name}</span>`).join(', ')}</div>
             </div>
-          ` : `<p style="font-size:11px; color:#555; text-align:center; padding:8px;">No items needed</p>`}
+          ` : ''}
+          ${lowItems.length > 0 ? `
+            <div style="background:#1f1a0a; border:1px solid #cc7a00; border-radius:2px; padding:8px;">
+              <span class="text-xs font-bold" style="color:#ff9900;">⚠ LOW STOCK (≤${lowStockThreshold} days)</span>
+              <div class="mt-1">${lowItems.map(s => `<span class="text-xs" style="color:#ff9900;">${s.name} (${s.qty})</span>`).join(', ')}</div>
+            </div>
+          ` : ''}
+
+          <!-- Medicine Stock -->
+          <div>
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">💊 MEDICINE STOCK</p>
+            ${stock.length > 0 ? `
+              <div class="space-y-1" style="max-height:200px; overflow-y:auto;">
+                ${stock.map((s, i) => {
+                  const daysLeft = s.dailyUse > 0 ? Math.floor(s.qty / s.dailyUse) : null;
+                  const qtyColor = s.qty <= 0 ? '#ff3333' : (daysLeft !== null && daysLeft <= lowStockThreshold) ? '#ff9900' : '#00ff00';
+                  return `
+                    <div class="text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:6px 8px;">
+                      <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="color:#ff9900; font-weight:600;">${s.name}</span>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                          <button class="stockDecBtn" data-idx="${i}" style="width:22px; height:22px; background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer; font-size:12px; line-height:1;">−</button>
+                          <span style="color:${qtyColor}; font-weight:700; min-width:28px; text-align:center;">${s.qty}</span>
+                          <button class="stockIncBtn" data-idx="${i}" style="width:22px; height:22px; background:#0a1f0a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer; font-size:12px; line-height:1;">+</button>
+                        </div>
+                      </div>
+                      <div style="display:flex; justify-content:space-between; margin-top:2px;">
+                        <span style="color:#555; font-size:9px;">${s.unit || 'units'}${s.dailyUse ? ' · ' + s.dailyUse + '/day' : ''}</span>
+                        ${daysLeft !== null ? `<span style="color:${qtyColor}; font-size:9px; font-weight:600;">~${daysLeft} days</span>` : ''}
+                      </div>
+                    </div>`;
+                }).join('')}
+              </div>
+            ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No medicines tracked</p>'}
+            <div class="mt-2" style="display:grid; grid-template-columns:1fr; gap:4px;">
+              <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-1 text-xs">
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px;">
+                <input type="number" id="stockMedQty" placeholder="Qty" class="border rounded px-2 py-1 text-xs">
+                <input type="text" id="stockMedUnit" placeholder="Unit" value="tablets" class="border rounded px-2 py-1 text-xs">
+                <input type="number" id="stockMedDaily" placeholder="Daily use" step="0.5" class="border rounded px-2 py-1 text-xs">
+              </div>
+              <button id="addStockBtn" class="bb-btn w-full px-2 py-1 text-xs">+ ADD MEDICINE</button>
+            </div>
+            ${stock.length > 0 ? `
+              <button id="openStockOrderBtn" class="w-full mt-2 p-2 text-xs font-bold" style="background:#0a0a1f; border:1px solid #9999ff; border-radius:2px; color:#9999ff; cursor:pointer;">📋 GENERATE ORDER LIST</button>
+            ` : ''}
+          </div>
+
+          <!-- Supplies Needed -->
           <div style="border-top:1px solid #333; padding-top:8px;">
-            <input type="text" id="pharmacyItem" placeholder="Item name" class="w-full border rounded px-2 py-2 text-xs mb-1">
-            <input type="text" id="pharmacyNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs mb-1">
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-              <button id="addPharmacyBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD</button>
-              <button id="addPharmacyUrgentBtn" class="w-full px-2 py-2 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">🔴 URGENT</button>
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">🛒 SUPPLIES NEEDED</p>
+            ${items.length > 0 ? `
+              <div class="space-y-1 text-xs">
+                ${items.map((item, i) => `
+                  <div style="background:#1a1a1a; border:1px solid ${item.urgent ? '#cc3333' : '#333'}; border-radius:2px; padding:6px 8px; display:flex; align-items:center; justify-content:space-between;">
+                    <div style="flex:1;">
+                      <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
+                      ${item.note ? `<p style="font-size:9px; color:#666; margin-top:2px;">${item.note}</p>` : ''}
+                      <p style="font-size:9px; color:#555;">${item.author} · ${item.time}</p>
+                    </div>
+                    <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">✕</button>
+                  </div>
+                `).join('')}
+              </div>
+            ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No items needed</p>'}
+            <div class="mt-2">
+              <input type="text" id="pharmacyItem" placeholder="Item name" class="w-full border rounded px-2 py-1 text-xs mb-1">
+              <input type="text" id="pharmacyNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs mb-1">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
+                <button id="addPharmacyBtn" class="bb-btn w-full px-2 py-1 text-xs">+ ADD</button>
+                <button id="addPharmacyUrgentBtn" class="w-full px-2 py-1 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">🔴 URGENT</button>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <!-- Stock Order Modal -->
+        <div id="stockOrderModal" style="display:none;">
+          <div class="modal-backdrop" id="stockOrderBackdrop"></div>
+          <div class="modal" style="max-height:90vh; padding:0;">
+            <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📋 Order List</h2>
+              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
+            </div>
+            <div id="stockOrderContent" class="p-4" style="max-height:calc(90vh - 50px); overflow-y:auto;"></div>
           </div>
         </div>
       `;
@@ -1280,75 +1354,6 @@
           <div class="pt-2 space-y-1" style="border-top:1px solid #333;">
             <input type="text" id="customTaskInput" placeholder="Add task for today..." class="w-full border rounded px-2 py-2 text-xs">
             <button id="addCustomTaskBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD TASK</button>
-          </div>
-        </div>
-      `;
-    }
-
-    function renderMedicineStockCard() {
-      const stock = JSON.parse(localStorage.getItem('medicineStock') || '[]');
-      const lowStockThreshold = 7; // days
-      const lowItems = stock.filter(s => s.qty <= lowStockThreshold && s.qty > 0);
-      const outItems = stock.filter(s => s.qty <= 0);
-
-      return `
-        <div class="space-y-2">
-          ${outItems.length > 0 ? `
-            <div style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff3333;">🚨 OUT OF STOCK</span>
-              <div class="mt-1">${outItems.map(s => `<span class="text-xs" style="color:#ff3333;">${s.name}</span>`).join(', ')}</div>
-            </div>
-          ` : ''}
-          ${lowItems.length > 0 ? `
-            <div style="background:#1f1a0a; border:1px solid #cc7a00; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff9900;">⚠ LOW STOCK (≤${lowStockThreshold} days)</span>
-              <div class="mt-1">${lowItems.map(s => `<span class="text-xs" style="color:#ff9900;">${s.name} (${s.qty})</span>`).join(', ')}</div>
-            </div>
-          ` : ''}
-          ${stock.length > 0 ? `
-            <div class="space-y-1 max-h-48 overflow-y-auto">
-              ${stock.map((s, i) => {
-                const qtyColor = s.qty <= 0 ? '#ff3333' : s.qty <= lowStockThreshold ? '#ff9900' : '#00ff00';
-                return `
-                  <div class="p-2 text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                      <strong style="color:#ff9900;">${s.name}</strong>
-                      <div style="display:flex; align-items:center; gap:4px;">
-                        <button class="stockDecBtn" data-idx="${i}" style="width:24px; height:24px; background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer; min-height:24px;">−</button>
-                        <span style="color:${qtyColor}; font-weight:700; min-width:30px; text-align:center;">${s.qty}</span>
-                        <button class="stockIncBtn" data-idx="${i}" style="width:24px; height:24px; background:#0a1f0a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer; min-height:24px;">+</button>
-                      </div>
-                    </div>
-                    <div style="display:flex; justify-content:space-between; margin-top:2px;">
-                      <span style="color:#555; font-size:9px;">${s.unit || 'units'} · ${s.dailyUse ? s.dailyUse + '/day' : ''}</span>
-                      <span style="color:#555; font-size:9px;">${s.qty > 0 && s.dailyUse ? '~' + Math.floor(s.qty / s.dailyUse) + ' days left' : ''}</span>
-                    </div>
-                  </div>`;
-              }).join('')}
-            </div>
-          ` : '<p class="text-xs" style="color:#555;">No medicines tracked</p>'}
-          <div class="pt-2 space-y-1" style="border-top:1px solid #333;">
-            <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-2 text-xs">
-            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px;">
-              <input type="number" id="stockMedQty" placeholder="Qty" class="border rounded px-2 py-2 text-xs">
-              <input type="text" id="stockMedUnit" placeholder="Unit" value="tablets" class="border rounded px-2 py-2 text-xs">
-              <input type="number" id="stockMedDaily" placeholder="Daily use" step="0.5" class="border rounded px-2 py-2 text-xs">
-            </div>
-            <button id="addStockBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD MEDICINE</button>
-          </div>
-          ${stock.length > 0 ? `
-            <button id="openStockOrderBtn" class="w-full p-2 text-xs font-bold" style="background:#0a0a1f; border:1px solid #9999ff; border-radius:2px; color:#9999ff; cursor:pointer;">📋 GENERATE ORDER LIST</button>
-          ` : ''}
-        </div>
-        <!-- Stock Order Modal -->
-        <div id="stockOrderModal" style="display:none;">
-          <div class="modal-backdrop" id="stockOrderBackdrop"></div>
-          <div class="modal" style="max-height:90vh; padding:0;">
-            <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
-              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📋 Order List</h2>
-              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
-            </div>
-            <div id="stockOrderContent" class="p-4" style="max-height:calc(90vh - 50px); overflow-y:auto;"></div>
           </div>
         </div>
       `;
