@@ -14,7 +14,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-    * { -webkit-user-select: none; user-select: none; font-family: 'JetBrains Mono', 'Courier New', monospace; }
+    * { -webkit-user-select: none; user-select: none; font-family: 'JetBrains Mono', 'Courier New', monospace; box-sizing: border-box; }
     input, textarea, select { -webkit-user-select: text; user-select: text; }
     body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #0a0a0a !important; color: #ff9900; }
     .safe-area-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
@@ -37,7 +37,7 @@
       .grid-responsive { grid-template-columns: 1fr; }
     }
     /* Bloomberg card overrides */
-    .bb-card { background: #111 !important; border: 1px solid #222 !important; border-left: 3px solid #ff9900 !important; border-radius: 4px !important; }
+    .bb-card { background: #111 !important; border: 1px solid #222 !important; border-left: 3px solid #ff9900 !important; border-radius: 4px !important; overflow: hidden; min-width: 0; }
     .bb-card-header { background: #1a1a1a !important; border-bottom: 1px solid #222 !important; }
     .bb-btn { background: #ff9900 !important; color: #000 !important; font-weight: 700; border-radius: 2px !important; text-transform: uppercase; letter-spacing: 0.5px; }
     .bb-btn:active { background: #cc7a00 !important; }
@@ -462,7 +462,7 @@
             <span class="text-sm">${icon}</span>
             <h3 class="font-bold text-xs uppercase" style="color:#ff9900; letter-spacing:1px;">${title}</h3>
           </div>
-          <div class="p-3" style="color:#ccc;">${content}</div>
+          <div class="p-3" style="color:#ccc; overflow:hidden; min-width:0;">${content}</div>
         </div>
       `;
     }
@@ -1125,12 +1125,12 @@
                 }).join('')}
               </div>
             ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No medicines tracked</p>'}
-            <div class="mt-2" style="display:grid; grid-template-columns:1fr; gap:4px;">
-              <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-1 text-xs">
-              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px;">
-                <input type="number" id="stockMedQty" placeholder="Qty" class="border rounded px-2 py-1 text-xs">
-                <input type="text" id="stockMedUnit" placeholder="Unit" value="tablets" class="border rounded px-2 py-1 text-xs">
-                <input type="number" id="stockMedDaily" placeholder="Daily use" step="0.5" class="border rounded px-2 py-1 text-xs">
+            <div class="mt-2" style="display:flex; flex-direction:column; gap:4px;">
+              <input type="text" id="stockMedName" placeholder="Medicine name" class="w-full border rounded px-2 py-1 text-xs" style="min-width:0;">
+              <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:4px; min-width:0;">
+                <input type="number" id="stockMedQty" placeholder="Qty" class="border rounded px-2 py-1 text-xs" style="min-width:0; width:100%;">
+                <input type="text" id="stockMedUnit" placeholder="Unit" value="tablets" class="border rounded px-2 py-1 text-xs" style="min-width:0; width:100%;">
+                <input type="number" id="stockMedDaily" placeholder="Daily use" step="0.5" class="border rounded px-2 py-1 text-xs" style="min-width:0; width:100%;">
               </div>
               <button id="addStockBtn" class="bb-btn w-full px-2 py-1 text-xs">+ ADD MEDICINE</button>
             </div>
