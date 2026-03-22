@@ -805,6 +805,19 @@
                 : '<span class="text-gray-400">No repositioning logged</span>'}
             </div>
           </div>
+
+          <!-- Hand Cleaning log -->
+          <div class="text-xs space-y-1 pt-2 border-t">
+            <div class="flex items-center justify-between">
+              <label class="font-semibold">🧴 Hand Cleaning</label>
+              <button id="addHandCleanBtn" class="px-2 py-1 bg-teal-500 text-white rounded font-semibold">+ Log</button>
+            </div>
+            <div class="flex gap-1 flex-wrap">
+              ${(hyg.handCleaning || []).length > 0
+                ? (hyg.handCleaning || []).map(t => `<span class="px-2 py-0.5 bg-teal-50 text-teal-700 rounded font-mono">${t}</span>`).join('')
+                : '<span class="text-gray-400">No hand cleaning logged</span>'}
+            </div>
+          </div>
         </div>
       `;
     }
@@ -1514,6 +1527,18 @@
           const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
           state.dailyData.hygiene.repositioning.push(now);
           saveDayData();
+          render();
+        });
+      }
+
+      if (document.getElementById('addHandCleanBtn')) {
+        document.getElementById('addHandCleanBtn').addEventListener('click', () => {
+          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
+          if (!state.dailyData.hygiene.handCleaning) state.dailyData.hygiene.handCleaning = [];
+          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          state.dailyData.hygiene.handCleaning.push(now);
+          saveDayData();
+          render();
         });
       }
 
