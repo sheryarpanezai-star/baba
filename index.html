@@ -257,25 +257,25 @@
       const data = state.dailyData;
       const flags = [];
 
-      if (data.morningMed === false) flags.push({ type: 'med', msg: 'âš  Morning medication not given' });
-      if (data.eveningMed === false) flags.push({ type: 'med', msg: 'âš  Evening medication not given' });
+      if (data.morningMed === false) flags.push({ type: 'med', msg: '⚠ Morning medication not given' });
+      if (data.eveningMed === false) flags.push({ type: 'med', msg: '⚠ Evening medication not given' });
       const totalFluid = (data.waterDay || 0) + (data.waterNight || 0) + (data.waterIntake || 0);
-      if (totalFluid < 500) flags.push({ type: 'water', msg: 'âš  Low water intake (' + totalFluid + ' mL)' });
+      if (totalFluid < 500) flags.push({ type: 'water', msg: '⚠ Low water intake (' + totalFluid + ' mL)' });
       ['day', 'night'].forEach(shift => {
         const v = (data.vitals || {})[shift];
         if (v) {
-          if (getVitalStatus('o2', v.o2) === 'red') flags.push({ type: 'vital', msg: `âš  Low oxygen (${shift} shift)` });
-          if (getVitalStatus('hr', v.hr) === 'red') flags.push({ type: 'vital', msg: `âš  Abnormal heart rate (${shift} shift)` });
-          if (getVitalStatus('bp', v.bp) === 'red') flags.push({ type: 'vital', msg: `âš  High BP (${shift} shift)` });
+          if (getVitalStatus('o2', v.o2) === 'red') flags.push({ type: 'vital', msg: `⚠ Low oxygen (${shift} shift)` });
+          if (getVitalStatus('hr', v.hr) === 'red') flags.push({ type: 'vital', msg: `⚠ Abnormal heart rate (${shift} shift)` });
+          if (getVitalStatus('bp', v.bp) === 'red') flags.push({ type: 'vital', msg: `⚠ High BP (${shift} shift)` });
         }
       });
       const totalUrine = (data.urineDay || 0) + (data.urineNight || 0);
-      if (totalUrine > 0 && totalUrine < 500) flags.push({ type: 'fluid', msg: 'âš  Daily urine output low (' + totalUrine + ' mL)' });
+      if (totalUrine > 0 && totalUrine < 500) flags.push({ type: 'fluid', msg: '⚠ Daily urine output low (' + totalUrine + ' mL)' });
       const totalBipap = (data.bipapDay || 0) + (data.bipapNight || 0);
-      if (totalBipap < 8 && new Date().getHours() >= 20) flags.push({ type: 'bipap', msg: 'âš  BiPAP below 8hr target (' + totalBipap + ' hrs)' });
+      if (totalBipap < 8 && new Date().getHours() >= 20) flags.push({ type: 'bipap', msg: '⚠ BiPAP below 8hr target (' + totalBipap + ' hrs)' });
       const hr = new Date().getHours();
-      if (!data.vitals?.day && hr >= 10) flags.push({ type: 'vital', msg: 'âš  Day shift vitals not recorded' });
-      if (!data.vitals?.night && hr >= 22) flags.push({ type: 'vital', msg: 'âš  Night shift vitals not recorded' });
+      if (!data.vitals?.day && hr >= 10) flags.push({ type: 'vital', msg: '⚠ Day shift vitals not recorded' });
+      if (!data.vitals?.night && hr >= 22) flags.push({ type: 'vital', msg: '⚠ Night shift vitals not recorded' });
 
       return flags;
     }
@@ -299,7 +299,7 @@
               <h1 class="text-lg font-bold" style="color:#ff9900; letter-spacing:2px;">AKRAM KHAN <span style="color:#00cc00;">PANEZAI</span></h1>
               <p class="text-xs" style="color:#555;">HEALTH MONITORING SYSTEM</p>
             </div>
-            <button id="settingsBtn" class="text-xl p-2" style="color:#ff9900;">âš™</button>
+            <button id="settingsBtn" class="text-xl p-2" style="color:#ff9900;">⚙</button>
           </div>
           <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-1">
             <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'daily' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'daily' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="daily">Daily</button>
@@ -318,7 +318,7 @@
       if (flags.length > 0) {
         html += `
           <div class="bb-alert p-3 max-w-6xl mx-auto mt-2">
-            <p class="font-bold text-xs uppercase mb-2" style="color:#ff3333; letter-spacing:1px;">â–¸ ALERTS</p>
+            <p class="font-bold text-xs uppercase mb-2" style="color:#ff3333; letter-spacing:1px;">▸ ALERTS</p>
             <div class="space-y-1">
               ${flags.map(f => `<p class="text-xs" style="color:#ff6666;">${f.msg}</p>`).join('')}
             </div>
@@ -330,9 +330,9 @@
       if (state.view === 'daily') {
         html += `
           <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">â—€ PREV</button>
+            <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">◀ PREV</button>
             <span class="font-bold text-sm" style="color:#ff9900;">${formatDate(state.currentDate)}</span>
-            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed;" disabled' : ''}>NEXT â–¶</button>
+            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed;" disabled' : ''}>NEXT ▶</button>
           </div>
         `;
         html += renderDailyView();
@@ -355,13 +355,13 @@
         <div class="bb-setup p-4 sticky top-20 z-20">
           <div class="flex items-center justify-between cursor-pointer" id="setupToggle">
             <div class="flex items-center gap-3 flex-1">
-              <span class="text-2xl">âš™ï¸</span>
+              <span class="text-2xl">⚙️</span>
               <div>
                 <p class="font-semibold" style="color:#ff9900;">SETUP REQUIRED: Firebase Not Configured</p>
                 <p class="text-sm text-amber-800">This app uses Firebase for real-time data sync. Click to configure.</p>
               </div>
             </div>
-            <span class="text-xl">${state.settings.setupExpanded ? 'â–¼' : 'â–¶'}</span>
+            <span class="text-xl">${state.settings.setupExpanded ? '▼' : '▶'}</span>
           </div>
           ${state.settings.setupExpanded ? `
             <div class="mt-4 bg-white rounded-lg p-4 space-y-3">
@@ -391,8 +391,8 @@
         <div class="modal-backdrop" id="settingsBackdrop"></div>
         <div class="modal">
           <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#111; border-bottom:1px solid #333;">
-            <h2 class="text-sm font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">âš™ SETTINGS & ALERTS</h2>
-            <button id="closeSettingsBtn" style="color:#ff9900; font-size:20px;">âœ•</button>
+            <h2 class="text-sm font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">⚙ SETTINGS & ALERTS</h2>
+            <button id="closeSettingsBtn" style="color:#ff9900; font-size:20px;">✕</button>
           </div>
           <div class="p-4 space-y-4 safe-area-pb">
             <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">DAILY REPORT (WHATSAPP)</p>
@@ -405,7 +405,7 @@
               <label class="block text-xs font-semibold mb-1" style="color:#888;">Auto-send Report Time</label>
               <input type="time" id="reportTimeInput" value="${state.alerts.reportTime}" class="w-full border rounded px-3 py-2">
             </div>
-            <button id="sendReportNowBtn" class="w-full px-3 py-2 text-xs font-bold" style="background:#1a3a1a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer;">ðŸ“¤ SEND REPORT NOW</button>
+            <button id="sendReportNowBtn" class="w-full px-3 py-2 text-xs font-bold" style="background:#1a3a1a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer;">📤 SEND REPORT NOW</button>
 
             <div style="border-top:1px solid #333; padding-top:12px;">
               <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">REMINDERS</p>
@@ -437,21 +437,21 @@
           ${renderComplianceBar(compliance)}
         </div>
         <div class="max-w-6xl mx-auto px-4 py-3 grid-responsive">
-          ${renderCard('Nurse Shift', 'ðŸ‘©â€âš•ï¸', renderNurseShiftCard(data))}
-          ${renderCard('Vitals', 'â™¥ï¸', renderVitalsCard(data))}
-          ${renderCard('Medications', 'ðŸ’Š', renderMedicationsCard(data))}
-          ${renderCard('Supplements', 'ðŸ’Š', renderSupplementsCard(data))}
-          ${renderCard('Fluid Balance', 'ðŸ’§', renderFluidBalanceCard(data))}
-          ${renderCard('Nutrition', 'ðŸ½ï¸', renderNutritionCard(data))}
-          ${renderCard('Hygiene', 'ðŸš¿', renderHygieneCard(data))}
-          ${renderCard('Physiotherapy', 'ðŸ‹ï¸', renderPhysioCard(data))}
-          ${renderCard('BiPAP & Sleep', 'ðŸŒ¬ï¸', renderBiPAPCard(data))}
-          ${renderCard('Activities', 'ðŸŒ³', renderActivitiesCard(data))}
-          ${renderCard('Upcoming Events', 'ðŸ“…', renderMonthlyTasksCard(data))}
-          ${renderCard('Pharmacy & Supplies', 'ðŸ¥', renderPharmacyCard(data))}
-          ${renderCard('Custom Tasks', 'âœ…', renderCustomTasksCard(data))}
-          ${renderCard('Nursing Notes', 'ðŸ“', renderNursingNotesCard(data))}
-          ${renderCard('Medicine Stock', 'ðŸ’Š', renderMedicineStockCard())}
+          ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
+          ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
+          ${renderCard('Medications', '💊', renderMedicationsCard(data))}
+          ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
+          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
+          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
+          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
+          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
+          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
+          ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
+          ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
+          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+          ${renderCard('Medicine Stock', '💊', renderMedicineStockCard())}
         </div>
       `;
     }
@@ -487,15 +487,15 @@
       const nightV = vitals.night || null;
 
       function renderShiftBlock(label, emoji, v) {
-        if (!v) return `<div style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#555;">${emoji} ${label} â€” NOT RECORDED</span></div>`;
+        if (!v) return `<div style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#555;">${emoji} ${label} — NOT RECORDED</span></div>`;
         return `
           <div style="background:#111; border:1px solid #333; border-radius:2px; padding:8px;">
             <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:4px;">${emoji} ${label} <span style="color:#555; font-weight:400;">${v.time || ''}</span></p>
             <div class="grid grid-cols-3 gap-1">
               ${renderVitalReading('BP', v.bp || '--', 'mmHg', getVitalStatus('bp', v.bp))}
               ${renderVitalReading('HR', v.hr || '0', 'bpm', getVitalStatus('hr', v.hr))}
-              ${renderVitalReading('Oâ‚‚', v.o2 || '0', '%', getVitalStatus('o2', v.o2))}
-              ${renderVitalReading('Temp', v.temp || '0', 'Â°F', getVitalStatus('temp', v.temp))}
+              ${renderVitalReading('O₂', v.o2 || '0', '%', getVitalStatus('o2', v.o2))}
+              ${renderVitalReading('Temp', v.temp || '0', '°F', getVitalStatus('temp', v.temp))}
               ${renderVitalReading('Sugar', v.sugar || '0', 'mg/dL', getVitalStatus('sugar', v.sugar))}
             </div>
           </div>`;
@@ -503,17 +503,17 @@
 
       return `
         <div class="space-y-3">
-          ${renderShiftBlock('Day Shift', 'â˜€ï¸', dayV)}
-          ${renderShiftBlock('Night Shift', 'ðŸŒ™', nightV)}
+          ${renderShiftBlock('Day Shift', '☀️', dayV)}
+          ${renderShiftBlock('Night Shift', '🌙', nightV)}
           <form id="vitalsForm" class="space-y-2 mt-3 pt-3" style="border-top:1px solid #333;">
             <select id="vitals_shift" class="w-full border rounded px-2 py-2 text-xs font-bold">
-              <option value="day"${dayV ? ' disabled' : ''}>â˜€ï¸ DAY SHIFT${dayV ? ' (RECORDED)' : ''}</option>
-              <option value="night"${nightV ? ' disabled' : ''}>ðŸŒ™ NIGHT SHIFT${nightV ? ' (RECORDED)' : ''}</option>
+              <option value="day"${dayV ? ' disabled' : ''}>☀️ DAY SHIFT${dayV ? ' (RECORDED)' : ''}</option>
+              <option value="night"${nightV ? ' disabled' : ''}>🌙 NIGHT SHIFT${nightV ? ' (RECORDED)' : ''}</option>
             </select>
             <input type="text" id="vitals_bp" placeholder="BP (e.g., 120/80)" class="w-full border rounded px-2 py-1 text-xs">
             <input type="number" id="vitals_hr" placeholder="Heart Rate (bpm)" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_o2" placeholder="Oâ‚‚ %" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_temp" placeholder="Temp Â°F (e.g., 98.6)" step="0.1" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_o2" placeholder="O₂ %" class="w-full border rounded px-2 py-1 text-xs">
+            <input type="number" id="vitals_temp" placeholder="Temp °F (e.g., 98.6)" step="0.1" class="w-full border rounded px-2 py-1 text-xs">
             <input type="number" id="vitals_sugar" placeholder="Blood Sugar (mg/dL)" class="w-full border rounded px-2 py-1 text-xs">
             <button type="button" id="addVitalsBtn" class="bb-btn w-full px-2 py-2 text-xs"${dayV && nightV ? ' disabled style="opacity:0.3"' : ''}>SAVE VITALS</button>
           </form>
@@ -539,48 +539,48 @@
         <div class="space-y-3">
           <div class="flex gap-3">
             <button id="toggleMorningMed" class="flex-1 p-3 font-bold text-xs ${data.morningMed ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-              â˜€ï¸ MORNING ${data.morningMed ? 'âœ“' : ''}
+              ☀️ MORNING ${data.morningMed ? '✓' : ''}
             </button>
             <button id="toggleEveningMed" class="flex-1 p-3 font-bold text-xs ${data.eveningMed ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-              ðŸŒ™ EVENING ${data.eveningMed ? 'âœ“' : ''}
+              🌙 EVENING ${data.eveningMed ? '✓' : ''}
             </button>
           </div>
           <!-- Medicine List -->
           <div class="grid grid-cols-2 gap-2">
             <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
-              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">â˜€ï¸ AM MEDICINES</p>
-              ${amMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">â€¢ ${m}</p>`).join('')}
+              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">☀️ AM MEDICINES</p>
+              ${amMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
             </div>
             <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
-              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">ðŸŒ™ PM MEDICINES</p>
-              ${pmMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">â€¢ ${m}</p>`).join('')}
+              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">🌙 PM MEDICINES</p>
+              ${pmMeds.map(m => `<p style="font-size:10px; color:#ccc; padding:1px 0;">• ${m}</p>`).join('')}
             </div>
           </div>
           <div class="pt-3 space-y-3" style="border-top:1px solid #333;">
-            <p class="text-xs flex items-center gap-1" style="color:#888;">ðŸ“· PHOTO REQUIRED BEFORE MARKING</p>
+            <p class="text-xs flex items-center gap-1" style="color:#888;">📷 PHOTO REQUIRED BEFORE MARKING</p>
             <!-- Morning Photo -->
             <div class="p-2" style="border-radius:2px; background:${data.morningMedPhoto ? (data.morningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.morningMedPhoto ? (data.morningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
-              <p class="text-xs font-bold mb-1" style="color:#ff9900;">â˜€ï¸ MORNING MEDS PHOTO</p>
+              <p class="text-xs font-bold mb-1" style="color:#ff9900;">☀️ MORNING MEDS PHOTO</p>
               ${data.morningMedPhoto
                 ? `<div class="flex items-center gap-2">
                     <img src="${data.morningMedPhoto}" alt="Morning meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
                     <span class="text-xs" style="color:#555;">${data.morningMedPhotoTime || 'Uploaded'}</span>
                   </div>`
                 : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
-                    <span class="text-xs font-bold" style="color:#ff9900;">ðŸ“· TAKE / UPLOAD PHOTO</span>
+                    <span class="text-xs font-bold" style="color:#ff9900;">📷 TAKE / UPLOAD PHOTO</span>
                     <input type="file" id="morningMedPhoto" accept="image/*" capture="environment" class="hidden">
                   </label>`}
             </div>
             <!-- Evening Photo -->
             <div class="p-2" style="border-radius:2px; background:${data.eveningMedPhoto ? (data.eveningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.eveningMedPhoto ? (data.eveningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
-              <p class="text-xs font-bold mb-1" style="color:#ff9900;">ðŸŒ™ EVENING MEDS PHOTO</p>
+              <p class="text-xs font-bold mb-1" style="color:#ff9900;">🌙 EVENING MEDS PHOTO</p>
               ${data.eveningMedPhoto
                 ? `<div class="flex items-center gap-2">
                     <img src="${data.eveningMedPhoto}" alt="Evening meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
                     <span class="text-xs" style="color:#555;">${data.eveningMedPhotoTime || 'Uploaded'}</span>
                   </div>`
                 : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
-                    <span class="text-xs font-medium text-violet-600">ðŸ“· Take / Upload Photo</span>
+                    <span class="text-xs font-medium text-violet-600">📷 Take / Upload Photo</span>
                     <input type="file" id="eveningMedPhoto" accept="image/*" capture="environment" class="hidden">
                   </label>`}
             </div>
@@ -605,24 +605,24 @@
           <!-- Omega-3 -->
           <button id="toggleOmega3" class="w-full font-bold text-xs ${sup.omega3 ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
             <span>OMEGA-3</span>
-            <span>${sup.omega3 ? 'âœ“ GIVEN' : 'â€”'}</span>
+            <span>${sup.omega3 ? '✓ GIVEN' : '—'}</span>
           </button>
           <!-- Magnesium -->
           <button id="toggleMagnesium" class="w-full font-bold text-xs ${sup.magnesium ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
             <span>MAGNESIUM L-THREONATE</span>
-            <span>${sup.magnesium ? 'âœ“ GIVEN' : 'â€”'}</span>
+            <span>${sup.magnesium ? '✓ GIVEN' : '—'}</span>
           </button>
           <!-- Ensure -->
           <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
             <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:6px;">ENSURE</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
               <button id="toggleEnsureDay" class="font-bold text-xs ${sup.ensureDay ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
-                <span>â˜€ï¸ DAY</span>
-                <span>${sup.ensureDay ? 'âœ“' : 'â€”'}</span>
+                <span>☀️ DAY</span>
+                <span>${sup.ensureDay ? '✓' : '—'}</span>
               </button>
               <button id="toggleEnsureNight" class="font-bold text-xs ${sup.ensureNight ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
-                <span>ðŸŒ™ NIGHT</span>
-                <span>${sup.ensureNight ? 'âœ“' : 'â€”'}</span>
+                <span>🌙 NIGHT</span>
+                <span>${sup.ensureNight ? '✓' : '—'}</span>
               </button>
             </div>
           </div>
@@ -645,7 +645,7 @@
         <div class="space-y-3">
           <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">FLUID INTAKE</p>
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold" style="color:#00ccff;">ðŸ’§ ${totalWater} / ${target} mL</span>
+            <span class="text-sm font-bold" style="color:#00ccff;">💧 ${totalWater} / ${target} mL</span>
             <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
           </div>
           <div class="w-full h-3 bb-progress-track">
@@ -653,11 +653,11 @@
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">â˜€ï¸ DAY (mL)</label>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
               <input type="number" id="waterDayInput" placeholder="mL" value="${waterDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸŒ™ NIGHT (mL)</label>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
               <input type="number" id="waterNightInput" placeholder="mL" value="${waterNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
           </div>
@@ -666,11 +666,11 @@
             <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE OUTPUT</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">â˜€ï¸ DAY (mL)</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
                 <input type="number" id="urineDayInput" placeholder="mL" value="${urineDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸŒ™ NIGHT (mL)</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
                 <input type="number" id="urineNightInput" placeholder="mL" value="${urineNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
             </div>
@@ -681,7 +681,7 @@
             <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE QUALITY</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸŽ¨ COLOR</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🎨 COLOR</label>
                 <select id="urineColorInput" class="w-full border rounded px-2 py-2 text-xs">
                   <option value="" ${!(data.urineColor) ? 'selected' : ''}>-- Select --</option>
                   <option value="clear" ${data.urineColor === 'clear' ? 'selected' : ''}>Clear</option>
@@ -695,7 +695,7 @@
                 </select>
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸ”¬ OPACITY/CLOTS</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🔬 OPACITY/CLOTS</label>
                 <select id="urineOpacityInput" class="w-full border rounded px-2 py-2 text-xs">
                   <option value="" ${!(data.urineOpacity) ? 'selected' : ''}>-- Select --</option>
                   <option value="clear" ${data.urineOpacity === 'clear' ? 'selected' : ''}>Clear</option>
@@ -706,7 +706,7 @@
               </div>
             </div>
             <div class="mt-2">
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸ§ª DEBRIS/SEDIMENT</label>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🧪 DEBRIS/SEDIMENT</label>
               <select id="urineDebrisInput" class="w-full border rounded px-2 py-2 text-xs">
                 <option value="" ${!(data.urineDebris) ? 'selected' : ''}>-- Select --</option>
                 <option value="none" ${data.urineDebris === 'none' ? 'selected' : ''}>None</option>
@@ -724,9 +724,9 @@
           <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
             <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE QUALITY</span>
             <div class="flex gap-2 mt-1 flex-wrap">
-              ${data.urineColor ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#1f0a0a' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#ff3333' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#ff9900' : '#00ff00'};">ðŸŽ¨ ${data.urineColor}</span>` : ''}
-              ${data.urineOpacity ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineOpacity === '+++' ? '#1f0a0a' : data.urineOpacity === '++' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineOpacity === '+++' ? '#ff3333' : data.urineOpacity === '++' ? '#ff9900' : '#00ff00'};">ðŸ”¬ ${data.urineOpacity}</span>` : ''}
-              ${data.urineDebris ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineDebris === 'heavy' ? '#1f0a0a' : data.urineDebris === 'moderate' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineDebris === 'heavy' ? '#ff3333' : data.urineDebris === 'moderate' ? '#ff9900' : '#00ff00'};">ðŸ§ª ${data.urineDebris}</span>` : ''}
+              ${data.urineColor ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#1f0a0a' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#ff3333' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#ff9900' : '#00ff00'};">🎨 ${data.urineColor}</span>` : ''}
+              ${data.urineOpacity ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineOpacity === '+++' ? '#1f0a0a' : data.urineOpacity === '++' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineOpacity === '+++' ? '#ff3333' : data.urineOpacity === '++' ? '#ff9900' : '#00ff00'};">🔬 ${data.urineOpacity}</span>` : ''}
+              ${data.urineDebris ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineDebris === 'heavy' ? '#1f0a0a' : data.urineDebris === 'moderate' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineDebris === 'heavy' ? '#ff3333' : data.urineDebris === 'moderate' ? '#ff9900' : '#00ff00'};">🧪 ${data.urineDebris}</span>` : ''}
             </div>
           </div>
           ` : ''}
@@ -752,13 +752,13 @@
     function renderNutritionCard(data) {
       const meals = data.meals || {};
       const sections = [
-        { id: 'breakfast', label: 'ðŸŒ… BREAKFAST' },
-        { id: 'lunch', label: 'â˜€ï¸ LUNCH' },
-        { id: 'dinner', label: 'ðŸŒ™ DINNER' },
-        { id: 'snacks', label: 'ðŸŽ SNACKS' }
+        { id: 'breakfast', label: '🌅 BREAKFAST' },
+        { id: 'lunch', label: '☀️ LUNCH' },
+        { id: 'dinner', label: '🌙 DINNER' },
+        { id: 'snacks', label: '🍎 SNACKS' }
       ];
       const pctOptions = [100, 75, 50, 25, 0];
-      const pctLabels = { 100: 'All', 75: 'Â¾', 50: 'Â½', 25: 'Â¼', 0: 'Refused' };
+      const pctLabels = { 100: 'All', 75: '¾', 50: '½', 25: '¼', 0: 'Refused' };
       const recorded = sections.filter(s => meals[s.id]?.pct !== undefined).length;
 
       return `
@@ -775,7 +775,7 @@
               <div style="background:#111; border:1px solid ${hasPct ? '#333' : '#222'}; border-radius:2px; padding:8px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
                   <p style="font-size:11px; font-weight:700; color:#ff9900;">${s.label}</p>
-                  ${hasPct ? `<span style="font-size:11px; font-weight:700; color:${pctColor};">${m.pct}% ${m.time ? 'Â· ' + m.time : ''}</span>` : ''}
+                  ${hasPct ? `<span style="font-size:11px; font-weight:700; color:${pctColor};">${m.pct}% ${m.time ? '· ' + m.time : ''}</span>` : ''}
                 </div>
                 ${hasPct ? `
                   <div style="background:#1a1a1a; border-radius:2px; height:6px; overflow:hidden; margin-bottom:${m.note ? '6' : '0'}px;">
@@ -804,24 +804,24 @@
           <!-- Daily tasks -->
           <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">DAILY</p>
           <div class="grid grid-cols-2 gap-1 text-xs">
-            <button id="toggleOralCare" class="p-2 rounded border-2 ${hyg.oralCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸ¦· Oral Care ${hyg.oralCare ? 'âœ“' : ''}</button>
-            <button id="toggleSkinCare" class="p-2 rounded border-2 ${hyg.skinCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸ’… Skin Care ${hyg.skinCare ? 'âœ“' : ''}</button>
+            <button id="toggleOralCare" class="p-2 rounded border-2 ${hyg.oralCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🦷 Oral Care ${hyg.oralCare ? '✓' : ''}</button>
+            <button id="toggleSkinCare" class="p-2 rounded border-2 ${hyg.skinCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💅 Skin Care ${hyg.skinCare ? '✓' : ''}</button>
           </div>
           <!-- Diaper Change -->
           <div class="text-xs space-y-1 pt-2 border-t">
-            <label class="block font-semibold">ðŸ©¹ Diaper Change</label>
+            <label class="block font-semibold">🩹 Diaper Change</label>
             <div class="flex gap-1">
-              <button id="toggleDiaperAM" class="flex-1 p-2 rounded border-2 ${hyg.diaperAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">â˜€ï¸ AM ${hyg.diaperAM ? 'âœ“' : ''}</button>
-              <button id="toggleDiaperPM" class="flex-1 p-2 rounded border-2 ${hyg.diaperPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸŒ™ PM ${hyg.diaperPM ? 'âœ“' : ''}</button>
+              <button id="toggleDiaperAM" class="flex-1 p-2 rounded border-2 ${hyg.diaperAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">☀️ AM ${hyg.diaperAM ? '✓' : ''}</button>
+              <button id="toggleDiaperPM" class="flex-1 p-2 rounded border-2 ${hyg.diaperPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🌙 PM ${hyg.diaperPM ? '✓' : ''}</button>
             </div>
           </div>
 
           <!-- Brush Teeth -->
           <div class="text-xs space-y-1 pt-2 border-t">
-            <label class="block font-semibold">ðŸª¥ Brush Teeth</label>
+            <label class="block font-semibold">🪥 Brush Teeth</label>
             <div class="flex gap-1">
-              <button id="toggleBrushAM" class="flex-1 p-2 rounded border-2 ${hyg.brushAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">â˜€ï¸ AM ${hyg.brushAM ? 'âœ“' : ''}</button>
-              <button id="toggleBrushPM" class="flex-1 p-2 rounded border-2 ${hyg.brushPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸŒ™ PM ${hyg.brushPM ? 'âœ“' : ''}</button>
+              <button id="toggleBrushAM" class="flex-1 p-2 rounded border-2 ${hyg.brushAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">☀️ AM ${hyg.brushAM ? '✓' : ''}</button>
+              <button id="toggleBrushPM" class="flex-1 p-2 rounded border-2 ${hyg.brushPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🌙 PM ${hyg.brushPM ? '✓' : ''}</button>
             </div>
           </div>
 
@@ -841,25 +841,25 @@
                 <div style="background:#1a1a1a; border:1px solid ${bagRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; text-align:center; margin-bottom:6px;">
                   <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE BAG CHANGE</span>
                   <p style="font-size:20px; font-weight:700; color:${bagColor};">${bagRemaining <= 0 ? 'OVERDUE' : bagRemaining + ' days'}</p>
-                  <span style="font-size:9px; color:#555;">Next: ${nextBag.getFullYear()}-${String(nextBag.getMonth()+1).padStart(2,'0')}-${String(nextBag.getDate()).padStart(2,'0')} Â· Last: ${lastBag}</span>
+                  <span style="font-size:9px; color:#555;">Next: ${nextBag.getFullYear()}-${String(nextBag.getMonth()+1).padStart(2,'0')}-${String(nextBag.getDate()).padStart(2,'0')} · Last: ${lastBag}</span>
                 </div>
                 <button id="toggleUrineBag" class="w-full p-2 font-bold text-xs ${hyg.urineBagChanged ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; margin-bottom:6px;">
-                  ðŸ”„ URINE BAG CHANGED ${hyg.urineBagChanged ? 'âœ“' : ''}
+                  🔄 URINE BAG CHANGED ${hyg.urineBagChanged ? '✓' : ''}
                 </button>`;
             })()}
             <div class="grid grid-cols-2 gap-1">
-              <button id="toggleShave" class="p-2 rounded border-2 ${hyg.shaved ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸª’ Shave ${hyg.shaved ? 'âœ“' : ''}</button>
-              <button id="toggleFullBath" class="p-2 rounded border-2 ${hyg.fullBath ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸ› Bath ${hyg.fullBath ? 'âœ“' : ''}</button>
-              <button id="toggleCleanNoseEars" class="p-2 rounded border-2 ${hyg.cleanNoseEars ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸ‘‚ Clean Nose & Ears ${hyg.cleanNoseEars ? 'âœ“' : ''}</button>
-              <button id="toggleTrimNails" class="p-2 rounded border-2 ${hyg.trimNails ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">âœ‚ï¸ Trim Nails ${hyg.trimNails ? 'âœ“' : ''}</button>
-              <button id="toggleHaircut" class="p-2 rounded border-2 ${hyg.haircut ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">ðŸ’‡ Haircut ${hyg.haircut ? 'âœ“' : ''}</button>
+              <button id="toggleShave" class="p-2 rounded border-2 ${hyg.shaved ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🪒 Shave ${hyg.shaved ? '✓' : ''}</button>
+              <button id="toggleFullBath" class="p-2 rounded border-2 ${hyg.fullBath ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🛁 Bath ${hyg.fullBath ? '✓' : ''}</button>
+              <button id="toggleCleanNoseEars" class="p-2 rounded border-2 ${hyg.cleanNoseEars ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">👂 Clean Nose & Ears ${hyg.cleanNoseEars ? '✓' : ''}</button>
+              <button id="toggleTrimNails" class="p-2 rounded border-2 ${hyg.trimNails ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">✂️ Trim Nails ${hyg.trimNails ? '✓' : ''}</button>
+              <button id="toggleHaircut" class="p-2 rounded border-2 ${hyg.haircut ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💇 Haircut ${hyg.haircut ? '✓' : ''}</button>
             </div>
           </div>
 
           <!-- Repositioning log -->
           <div class="text-xs space-y-1 pt-2 border-t">
             <div class="flex items-center justify-between">
-              <label class="font-semibold">ðŸ”„ Repositioning</label>
+              <label class="font-semibold">🔄 Repositioning</label>
               <button id="addRepoBtn" class="px-2 py-1 bg-teal-500 text-white rounded font-semibold">+ Log</button>
             </div>
             <div class="flex gap-1 flex-wrap">
@@ -872,7 +872,7 @@
           <!-- Hand Cleaning log -->
           <div class="text-xs space-y-1 pt-2 border-t">
             <div class="flex items-center justify-between">
-              <label class="font-semibold">ðŸ§´ Hand Cleaning</label>
+              <label class="font-semibold">🧴 Hand Cleaning</label>
               <button id="addHandCleanBtn" class="px-2 py-1 bg-teal-500 text-white rounded font-semibold">+ Log</button>
             </div>
             <div class="flex gap-1 flex-wrap">
@@ -888,10 +888,10 @@
     function renderPhysioCard(data) {
       const physio = data.physio || {};
       const exercises = [
-        { id: 'rom', label: 'ðŸ¦µ Range of Motion', desc: 'Passive ROM exercises' },
-        { id: 'chest', label: 'ðŸš´ Cycling', desc: 'Bed cycling exercise' },
-        { id: 'stretch', label: 'ðŸ¤¸ Stretching', desc: 'Limb stretches' },
-        { id: 'massage', label: 'ðŸ’† Massage', desc: 'Circulation & comfort' }
+        { id: 'rom', label: '🦵 Range of Motion', desc: 'Passive ROM exercises' },
+        { id: 'chest', label: '🚴 Cycling', desc: 'Bed cycling exercise' },
+        { id: 'stretch', label: '🤸 Stretching', desc: 'Limb stretches' },
+        { id: 'massage', label: '💆 Massage', desc: 'Circulation & comfort' }
       ];
       const log = physio.log || [];
       return `
@@ -899,7 +899,7 @@
           <div class="grid grid-cols-2 gap-2">
             ${exercises.map(ex => `
               <button id="togglePhysio_${ex.id}" class="p-2 text-left text-xs font-bold ${physio[ex.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-                ${ex.label} ${physio[ex.id] ? 'âœ“' : ''}
+                ${ex.label} ${physio[ex.id] ? '✓' : ''}
                 <p style="color:#555; font-weight:400; font-size:10px;">${ex.desc}</p>
               </button>
             `).join('')}
@@ -907,7 +907,7 @@
           <div class="text-xs text-center" style="color:#888;">${Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length} / ${exercises.length} COMPLETED</div>
           ${log.length > 0 ? `
             <div class="space-y-1 text-xs">
-              ${log.map(l => `<div class="p-1.5" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${l.time}</strong> <span style="color:#ccc;">â€” ${l.note}</span></div>`).join('')}
+              ${log.map(l => `<div class="p-1.5" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${l.time}</strong> <span style="color:#ccc;">— ${l.note}</span></div>`).join('')}
             </div>
           ` : ''}
           <div class="pt-2" style="border-top:1px solid #333;">
@@ -931,7 +931,7 @@
         <div class="space-y-3">
           <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">BIPAP</p>
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold" style="color:#9966ff;">ðŸŒ¬ï¸ ${totalHrs} / ${target} hrs</span>
+            <span class="text-sm font-bold" style="color:#9966ff;">🌬️ ${totalHrs} / ${target} hrs</span>
             <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
           </div>
           <div class="w-full h-3 bb-progress-track">
@@ -939,11 +939,11 @@
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">â˜€ï¸ DAY</label>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
               <input type="number" id="bipapDayInput" placeholder="hrs" step="0.5" value="${bipapDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸŒ™ NIGHT</label>
+              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
               <input type="number" id="bipapNightInput" placeholder="hrs" step="0.5" value="${bipapNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
           </div>
@@ -955,11 +955,11 @@
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">â˜€ï¸ DAY</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
                 <input type="number" id="sleepDayInput" placeholder="hrs" step="0.5" value="${sleepDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">ðŸŒ™ NIGHT</label>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
                 <input type="number" id="sleepNightInput" placeholder="hrs" step="0.5" value="${sleepNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
             </div>
@@ -974,7 +974,7 @@
       const tasks = state.monthlyTasks[ym] || { catheter: false, vitaminD: false };
       const now = new Date(state.currentDate + 'T00:00:00');
 
-      // Catheter countdown â€” every 4 weeks (28 days)
+      // Catheter countdown — every 4 weeks (28 days)
       const lastCatheter = localStorage.getItem('lastCatheterDate') || '2025-02-17';
       const lastCathDate = new Date(lastCatheter + 'T00:00:00');
       const cathDiffDays = Math.floor((now - lastCathDate) / (1000 * 60 * 60 * 24));
@@ -984,7 +984,7 @@
       cathNextDate.setDate(cathNextDate.getDate() + 28);
       const cathNextStr = cathNextDate.getFullYear() + '-' + String(cathNextDate.getMonth()+1).padStart(2,'0') + '-' + String(cathNextDate.getDate()).padStart(2,'0');
 
-      // Vitamin D â€” 1st of every month
+      // Vitamin D — 1st of every month
       let vitDTarget = new Date(now.getFullYear(), now.getMonth(), 1);
       if (now > vitDTarget) {
         vitDTarget = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -1002,7 +1002,7 @@
             <span style="font-size:9px; color:#555;">Next: ${cathNextStr} &middot; Last: ${lastCatheter}</span>
           </div>
           <button id="toggleCatheter" class="w-full p-2 font-bold text-xs ${tasks.catheter ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-            ðŸ”„ CATHETER CHANGED ${tasks.catheter ? 'âœ“' : ''}
+            🔄 CATHETER CHANGED ${tasks.catheter ? '✓' : ''}
           </button>
           <!-- Weekly Catheter Flush -->
           ${(() => {
@@ -1017,10 +1017,10 @@
               <div style="background:#1a1a1a; border:1px solid ${flushRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center; margin-top:8px;">
                 <span style="font-size:10px; color:#888; letter-spacing:1px;">CATHETER FLUSH</span>
                 <p style="font-size:20px; font-weight:700; color:${flushColor};">${lastFlushDate ? (flushRemaining <= 0 ? 'OVERDUE' : flushRemaining + ' days') : 'NOT SET'}</p>
-                <span style="font-size:9px; color:#555;">${lastFlush ? 'Last: ' + lastFlush : 'No flush recorded'} Â· Weekly</span>
+                <span style="font-size:9px; color:#555;">${lastFlush ? 'Last: ' + lastFlush : 'No flush recorded'} · Weekly</span>
               </div>
               <button id="logCatheterFlush" class="w-full p-2 font-bold text-xs bb-btn" style="border-radius:2px; margin-top:4px;">
-                ðŸ’‰ LOG CATHETER FLUSH
+                💉 LOG CATHETER FLUSH
               </button>
               ${flushLog.length > 0 ? `
                 <div class="flex gap-1 flex-wrap mt-1">
@@ -1036,7 +1036,7 @@
             <span style="font-size:9px; color:#555;">Due: 1st of every month</span>
           </div>
           <button id="toggleVitaminD" class="w-full p-2 font-bold text-xs ${tasks.vitaminD ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-            ðŸ’Š VITAMIN D GIVEN ${tasks.vitaminD ? 'âœ“' : ''}
+            💊 VITAMIN D GIVEN ${tasks.vitaminD ? '✓' : ''}
           </button>
         </div>
       `;
@@ -1045,11 +1045,11 @@
     function renderActivitiesCard(data) {
       const act = data.activities || {};
       const items = [
-        { id: 'lounge', label: 'ðŸ›‹ï¸ LOUNGE', icon: 'ðŸ›‹ï¸' },
-        { id: 'garden', label: 'ðŸŒ³ GARDEN', icon: 'ðŸŒ³' },
-        { id: 'park', label: 'ðŸžï¸ PARK', icon: 'ðŸžï¸' },
-        { id: 'drive', label: 'ðŸš— DRIVE', icon: 'ðŸš—' },
-        { id: 'friends', label: 'ðŸ‘¥ FRIENDS', icon: 'ðŸ‘¥' }
+        { id: 'lounge', label: '🛋️ LOUNGE', icon: '🛋️' },
+        { id: 'garden', label: '🌳 GARDEN', icon: '🌳' },
+        { id: 'park', label: '🏞️ PARK', icon: '🏞️' },
+        { id: 'drive', label: '🚗 DRIVE', icon: '🚗' },
+        { id: 'friends', label: '👥 FRIENDS', icon: '👥' }
       ];
       const doneCount = items.filter(i => act[i.id]).length;
       return `
@@ -1064,7 +1064,7 @@
               return `
               <button id="toggleActivity_${i.id}" class="w-full font-bold text-xs ${act[i.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
                 <span>${i.label}</span>
-                <span>${act[i.id] ? 'âœ“' + (time ? ' <span style="font-size:9px; font-weight:400; color:#888;">' + time + '</span>' : '') : 'â€”'}</span>
+                <span>${act[i.id] ? '✓' + (time ? ' <span style="font-size:9px; font-weight:400; color:#888;">' + time + '</span>' : '') : '—'}</span>
               </button>`;
             }).join('')}
           </div>
@@ -1072,7 +1072,7 @@
             <input type="text" id="activityNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-2 text-xs" value="${act.note || ''}">
             <button id="saveActivityNote" class="bb-btn w-full px-2 py-2 text-xs mt-2">SAVE NOTE</button>
           </div>
-          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}${act.noteTime ? ' <span style="color:#555;">Â· ' + act.noteTime + '</span>' : ''}</p>` : ''}
+          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}${act.noteTime ? ' <span style="color:#555;">· ' + act.noteTime + '</span>' : ''}</p>` : ''}
         </div>
       `;
     }
@@ -1086,11 +1086,11 @@
               ${items.map((item, i) => `
                 <div style="background:#1a1a1a; border:1px solid ${item.urgent ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
                   <div style="flex:1;">
-                    <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? 'ðŸ”´ ' : ''}${item.name}</span>
+                    <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
                     ${item.note ? `<p style="font-size:9px; color:#666; margin-top:2px;">${item.note}</p>` : ''}
-                    <p style="font-size:9px; color:#555;">${item.author} Â· ${item.time}</p>
+                    <p style="font-size:9px; color:#555;">${item.author} · ${item.time}</p>
                   </div>
-                  <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">âœ•</button>
+                  <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">✕</button>
                 </div>
               `).join('')}
             </div>
@@ -1100,7 +1100,7 @@
             <input type="text" id="pharmacyNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs mb-1">
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
               <button id="addPharmacyBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD</button>
-              <button id="addPharmacyUrgentBtn" class="w-full px-2 py-2 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">ðŸ”´ URGENT</button>
+              <button id="addPharmacyUrgentBtn" class="w-full px-2 py-2 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">🔴 URGENT</button>
             </div>
           </div>
         </div>
@@ -1113,7 +1113,7 @@
         <div class="space-y-2">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <span class="text-xs font-semibold" style="color:#888;">Today's Notes</span>
-            <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #ff9900; border-radius:2px; color:#ff9900; cursor:pointer;">ðŸ“– JOURNAL</button>
+            <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #ff9900; border-radius:2px; color:#ff9900; cursor:pointer;">📖 JOURNAL</button>
           </div>
           ${notes.length > 0 ? `
             <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
@@ -1136,8 +1136,8 @@
           <div class="modal-backdrop" id="journalBackdrop"></div>
           <div class="modal" style="max-height:90vh; padding:0;">
             <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
-              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">ðŸ“– Nursing Journal</h2>
-              <button id="closeJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">âœ• CLOSE</button>
+              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📖 Nursing Journal</h2>
+              <button id="closeJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
             </div>
             <div id="journalContent" class="p-4 space-y-3 overflow-y-auto" style="max-height:calc(90vh - 50px);"></div>
           </div>
@@ -1178,7 +1178,7 @@
         return `
           <div style="border:1px solid #333; border-radius:2px; overflow:hidden;">
             <div style="background:#1a1a1a; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333;">
-              <span class="font-bold text-xs" style="color:#ff9900;">${day.date} Â· ${dayLabel}</span>
+              <span class="font-bold text-xs" style="color:#ff9900;">${day.date} · ${dayLabel}</span>
               <span class="text-xs" style="color:#555;">${day.notes.length} note${day.notes.length !== 1 ? 's' : ''}</span>
             </div>
             <div class="space-y-1 p-2">
@@ -1210,19 +1210,19 @@
           ${activeShift ? `
             <div style="background:#0a2e0a; border:1px solid #00cc00; border-radius:2px; padding:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="text-xs font-bold" style="color:#00ff00;">ðŸŸ¢ SHIFT ACTIVE</span>
+                <span class="text-xs font-bold" style="color:#00ff00;">🟢 SHIFT ACTIVE</span>
                 <span class="text-xs" style="color:#888;">${startTime}</span>
               </div>
               <p class="text-sm font-bold mt-1" style="color:#ff9900;">${nurseName}</p>
-              ${exelonPatch ? '<span class="text-xs" style="color:#00ff00;">âœ“ Exelon Patch Applied</span>' : '<span class="text-xs" style="color:#ff9900;">âš  Exelon Patch NOT confirmed</span>'}
+              ${exelonPatch ? '<span class="text-xs" style="color:#00ff00;">✓ Exelon Patch Applied</span>' : '<span class="text-xs" style="color:#ff9900;">⚠ Exelon Patch NOT confirmed</span>'}
             </div>
             <div class="pt-2 space-y-2" style="border-top:1px solid #333;">
               <label class="block text-xs font-bold" style="color:#888;">END SHIFT</label>
               <button id="toggleExelonPatch" class="w-full p-2 font-bold text-xs ${exelonPatch ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
-                ðŸ’Š EXELON PATCH APPLIED ${exelonPatch ? 'âœ“' : ''}
+                💊 EXELON PATCH APPLIED ${exelonPatch ? '✓' : ''}
               </button>
               <button id="endShiftBtn" class="w-full p-2 font-bold text-xs" style="background:#1f0a0a; border:2px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">
-                ðŸ”´ END SHIFT & CONFIRM DATA
+                🔴 END SHIFT & CONFIRM DATA
               </button>
             </div>
           ` : `
@@ -1238,7 +1238,7 @@
                 <option value="other">Other...</option>
               </select>
               <input type="text" id="nurseNameCustom" placeholder="Enter nurse name" class="w-full border rounded px-2 py-2 text-xs" style="display:none;">
-              <button id="startShiftBtn" class="bb-btn w-full px-2 py-2 text-xs">â–¶ START SHIFT</button>
+              <button id="startShiftBtn" class="bb-btn w-full px-2 py-2 text-xs">▶ START SHIFT</button>
             </div>
           `}
           ${(shift.history || []).length > 0 ? `
@@ -1250,7 +1250,7 @@
                     <strong style="color:#ff9900;">${h.name}</strong>
                     <span style="color:#555;">${h.start} - ${h.end || 'ongoing'}</span>
                   </div>
-                  <span style="color:${h.exelonPatch ? '#00ff00' : '#ff3333'};">${h.exelonPatch ? 'âœ“ Exelon' : 'âœ— No Exelon'} Â· ${h.dataConfirmed ? 'âœ“ Data confirmed' : 'âœ— Not confirmed'}</span>
+                  <span style="color:${h.exelonPatch ? '#00ff00' : '#ff3333'};">${h.exelonPatch ? '✓ Exelon' : '✗ No Exelon'} · ${h.dataConfirmed ? '✓ Data confirmed' : '✗ Not confirmed'}</span>
                 </div>
               `).join('')}
             </div>
@@ -1267,9 +1267,9 @@
             <div class="space-y-1">
               ${tasks.map((t, i) => `
                 <div class="flex items-center gap-2 p-2 text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;">
-                  <button class="customTaskToggle" data-idx="${i}" style="width:24px; height:24px; border:2px solid ${t.done ? '#00cc00' : '#333'}; border-radius:2px; background:${t.done ? '#0a2e0a' : '#1a1a1a'}; color:${t.done ? '#00ff00' : '#555'}; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${t.done ? 'âœ“' : ''}</button>
+                  <button class="customTaskToggle" data-idx="${i}" style="width:24px; height:24px; border:2px solid ${t.done ? '#00cc00' : '#333'}; border-radius:2px; background:${t.done ? '#0a2e0a' : '#1a1a1a'}; color:${t.done ? '#00ff00' : '#555'}; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${t.done ? '✓' : ''}</button>
                   <span style="color:${t.done ? '#555; text-decoration:line-through' : '#ccc'}; flex:1;">${t.text}</span>
-                  <button class="removeCustomTask" data-idx="${i}" style="color:#ff3333; background:none; border:none; cursor:pointer; font-size:12px; min-height:24px; padding:0 4px;">âœ•</button>
+                  <button class="removeCustomTask" data-idx="${i}" style="color:#ff3333; background:none; border:none; cursor:pointer; font-size:12px; min-height:24px; padding:0 4px;">✕</button>
                 </div>
               `).join('')}
             </div>
@@ -1295,13 +1295,13 @@
         <div class="space-y-2">
           ${outItems.length > 0 ? `
             <div style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff3333;">ðŸš¨ OUT OF STOCK</span>
+              <span class="text-xs font-bold" style="color:#ff3333;">🚨 OUT OF STOCK</span>
               <div class="mt-1">${outItems.map(s => `<span class="text-xs" style="color:#ff3333;">${s.name}</span>`).join(', ')}</div>
             </div>
           ` : ''}
           ${lowItems.length > 0 ? `
             <div style="background:#1f1a0a; border:1px solid #cc7a00; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff9900;">âš  LOW STOCK (â‰¤${lowStockThreshold} days)</span>
+              <span class="text-xs font-bold" style="color:#ff9900;">⚠ LOW STOCK (≤${lowStockThreshold} days)</span>
               <div class="mt-1">${lowItems.map(s => `<span class="text-xs" style="color:#ff9900;">${s.name} (${s.qty})</span>`).join(', ')}</div>
             </div>
           ` : ''}
@@ -1314,13 +1314,13 @@
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                       <strong style="color:#ff9900;">${s.name}</strong>
                       <div style="display:flex; align-items:center; gap:4px;">
-                        <button class="stockDecBtn" data-idx="${i}" style="width:24px; height:24px; background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer; min-height:24px;">âˆ’</button>
+                        <button class="stockDecBtn" data-idx="${i}" style="width:24px; height:24px; background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer; min-height:24px;">−</button>
                         <span style="color:${qtyColor}; font-weight:700; min-width:30px; text-align:center;">${s.qty}</span>
                         <button class="stockIncBtn" data-idx="${i}" style="width:24px; height:24px; background:#0a1f0a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer; min-height:24px;">+</button>
                       </div>
                     </div>
                     <div style="display:flex; justify-content:space-between; margin-top:2px;">
-                      <span style="color:#555; font-size:9px;">${s.unit || 'units'} Â· ${s.dailyUse ? s.dailyUse + '/day' : ''}</span>
+                      <span style="color:#555; font-size:9px;">${s.unit || 'units'} · ${s.dailyUse ? s.dailyUse + '/day' : ''}</span>
                       <span style="color:#555; font-size:9px;">${s.qty > 0 && s.dailyUse ? '~' + Math.floor(s.qty / s.dailyUse) + ' days left' : ''}</span>
                     </div>
                   </div>`;
@@ -1337,7 +1337,7 @@
             <button id="addStockBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD MEDICINE</button>
           </div>
           ${stock.length > 0 ? `
-            <button id="openStockOrderBtn" class="w-full p-2 text-xs font-bold" style="background:#0a0a1f; border:1px solid #9999ff; border-radius:2px; color:#9999ff; cursor:pointer;">ðŸ“‹ GENERATE ORDER LIST</button>
+            <button id="openStockOrderBtn" class="w-full p-2 text-xs font-bold" style="background:#0a0a1f; border:1px solid #9999ff; border-radius:2px; color:#9999ff; cursor:pointer;">📋 GENERATE ORDER LIST</button>
           ` : ''}
         </div>
         <!-- Stock Order Modal -->
@@ -1345,8 +1345,8 @@
           <div class="modal-backdrop" id="stockOrderBackdrop"></div>
           <div class="modal" style="max-height:90vh; padding:0;">
             <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
-              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">ðŸ“‹ Order List</h2>
-              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">âœ• CLOSE</button>
+              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📋 Order List</h2>
+              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
             </div>
             <div id="stockOrderContent" class="p-4" style="max-height:calc(90vh - 50px); overflow-y:auto;"></div>
           </div>
@@ -1370,35 +1370,35 @@
               </tr>
             </thead>
             <tbody>
-              ${renderWeeklyRow('ðŸ’Š Meds AM', 'morningMed', days)}
-              ${renderWeeklyRow('ðŸ’Š Meds PM', 'eveningMed', days)}
-              ${renderWeeklyRow('ðŸ’§ Water Day', 'waterDay', days)}
-              ${renderWeeklyRow('ðŸ’§ Water Night', 'waterNight', days)}
-              ${renderWeeklyRow('â˜€ï¸ BP', 'vitals.day.bp', days)}
-              ${renderWeeklyRow('ðŸŒ™ BP', 'vitals.night.bp', days)}
-              ${renderWeeklyRow('â˜€ï¸ Oâ‚‚', 'vitals.day.o2', days)}
-              ${renderWeeklyRow('ðŸŒ™ Oâ‚‚', 'vitals.night.o2', days)}
-              ${renderWeeklyRow('â˜€ï¸ Urine', 'urineDay', days)}
-              ${renderWeeklyRow('ðŸŒ™ Urine', 'urineNight', days)}
-              ${renderWeeklyRow('ðŸ¦µ ROM', 'physio.rom', days)}
-              ${renderWeeklyRow('ðŸš´ Cycling', 'physio.chest', days)}
-              ${renderWeeklyRow('ðŸ¤¸ Stretch', 'physio.stretch', days)}
-              ${renderWeeklyRow('ðŸ’† Massage', 'physio.massage', days)}
-              ${renderWeeklyRow('ðŸŒ¬ BiPAP Day', 'bipapDay', days)}
-              ${renderWeeklyRow('ðŸŒ¬ BiPAP Night', 'bipapNight', days)}
-              ${renderWeeklyRow('ðŸ˜´ Sleep Day', 'sleepDay', days)}
-              ${renderWeeklyRow('ðŸ˜´ Sleep Night', 'sleepNight', days)}
-              ${renderWeeklyRow('ðŸ’Š K-Lyte', 'supplements.klyte', days)}
-              ${renderWeeklyRow('ðŸ’Š Mg', 'supplements.magnesium', days)}
-              ${renderWeeklyRow('ðŸ’Š Omega3', 'supplements.omega3', days)}
-              ${renderWeeklyRow('ðŸ©¹ Diaper AM', 'hygiene.diaperAM', days)}
-              ${renderWeeklyRow('ðŸ©¹ Diaper PM', 'hygiene.diaperPM', days)}
-              ${renderWeeklyRow('ðŸª¥ Brush', 'hygiene.brushCount', days)}
-              ${renderWeeklyRow('ðŸª’ Shave', 'hygiene.shaved', days)}
-              ${renderWeeklyRow('ðŸ› Bath', 'hygiene.fullBath', days)}
-              ${renderWeeklyRow('ðŸ‘‚ Nose/Ears', 'hygiene.cleanNoseEars', days)}
-              ${renderWeeklyRow('âœ‚ï¸ Nails', 'hygiene.trimNails', days)}
-              ${renderWeeklyRow('ðŸ’‡ Haircut', 'hygiene.haircut', days)}
+              ${renderWeeklyRow('💊 Meds AM', 'morningMed', days)}
+              ${renderWeeklyRow('💊 Meds PM', 'eveningMed', days)}
+              ${renderWeeklyRow('💧 Water Day', 'waterDay', days)}
+              ${renderWeeklyRow('💧 Water Night', 'waterNight', days)}
+              ${renderWeeklyRow('☀️ BP', 'vitals.day.bp', days)}
+              ${renderWeeklyRow('🌙 BP', 'vitals.night.bp', days)}
+              ${renderWeeklyRow('☀️ O₂', 'vitals.day.o2', days)}
+              ${renderWeeklyRow('🌙 O₂', 'vitals.night.o2', days)}
+              ${renderWeeklyRow('☀️ Urine', 'urineDay', days)}
+              ${renderWeeklyRow('🌙 Urine', 'urineNight', days)}
+              ${renderWeeklyRow('🦵 ROM', 'physio.rom', days)}
+              ${renderWeeklyRow('🚴 Cycling', 'physio.chest', days)}
+              ${renderWeeklyRow('🤸 Stretch', 'physio.stretch', days)}
+              ${renderWeeklyRow('💆 Massage', 'physio.massage', days)}
+              ${renderWeeklyRow('🌬 BiPAP Day', 'bipapDay', days)}
+              ${renderWeeklyRow('🌬 BiPAP Night', 'bipapNight', days)}
+              ${renderWeeklyRow('😴 Sleep Day', 'sleepDay', days)}
+              ${renderWeeklyRow('😴 Sleep Night', 'sleepNight', days)}
+              ${renderWeeklyRow('💊 K-Lyte', 'supplements.klyte', days)}
+              ${renderWeeklyRow('💊 Mg', 'supplements.magnesium', days)}
+              ${renderWeeklyRow('💊 Omega3', 'supplements.omega3', days)}
+              ${renderWeeklyRow('🩹 Diaper AM', 'hygiene.diaperAM', days)}
+              ${renderWeeklyRow('🩹 Diaper PM', 'hygiene.diaperPM', days)}
+              ${renderWeeklyRow('🪥 Brush', 'hygiene.brushCount', days)}
+              ${renderWeeklyRow('🪒 Shave', 'hygiene.shaved', days)}
+              ${renderWeeklyRow('🛁 Bath', 'hygiene.fullBath', days)}
+              ${renderWeeklyRow('👂 Nose/Ears', 'hygiene.cleanNoseEars', days)}
+              ${renderWeeklyRow('✂️ Nails', 'hygiene.trimNails', days)}
+              ${renderWeeklyRow('💇 Haircut', 'hygiene.haircut', days)}
             </tbody>
           </table>
         </div>
@@ -1429,7 +1429,7 @@
               val = count + '/2';
               color = count === 2 ? 'text-green-600' : count === 1 ? 'text-amber-600' : 'text-red-500';
             } else if (typeof obj === 'boolean') {
-              val = obj ? 'âœ“' : 'â€”';
+              val = obj ? '✓' : '—';
               color = obj ? 'text-green-600' : 'text-gray-300';
             } else if (typeof obj === 'number') {
               val = obj;
@@ -1720,7 +1720,7 @@
         });
       }
 
-      // Nutrition â€” % eaten buttons
+      // Nutrition — % eaten buttons
       document.querySelectorAll('.mealPctBtn').forEach(btn => {
         btn.addEventListener('click', () => {
           const mealId = btn.dataset.meal;
@@ -2175,7 +2175,7 @@
             const lowItems = stock.filter(s => s.qty <= 7);
             content.innerHTML = `
               <div class="space-y-2">
-                <p class="text-xs" style="color:#888;">Items to order (â‰¤7 days supply):</p>
+                <p class="text-xs" style="color:#888;">Items to order (≤7 days supply):</p>
                 ${lowItems.length > 0 ? lowItems.map(s => `
                   <div class="p-2 text-xs" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; display:flex; justify-content:space-between;">
                     <strong style="color:#ff9900;">${s.name}</strong>
@@ -2363,39 +2363,39 @@
       const date = state.currentDate;
       const compliance = Math.round(calculateCompliance() * 100);
       const lines = [];
-      lines.push('ðŸ“‹ *BABA DAILY REPORT*');
-      lines.push('ðŸ“… ' + date);
-      lines.push('â”â”â”â”â”â”â”â”â”â”â”â”â”â”â”');
+      lines.push('📋 *BABA DAILY REPORT*');
+      lines.push('📅 ' + date);
+      lines.push('━━━━━━━━━━━━━━━');
 
       // Compliance
-      lines.push('âœ… Compliance: ' + compliance + '%');
+      lines.push('✅ Compliance: ' + compliance + '%');
       lines.push('');
 
       // Vitals
-      lines.push('â™¥ï¸ *VITALS*');
+      lines.push('♥️ *VITALS*');
       if (d.vitals?.day) {
         const v = d.vitals.day;
-        lines.push('â˜€ï¸ Day: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + 'Â°F | Sugar ' + (v.sugar || '--'));
-      } else { lines.push('â˜€ï¸ Day: Not recorded'); }
+        lines.push('☀️ Day: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + '°F | Sugar ' + (v.sugar || '--'));
+      } else { lines.push('☀️ Day: Not recorded'); }
       if (d.vitals?.night) {
         const v = d.vitals.night;
-        lines.push('ðŸŒ™ Night: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + 'Â°F | Sugar ' + (v.sugar || '--'));
-      } else { lines.push('ðŸŒ™ Night: Not recorded'); }
+        lines.push('🌙 Night: BP ' + (v.bp || '--') + ' | HR ' + (v.hr || '--') + ' | O2 ' + (v.o2 || '--') + '% | Temp ' + (v.temp || '--') + '°F | Sugar ' + (v.sugar || '--'));
+      } else { lines.push('🌙 Night: Not recorded'); }
       lines.push('');
 
       // Medications
-      lines.push('ðŸ’Š *MEDICATIONS*');
-      lines.push('AM: ' + (d.morningMed ? 'âœ… Given' : 'âŒ Not given'));
-      lines.push('PM: ' + (d.eveningMed ? 'âœ… Given' : 'âŒ Not given'));
+      lines.push('💊 *MEDICATIONS*');
+      lines.push('AM: ' + (d.morningMed ? '✅ Given' : '❌ Not given'));
+      lines.push('PM: ' + (d.eveningMed ? '✅ Given' : '❌ Not given'));
       lines.push('');
 
       // Supplements
       const sup = d.supplements || {};
-      lines.push('ðŸ’Š *SUPPLEMENTS*');
-      lines.push('K-Lyte: ' + (sup.klyte ? sup.klyte + ' mL' : 'âŒ'));
-      lines.push('Omega-3: ' + (sup.omega3 ? 'âœ…' : 'âŒ'));
-      lines.push('Magnesium: ' + (sup.magnesium ? 'âœ…' : 'âŒ'));
-      lines.push('Ensure: ' + (sup.ensureDay ? 'â˜€ï¸âœ…' : 'â˜€ï¸âŒ') + ' ' + (sup.ensureNight ? 'ðŸŒ™âœ…' : 'ðŸŒ™âŒ'));
+      lines.push('💊 *SUPPLEMENTS*');
+      lines.push('K-Lyte: ' + (sup.klyte ? sup.klyte + ' mL' : '❌'));
+      lines.push('Omega-3: ' + (sup.omega3 ? '✅' : '❌'));
+      lines.push('Magnesium: ' + (sup.magnesium ? '✅' : '❌'));
+      lines.push('Ensure: ' + (sup.ensureDay ? '☀️✅' : '☀️❌') + ' ' + (sup.ensureNight ? '🌙✅' : '🌙❌'));
       lines.push('');
 
       // Fluids
@@ -2403,15 +2403,15 @@
       const totalW = wDay + wNight + (d.waterIntake || 0);
       const uDay = d.urineDay || 0, uNight = d.urineNight || 0;
       const totalU = uDay + uNight;
-      lines.push('ðŸ’§ *FLUIDS*');
-      lines.push('Intake: ' + totalW + '/1200 mL (â˜€ï¸' + wDay + ' ðŸŒ™' + wNight + ')');
-      lines.push('Output: ' + totalU + ' mL (â˜€ï¸' + uDay + ' ðŸŒ™' + uNight + ')');
+      lines.push('💧 *FLUIDS*');
+      lines.push('Intake: ' + totalW + '/1200 mL (☀️' + wDay + ' 🌙' + wNight + ')');
+      lines.push('Output: ' + totalU + ' mL (☀️' + uDay + ' 🌙' + uNight + ')');
       lines.push('Net: ' + (totalW - totalU >= 0 ? '+' : '') + (totalW - totalU) + ' mL');
       lines.push('');
 
       // Nutrition
       const meals = d.meals || {};
-      lines.push('ðŸ½ï¸ *NUTRITION*');
+      lines.push('🍽️ *NUTRITION*');
       ['breakfast', 'lunch', 'dinner', 'snacks'].forEach(m => {
         const meal = meals[m];
         const label = m.charAt(0).toUpperCase() + m.slice(1);
@@ -2426,16 +2426,16 @@
       // BiPAP & Sleep
       const bDay = d.bipapDay || 0, bNight = d.bipapNight || 0;
       const sDay = d.sleepDay || 0, sNight = d.sleepNight || 0;
-      lines.push('ðŸŒ¬ï¸ *BIPAP & SLEEP*');
-      lines.push('BiPAP: ' + (bDay + bNight) + '/8 hrs (â˜€ï¸' + bDay + ' ðŸŒ™' + bNight + ')');
-      lines.push('Sleep: ' + (sDay + sNight) + ' hrs (â˜€ï¸' + sDay + ' ðŸŒ™' + sNight + ')');
+      lines.push('🌬️ *BIPAP & SLEEP*');
+      lines.push('BiPAP: ' + (bDay + bNight) + '/8 hrs (☀️' + bDay + ' 🌙' + bNight + ')');
+      lines.push('Sleep: ' + (sDay + sNight) + ' hrs (☀️' + sDay + ' 🌙' + sNight + ')');
       lines.push('');
 
       // Activities
       const act = d.activities || {};
       const actDone = ['lounge','garden','park','drive','friends'].filter(a => act[a]);
       if (actDone.length > 0) {
-        lines.push('ðŸŒ³ *ACTIVITIES*');
+        lines.push('🌳 *ACTIVITIES*');
         lines.push(actDone.map(a => a.charAt(0).toUpperCase() + a.slice(1)).join(', '));
         if (act.note) lines.push('Note: ' + act.note);
         lines.push('');
@@ -2451,7 +2451,7 @@
       if (hyg.brushAM) hygDone.push('Brush AM');
       if (hyg.brushPM) hygDone.push('Brush PM');
       if (hygDone.length > 0) {
-        lines.push('ðŸš¿ *HYGIENE*');
+        lines.push('🚿 *HYGIENE*');
         lines.push(hygDone.join(', '));
         lines.push('');
       }
@@ -2459,7 +2459,7 @@
       // Red flags
       const flags = getRedFlags();
       if (flags.length > 0) {
-        lines.push('ðŸš¨ *ALERTS*');
+        lines.push('🚨 *ALERTS*');
         flags.forEach(f => lines.push(f.msg));
         lines.push('');
       }
@@ -2467,15 +2467,15 @@
       // Pharmacy
       const pharmacy = d.pharmacy || [];
       if (pharmacy.length > 0) {
-        lines.push('ðŸ¥ *PHARMACY & SUPPLIES*');
-        pharmacy.forEach(p => lines.push((p.urgent ? 'ðŸ”´ ' : 'â€¢ ') + p.name + (p.note ? ' (' + p.note + ')' : '')));
+        lines.push('🏥 *PHARMACY & SUPPLIES*');
+        pharmacy.forEach(p => lines.push((p.urgent ? '🔴 ' : '• ') + p.name + (p.note ? ' (' + p.note + ')' : '')));
         lines.push('');
       }
 
       // Notes
       const notes = d.notes || [];
       if (notes.length > 0) {
-        lines.push('ðŸ“ *NOTES*');
+        lines.push('📝 *NOTES*');
         notes.forEach(n => lines.push(n.author + ': ' + n.text));
       }
 
@@ -2510,7 +2510,7 @@
           failed++;
         }
       }
-      const status = 'ðŸ“¤ Report sent to ' + sent + '/' + recipients.length + ' recipients' + (failed > 0 ? ' (' + failed + ' failed)' : '');
+      const status = '📤 Report sent to ' + sent + '/' + recipients.length + ' recipients' + (failed > 0 ? ' (' + failed + ' failed)' : '');
       alert(status);
       state.alerts.lastReportSent = new Date().toISOString();
       localStorage.setItem('alerts_lastReportSent', state.alerts.lastReportSent);
