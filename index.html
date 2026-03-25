@@ -574,6 +574,7 @@
         { id: 'day_am_meds', time: '9:00', label: 'AM Medications', auto: !!data.morningMed },
         { id: 'day_breakfast', time: '10:00', label: 'Breakfast', auto: !!(meals.breakfast && meals.breakfast.pct !== undefined) },
         { id: 'day_physio', time: '1:00p', label: 'Physiotherapy Session', auto: Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length > 0 },
+        { id: 'day_diaper_mid', time: '2:00p', label: 'Check Diaper', auto: (hyg.diaperLog || []).filter(e => { const h = parseInt(e.time.split(':')[0]); return h >= 13 && h <= 15; }).length > 0 },
         { id: 'day_lunch', time: '2:00p', label: 'Lunch', auto: !!(meals.lunch && meals.lunch.pct !== undefined) },
         { id: 'day_nap', time: '3:00p', label: 'Afternoon Nap / Lounge', auto: !!act.lounge || !!cl.day_nap },
         { id: 'day_tea', time: '5:00p', label: 'Tea', auto: !!(meals.snacks && meals.snacks.pct !== undefined) || !!cl.day_tea }
@@ -585,6 +586,7 @@
         { id: 'night_dinner', time: '8:30p', label: 'Dinner', auto: !!(meals.dinner && meals.dinner.pct !== undefined) },
         { id: 'night_pm_meds', time: '9:00p', label: 'PM Meds + Omega 3 + Magnesium', auto: !!data.eveningMed },
         { id: 'night_bipap', time: '10:00p', label: 'BiPAP + Sleep', auto: (data.bipapNight || 0) > 0 },
+        { id: 'night_diaper_mid', time: '2:00a', label: 'Check Diaper', auto: (hyg.diaperLog || []).filter(e => { const h = parseInt(e.time.split(':')[0]); return h >= 1 && h <= 3; }).length > 0 },
         { id: 'night_urine', time: '7:30a', label: 'Empty Urine Bag (before shift end)', auto: !!cl.night_urine }
       ];
 
