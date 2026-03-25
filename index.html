@@ -130,9 +130,27 @@
   <div id="app"></div>
 
   <script>
+    // ============= PAKISTAN TIME HELPERS (UTC+5) =============
+    function nowPKT() {
+      return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Karachi' }));
+    }
+    function pktHours() { return nowPKT().getHours(); }
+    function pktTimeStr() {
+      const n = nowPKT();
+      return String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+    }
+    function pktTime12() {
+      return nowPKT().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Karachi' });
+    }
+    function pktDateStr() {
+      const n = nowPKT();
+      return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
+    }
+    function pktISO() { return pktISO(); }
+
     // ============= STATE MANAGEMENT =============
     const state = {
-      currentDate: (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })(),
+      currentDate: pktDateStr(),
       view: 'daily', // 'daily', 'weekly', 'monthly'
       activeTab: 'overview', // 'overview', 'meds', 'meals', 'care', 'physio', 'sleep'
       firebase: { configured: false, db: null },
@@ -298,8 +316,8 @@
       const totalUrine = (data.urineDay || 0) + (data.urineNight || 0);
       if (totalUrine > 0 && totalUrine < 500) flags.push({ type: 'fluid', msg: '⚠ Daily urine output low (' + totalUrine + ' mL)' });
       const totalBipap = (data.bipapDay || 0) + (data.bipapNight || 0);
-      if (totalBipap < 8 && new Date().getHours() >= 20) flags.push({ type: 'bipap', msg: '⚠ BiPAP below 8hr target (' + totalBipap + ' hrs)' });
-      const hr = new Date().getHours();
+      if (totalBipap < 8 && pktHours() >= 20) flags.push({ type: 'bipap', msg: '⚠ BiPAP below 8hr target (' + totalBipap + ' hrs)' });
+      const hr = pktHours();
       if (!data.vitals?.day && hr >= 10) flags.push({ type: 'vital', msg: '⚠ Day shift vitals not recorded' });
       if (!data.vitals?.night && hr >= 22) flags.push({ type: 'vital', msg: '⚠ Night shift vitals not recorded' });
 
@@ -358,7 +376,7 @@
           <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between" style="background:#fff; margin-top:1px;">
             <button id="prevDayBtn" class="bb-btn-secondary px-3 py-1.5 text-xs font-semibold" style="min-height:34px; border-radius:20px;">◀ Prev</button>
             <span style="font-size:13px; font-weight:600; color:#333;">${formatDate(state.currentDate)}</span>
-            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-1.5 text-xs font-semibold" style="min-height:34px; border-radius:20px;" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed; min-height:34px; border-radius:20px;" disabled' : ''}>Next ▶</button>
+            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-1.5 text-xs font-semibold" style="min-height:34px; border-radius:20px;" ${state.currentDate >= (pktDateStr()) ? 'style="opacity:0.3; cursor:not-allowed; min-height:34px; border-radius:20px;" disabled' : ''}>Next ▶</button>
           </div>
         `;
         html += renderDailyView();
@@ -562,7 +580,7 @@
         const h = parseInt(shift.startTime.split(':')[0]);
         currentShift = h >= 16 ? 'night' : 'day';
       } else {
-        const h = new Date().getHours();
+        const h = pktHours();
         currentShift = h >= 16 || h < 6 ? 'night' : 'day';
       }
 
@@ -645,7 +663,7 @@
         const h = parseInt(shift.startTime.split(':')[0]);
         currentShift = h >= 16 ? 'night' : 'day';
       } else {
-        const h = new Date().getHours();
+        const h = pktHours();
         currentShift = h >= 16 || h < 6 ? 'night' : 'day';
       }
 
@@ -1501,7 +1519,7 @@
       if (allDays.length === 0) {
         return '<p class="text-xs" style="color:#999;">No nursing notes found in any date.</p>';
       }
-      const today = (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })();
+      const today = pktDateStr();
       return allDays.map(day => {
         const isToday = day.date === today;
         const dayLabel = isToday ? 'TODAY' : getDayOfWeek(day.date);
@@ -1791,7 +1809,7 @@
             delete cl[id + '_time'];
           } else {
             cl[id] = true;
-            const now = new Date();
+            const now = nowPKT();
             cl[id + '_time'] = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
           }
           saveDayData();
@@ -1884,7 +1902,7 @@
       const nextDayBtn = rebind('nextDayBtn');
       if (nextDayBtn) {
         nextDayBtn.addEventListener('click', () => {
-          const today = (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })();
+          const today = pktDateStr();
           if (state.currentDate >= today) return; // Can't go past today
           state.currentDate = addDays(state.currentDate, 1);
           loadDayData();
@@ -1903,7 +1921,7 @@
 
           if (bp || hr || o2 || temp || sugar) {
             if (!state.dailyData.vitals) state.dailyData.vitals = {};
-            const now = new Date();
+            const now = nowPKT();
             state.dailyData.vitals[shift] = { bp, hr, o2, temp, sugar, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
             saveDayData();
           }
@@ -2013,7 +2031,7 @@
           if (!state.dailyData.meals) state.dailyData.meals = {};
           const noteEl = document.getElementById('meal_' + mealId + '_note');
           const note = noteEl ? noteEl.value.trim() : '';
-          const now = new Date();
+          const now = nowPKT();
           state.dailyData.meals[mealId] = { pct, note, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
           saveDayData();
         });
@@ -2024,7 +2042,7 @@
         document.getElementById('logDiaperChange').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           if (!state.dailyData.hygiene.diaperLog) state.dailyData.hygiene.diaperLog = [];
-          const now = new Date();
+          const now = nowPKT();
           const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
           state.dailyData.hygiene.diaperLog.push({ time: timeStr });
           saveDayData();
@@ -2135,7 +2153,7 @@
         document.getElementById('addRepoBtn').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           if (!state.dailyData.hygiene.repositioning) state.dailyData.hygiene.repositioning = [];
-          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const now = pktTime12();
           state.dailyData.hygiene.repositioning.push(now);
           saveDayData();
           render();
@@ -2146,7 +2164,7 @@
         document.getElementById('addHandCleanBtn').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           if (!state.dailyData.hygiene.handCleaning) state.dailyData.hygiene.handCleaning = [];
-          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const now = pktTime12();
           state.dailyData.hygiene.handCleaning.push(now);
           saveDayData();
           render();
@@ -2170,7 +2188,7 @@
           if (note) {
             if (!state.dailyData.physio) state.dailyData.physio = {};
             if (!state.dailyData.physio.log) state.dailyData.physio.log = [];
-            const now = new Date();
+            const now = nowPKT();
             state.dailyData.physio.log.push({ time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), note });
             saveDayData();
           }
@@ -2239,7 +2257,7 @@
       if (document.getElementById('logCatheterFlush')) {
         document.getElementById('logCatheterFlush').addEventListener('click', () => {
           if (!state.dailyData.catheterFlush) state.dailyData.catheterFlush = [];
-          const now = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const now = pktTime12();
           state.dailyData.catheterFlush.push(now);
           localStorage.setItem('lastCatheterFlushDate', state.currentDate);
           saveDayData();
@@ -2265,7 +2283,7 @@
             if (!state.dailyData.activities) state.dailyData.activities = {};
             state.dailyData.activities[id] = !state.dailyData.activities[id];
             if (state.dailyData.activities[id]) {
-              state.dailyData.activities[id + '_time'] = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+              state.dailyData.activities[id + '_time'] = pktTime12();
             } else {
               delete state.dailyData.activities[id + '_time'];
             }
@@ -2277,7 +2295,7 @@
         document.getElementById('saveActivityNote').addEventListener('click', () => {
           if (!state.dailyData.activities) state.dailyData.activities = {};
           state.dailyData.activities.note = document.getElementById('activityNote').value.trim();
-          state.dailyData.activities.noteTime = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+          state.dailyData.activities.noteTime = pktTime12();
           saveDayData();
         });
       }
@@ -2288,7 +2306,7 @@
         if (!name) return;
         const note = document.getElementById('pharmacyNote').value.trim();
         if (!state.dailyData.pharmacy) state.dailyData.pharmacy = [];
-        const now = new Date();
+        const now = nowPKT();
         const hr = now.getHours();
         const author = hr >= 8 && hr < 20 ? 'Day Nurse' : 'Night Nurse';
         state.dailyData.pharmacy.push({ name, note, urgent, author, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
@@ -2319,7 +2337,7 @@
 
           if (text) {
             if (!state.dailyData.notes) state.dailyData.notes = [];
-            state.dailyData.notes.push({ author, text, timestamp: new Date().toISOString() });
+            state.dailyData.notes.push({ author, text, timestamp: pktISO() });
             saveDayData();
             render();
           }
@@ -2367,7 +2385,7 @@
           if (!state.dailyData.nurseShift) state.dailyData.nurseShift = {};
           state.dailyData.nurseShift.active = true;
           state.dailyData.nurseShift.nurseName = name;
-          state.dailyData.nurseShift.startTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          state.dailyData.nurseShift.startTime = pktTime12();
           saveDayData();
           render();
         });
@@ -2384,7 +2402,7 @@
           if (missing.length > 0) {
             if (!confirm('Missing data: ' + missing.join(', ') + '\\n\\nEnd shift anyway?')) return;
           }
-          const endTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const endTime = pktTime12();
           if (!shift.history) shift.history = [];
           shift.history.push({
             name: shift.nurseName,
@@ -2406,7 +2424,7 @@
           const text = input ? input.value.trim() : '';
           if (!text) return;
           if (!state.dailyData.customTasks) state.dailyData.customTasks = [];
-          state.dailyData.customTasks.push({ text, done: false, time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) });
+          state.dailyData.customTasks.push({ text, done: false, time: pktTime12() });
           saveDayData();
           render();
         });
@@ -2624,7 +2642,7 @@
 
       // Compress to max 800px wide, 60% quality (~50-100KB per photo)
       compressImage(file, 800, 0.6).then((compressedDataUrl) => {
-        const photoTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        const photoTime = pktTime12();
 
         // Upload to Firebase Storage if configured
         if (state.firebase.configured && state.firebase.storage) {
@@ -2662,7 +2680,7 @@
         // Last resort: try to read file as raw data URL
         const fallbackReader = new FileReader();
         fallbackReader.onload = (e) => {
-          const photoTime = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+          const photoTime = pktTime12();
           savePhoto(e.target.result, photoTime);
         };
         fallbackReader.readAsDataURL(file);
@@ -2855,13 +2873,13 @@
       }
       const status = '📤 Report sent to ' + sent + '/' + recipients.length + ' recipients' + (failed > 0 ? ' (' + failed + ' failed)' : '');
       alert(status);
-      state.alerts.lastReportSent = new Date().toISOString();
+      state.alerts.lastReportSent = pktISO();
       localStorage.setItem('alerts_lastReportSent', state.alerts.lastReportSent);
     }
 
     // Auto-send check every minute
     setInterval(() => {
-      const now = new Date();
+      const now = nowPKT();
       const timeStr = now.toTimeString().slice(0, 5);
       const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
 
