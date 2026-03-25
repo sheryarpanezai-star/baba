@@ -117,7 +117,7 @@
     const state = {
       currentDate: (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })(),
       view: 'daily', // 'daily', 'weekly', 'monthly'
-      activeTab: 'care', // 'care', 'vitals', 'meds', 'fluids', 'equipment', 'notes'
+      activeTab: 'shift', // 'shift', 'meds', 'dailycare', 'activities'
       firebase: { configured: false, db: null },
       alerts: {
         phone: localStorage.getItem('alerts_phone') || '',
@@ -444,39 +444,33 @@
 
       // Tab definitions
       const tabs = [
-        { id: 'care', label: 'Care' },
-        { id: 'vitals', label: 'Vitals' },
-        { id: 'meds', label: 'Meds' },
-        { id: 'fluids', label: 'Fluids' },
-        { id: 'equipment', label: 'Equipment' },
-        { id: 'notes', label: 'Notes' }
+        { id: 'shift', label: 'Shift' },
+        { id: 'meds', label: 'Medications' },
+        { id: 'dailycare', label: 'Daily Care' },
+        { id: 'activities', label: 'Activities' }
       ];
 
       // Tab content mapping
       const tabContent = {
-        care: `
+        shift: `
           ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
-          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
-          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
-          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
-        `,
-        vitals: `
           ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
-          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
+          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
         `,
         meds: `
           ${renderCard('Medications', '💊', renderMedicationsCard(data))}
           ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
-        `,
-        fluids: `
-          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
-        `,
-        equipment: `
-          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
           ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
         `,
-        notes: `
-          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+        dailycare: `
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
+          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
+          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
+          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
+        `,
+        activities: `
+          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
           ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
           ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
         `
@@ -490,7 +484,7 @@
           ${tabs.map(tab => `<div class="care-tab ${t === tab.id ? 'active' : ''}" data-care-tab="${tab.id}">${tab.label}</div>`).join('')}
         </div>
         <div class="max-w-6xl mx-auto px-4 py-3 grid-responsive">
-          ${tabContent[t] || tabContent.care}
+          ${tabContent[t] || tabContent.shift}
         </div>
       `;
     }
