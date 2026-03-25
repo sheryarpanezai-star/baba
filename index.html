@@ -533,11 +533,29 @@
       const dayV = vitals.day || null;
       const nightV = vitals.night || null;
 
+      // Detect current shift: use active shift start time, or current hour
+      const shift = data.nurseShift || {};
+      let currentShift = 'day';
+      if (shift.active && shift.startTime) {
+        const h = parseInt(shift.startTime.split(':')[0]);
+        currentShift = h >= 16 ? 'night' : 'day';
+      } else {
+        const h = new Date().getHours();
+        currentShift = h >= 16 || h < 6 ? 'night' : 'day';
+      }
+
+      const myV = currentShift === 'day' ? dayV : nightV;
+      const myLabel = currentShift === 'day' ? 'Day Shift' : 'Night Shift';
+      const myEmoji = currentShift === 'day' ? '☀️' : '🌙';
+      const otherV = currentShift === 'day' ? nightV : dayV;
+      const otherLabel = currentShift === 'day' ? 'Night Shift' : 'Day Shift';
+      const otherEmoji = currentShift === 'day' ? '🌙' : '☀️';
+
       function renderShiftBlock(label, emoji, v) {
-        if (!v) return `<div style="background:#f5f5f5; border:1px solid #dde; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#999;">${emoji} ${label} — NOT RECORDED</span></div>`;
+        if (!v) return `<div style="background:#f5f5f5; border:1px solid #e8ecf0; border-radius:8px; padding:10px; text-align:center;"><span style="font-size:11px; color:#999;">${emoji} ${label} — NOT RECORDED</span></div>`;
         return `
-          <div style="background:#fff; border:1px solid #d0d5dd; border-radius:2px; padding:8px;">
-            <p style="font-size:11px; font-weight:700; color:#1a73e8; margin-bottom:4px;">${emoji} ${label} <span style="color:#999; font-weight:400;">${v.time || ''}</span></p>
+          <div style="background:#fff; border:1px solid #e8ecf0; border-radius:8px; padding:10px;">
+            <p style="font-size:11px; font-weight:700; color:#1a73e8; margin-bottom:6px;">${emoji} ${label} <span style="color:#999; font-weight:400;">${v.time || ''}</span></p>
             <div class="grid grid-cols-3 gap-1">
               ${renderVitalReading('BP', v.bp || '--', 'mmHg', getVitalStatus('bp', v.bp))}
               ${renderVitalReading('HR', v.hr || '0', 'bpm', getVitalStatus('hr', v.hr))}
@@ -550,20 +568,35 @@
 
       return `
         <div class="space-y-3">
-          ${renderShiftBlock('Day Shift', '☀️', dayV)}
-          ${renderShiftBlock('Night Shift', '🌙', nightV)}
-          <form id="vitalsForm" class="space-y-2 mt-3 pt-3" style="border-top:1px solid #d0d5dd;">
-            <select id="vitals_shift" class="w-full border rounded px-2 py-2 text-xs font-bold">
-              <option value="day"${dayV ? ' disabled' : ''}>☀️ DAY SHIFT${dayV ? ' (RECORDED)' : ''}</option>
-              <option value="night"${nightV ? ' disabled' : ''}>🌙 NIGHT SHIFT${nightV ? ' (RECORDED)' : ''}</option>
-            </select>
-            <input type="text" id="vitals_bp" placeholder="BP (e.g., 120/80)" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_hr" placeholder="Heart Rate (bpm)" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_o2" placeholder="O₂ %" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_temp" placeholder="Temp °F (e.g., 98.6)" step="0.1" class="w-full border rounded px-2 py-1 text-xs">
-            <input type="number" id="vitals_sugar" placeholder="Blood Sugar (mg/dL)" class="w-full border rounded px-2 py-1 text-xs">
-            <button type="button" id="addVitalsBtn" class="bb-btn w-full px-2 py-2 text-xs"${dayV && nightV ? ' disabled style="opacity:0.3"' : ''}>SAVE VITALS</button>
-          </form>
+          <!-- Current shift vitals (prominent) -->
+          ${renderShiftBlock(myLabel, myEmoji, myV)}
+
+          <!-- Input form for current shift only -->
+          ${!myV ? `
+            <form id="vitalsForm" class="space-y-2">
+              <input type="hidden" id="vitals_shift" value="${currentShift}">
+              <input type="text" id="vitals_bp" placeholder="BP (e.g., 120/80)" class="w-full border rounded px-2 py-1 text-xs">
+              <input type="number" id="vitals_hr" placeholder="Heart Rate (bpm)" class="w-full border rounded px-2 py-1 text-xs">
+              <input type="number" id="vitals_o2" placeholder="O₂ %" class="w-full border rounded px-2 py-1 text-xs">
+              <input type="number" id="vitals_temp" placeholder="Temp °F (e.g., 98.6)" step="0.1" class="w-full border rounded px-2 py-1 text-xs">
+              <input type="number" id="vitals_sugar" placeholder="Blood Sugar (mg/dL)" class="w-full border rounded px-2 py-1 text-xs">
+              <button type="button" id="addVitalsBtn" class="bb-btn w-full px-2 py-2 text-xs">SAVE VITALS</button>
+            </form>
+          ` : ''}
+
+          <!-- Other shift vitals (collapsed/smaller) -->
+          ${otherV ? `
+            <div style="border-top:1px solid #e8ecf0; padding-top:8px;">
+              <p style="font-size:10px; color:#999; margin-bottom:4px;">${otherEmoji} ${otherLabel} (recorded)</p>
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <span style="font-size:10px; color:#555;">BP: ${otherV.bp || '--'}</span>
+                <span style="font-size:10px; color:#555;">HR: ${otherV.hr || '--'}</span>
+                <span style="font-size:10px; color:#555;">O₂: ${otherV.o2 || '--'}%</span>
+                <span style="font-size:10px; color:#555;">Temp: ${otherV.temp || '--'}°F</span>
+                <span style="font-size:10px; color:#555;">Sugar: ${otherV.sugar || '--'}</span>
+              </div>
+            </div>
+          ` : ''}
         </div>
       `;
     }
