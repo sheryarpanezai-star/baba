@@ -107,6 +107,23 @@
     .care-tab { padding: 10px 14px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all 0.2s; background: none; border-left: none; border-right: none; border-top: none; min-height: 38px; }
     .care-tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
     .care-tab:hover:not(.active) { color: #1a73e8; }
+    /* Timeline checklist */
+    .tl-wrap { position: relative; }
+    .tl-item { display: flex; gap: 10px; padding-bottom: 14px; position: relative; }
+    .tl-item:last-child { padding-bottom: 0; }
+    .tl-item::before { content: ''; position: absolute; left: 14px; top: 28px; bottom: 0; width: 2px; background: #e8ecf0; }
+    .tl-item:last-child::before { display: none; }
+    .tl-dot { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 12px; z-index: 1; cursor: pointer; transition: all 0.2s; }
+    .tl-done { background: #e6f4ea; border: 1.5px solid #137333; }
+    .tl-current { background: #e8f0fe; border: 2px solid #1a73e8; animation: tlPulse 2s infinite; }
+    .tl-pending { background: #f5f5f5; border: 1.5px solid #ddd; }
+    @keyframes tlPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(26,115,232,0.3); } 50% { box-shadow: 0 0 0 5px rgba(26,115,232,0); } }
+    .tl-time { font-size: 10px; font-weight: 600; color: #888; }
+    .tl-label { font-size: 12px; font-weight: 600; color: #333; }
+    .tl-label.is-done { color: #137333; }
+    .tl-label.is-cur { color: #1a73e8; }
+    .tl-label.is-pend { color: #999; }
+    .tl-done-badge { font-size: 9px; color: #137333; background: #e6f4ea; padding: 1px 5px; border-radius: 4px; margin-left: 4px; }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -456,6 +473,7 @@
         // Overview: shift, vitals, hygiene (diaper changes happen throughout), notes, tasks
         overview: `
           ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
+          ${renderCard('Shift Checklist', '📋', renderShiftChecklist(data))}
           ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
           ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
           ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
@@ -524,6 +542,91 @@
             </div>
           </div>
           <span style="font-size:13px; font-weight:700; color:${color}; min-width:40px; text-align:right;">${Math.round(pct * 100)}%</span>
+        </div>
+      `;
+    }
+
+    function renderShiftChecklist(data) {
+      const shift = data.nurseShift || {};
+      const hyg = data.hygiene || {};
+      const vitals = data.vitals || {};
+      const meals = data.meals || {};
+      const physio = data.physio || {};
+      const sup = data.supplements || {};
+      const act = data.activities || {};
+      const cl = data.shiftChecklist || {};
+
+      // Detect current shift
+      let currentShift = 'day';
+      if (shift.active && shift.startTime) {
+        const h = parseInt(shift.startTime.split(':')[0]);
+        currentShift = h >= 16 ? 'night' : 'day';
+      } else {
+        const h = new Date().getHours();
+        currentShift = h >= 16 || h < 6 ? 'night' : 'day';
+      }
+
+      // Define checklist items per shift with auto-check conditions
+      const dayItems = [
+        { id: 'day_diaper_am', time: '8:00', label: 'Diaper Change + Empty Urine Bag', auto: (hyg.diaperLog || []).length > 0 },
+        { id: 'day_handoff', time: '8:15', label: 'Night Nurse Handoff', auto: !!(shift.history || []).find(h => { const hr = parseInt((h.end || '').split(':')[0]); return hr >= 7 && hr <= 10; }) },
+        { id: 'day_vitals', time: '8:30', label: 'Take Vitals', auto: !!vitals.day },
+        { id: 'day_am_meds', time: '9:00', label: 'AM Medications', auto: !!data.morningMed },
+        { id: 'day_breakfast', time: '10:00', label: 'Breakfast', auto: !!(meals.breakfast && meals.breakfast.pct !== undefined) },
+        { id: 'day_physio', time: '1:00p', label: 'Physiotherapy Session', auto: Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length > 0 },
+        { id: 'day_lunch', time: '2:00p', label: 'Lunch', auto: !!(meals.lunch && meals.lunch.pct !== undefined) },
+        { id: 'day_nap', time: '3:00p', label: 'Afternoon Nap / Lounge', auto: !!act.lounge || !!cl.day_nap },
+        { id: 'day_tea', time: '5:00p', label: 'Tea', auto: !!(meals.snacks && meals.snacks.pct !== undefined) || !!cl.day_tea }
+      ];
+
+      const nightItems = [
+        { id: 'night_diaper', time: '8:00p', label: 'Diaper Change (with day nurse)', auto: (hyg.diaperLog || []).filter(e => { const h = parseInt(e.time.split(':')[0]); return h >= 19 || h < 6; }).length > 0 },
+        { id: 'night_vitals', time: '8:15p', label: 'Take Vitals', auto: !!vitals.night },
+        { id: 'night_dinner', time: '8:30p', label: 'Dinner', auto: !!(meals.dinner && meals.dinner.pct !== undefined) },
+        { id: 'night_pm_meds', time: '9:00p', label: 'PM Meds + Omega 3 + Magnesium', auto: !!data.eveningMed },
+        { id: 'night_bipap', time: '10:00p', label: 'BiPAP + Sleep', auto: (data.bipapNight || 0) > 0 },
+        { id: 'night_urine', time: '7:30a', label: 'Empty Urine Bag (before shift end)', auto: !!cl.night_urine }
+      ];
+
+      const items = currentShift === 'day' ? dayItems : nightItems;
+      const shiftLabel = currentShift === 'day' ? '☀️ Day Shift' : '🌙 Night Shift';
+
+      // Count done (auto-checked or manually checked)
+      const doneCount = items.filter(it => it.auto || cl[it.id]).length;
+      const total = items.length;
+      const pct = Math.round((doneCount / total) * 100);
+      const barColor = pct > 80 ? '#137333' : pct > 50 ? '#1a73e8' : '#c5221f';
+
+      // Find first non-done item as "current"
+      const firstPendingIdx = items.findIndex(it => !it.auto && !cl[it.id]);
+
+      return `
+        <div class="space-y-2">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span style="font-size:12px; font-weight:700; color:#1a73e8;">${shiftLabel} Checklist</span>
+            <span style="font-size:10px; color:#888;">${doneCount}/${total}</span>
+          </div>
+          <div style="background:#e8ecf0; height:5px; border-radius:5px; overflow:hidden;">
+            <div style="height:100%; width:${pct}%; background:${barColor}; border-radius:5px; transition:width 0.5s;"></div>
+          </div>
+          <div class="tl-wrap" style="padding-top:4px;">
+            ${items.map((it, idx) => {
+              const isDone = it.auto || cl[it.id];
+              const isCurrent = !isDone && idx === firstPendingIdx;
+              const dotClass = isDone ? 'tl-done' : isCurrent ? 'tl-current' : 'tl-pending';
+              const dotInner = isDone ? '<span style="color:#137333; font-weight:700; font-size:12px;">✓</span>' : isCurrent ? '<span style="color:#1a73e8; font-weight:700; font-size:11px;">→</span>' : '';
+              const labelClass = isDone ? 'is-done' : isCurrent ? 'is-cur' : 'is-pend';
+              const doneTime = cl[it.id + '_time'] || '';
+              return `
+              <div class="tl-item">
+                <div class="tl-dot ${dotClass} checklistDot" data-cl-id="${it.id}" title="Tap to toggle">${dotInner}</div>
+                <div style="flex:1; padding-top:3px;">
+                  <div class="tl-time">${it.time}</div>
+                  <div class="tl-label ${labelClass}">${it.label}${isDone && doneTime ? '<span class="tl-done-badge">' + doneTime + '</span>' : ''}</div>
+                </div>
+              </div>`;
+            }).join('')}
+          </div>
         </div>
       `;
     }
@@ -1671,6 +1774,25 @@
       document.querySelectorAll('.care-tab').forEach(tab => {
         tab.addEventListener('click', (e) => {
           state.activeTab = e.target.dataset.careTab;
+          render();
+        });
+      });
+
+      // Shift checklist dot toggles
+      document.querySelectorAll('.checklistDot').forEach(dot => {
+        dot.addEventListener('click', (e) => {
+          const id = e.currentTarget.dataset.clId;
+          if (!state.dailyData.shiftChecklist) state.dailyData.shiftChecklist = {};
+          const cl = state.dailyData.shiftChecklist;
+          if (cl[id]) {
+            delete cl[id];
+            delete cl[id + '_time'];
+          } else {
+            cl[id] = true;
+            const now = new Date();
+            cl[id + '_time'] = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+          }
+          saveDayData();
           render();
         });
       });
