@@ -447,17 +447,17 @@
         { id: 'overview', label: 'Overview' },
         { id: 'meds', label: 'Meds' },
         { id: 'meals', label: 'Meals' },
-        { id: 'care', label: 'Care' },
         { id: 'physio', label: 'Physio' },
         { id: 'sleep', label: 'Sleep' }
       ];
 
       // Tab content mapping
       const tabContent = {
-        // Overview: nurse shift, vitals, notes, tasks
+        // Overview: shift, vitals, hygiene (diaper changes happen throughout), notes, tasks
         overview: `
           ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
           ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
           ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
           ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
           ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
@@ -472,10 +472,6 @@
         meals: `
           ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
           ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
-        `,
-        // Hygiene/diaper care
-        care: `
-          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
         `,
         // Physiotherapy + activities (lounge, outdoor)
         physio: `
