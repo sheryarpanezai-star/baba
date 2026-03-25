@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="Akram Khan Panezai">
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="theme-color" content="#f0f2f5">
   <title>Akram Khan Panezai</title>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
@@ -16,92 +16,92 @@
     @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
     * { -webkit-user-select: none; user-select: none; font-family: 'JetBrains Mono', 'Courier New', monospace; box-sizing: border-box; }
     input, textarea, select { -webkit-user-select: text; user-select: text; }
-    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #0a0a0a !important; color: #ff9900; }
+    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #f0f2f5 !important; color: #1a73e8; }
     .safe-area-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
     @supports (padding: max(0px)) {
       body { padding-left: max(0px, env(safe-area-inset-left)); padding-right: max(0px, env(safe-area-inset-right)); }
     }
     button { min-height: 44px; }
-    input, textarea, select { min-height: 44px; font-size: 16px !important; background: #1a1a1a !important; color: #ff9900 !important; border-color: #333 !important; }
-    input::placeholder, textarea::placeholder { color: #555 !important; }
+    input, textarea, select { min-height: 44px; font-size: 16px !important; background: #fff !important; color: #333 !important; border-color: #d0d5dd !important; }
+    input::placeholder, textarea::placeholder { color: #999 !important; }
     .compliance-ring { display: flex; align-items: center; justify-content: center; }
     .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: .5; }
     }
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 40; }
-    .modal { position: fixed; bottom: 0; left: 0; right: 0; background: #111; border-radius: 0.5rem 0.5rem 0 0; max-height: 90vh; overflow-y: auto; z-index: 50; border-top: 2px solid #ff9900; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 40; }
+    .modal { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 0.5rem 0.5rem 0 0; max-height: 90vh; overflow-y: auto; z-index: 50; border-top: 2px solid #1a73e8; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
     .grid-responsive { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; }
     @media (max-width: 768px) {
       .grid-responsive { grid-template-columns: 1fr; }
     }
-    /* Bloomberg card overrides */
-    .bb-card { background: #111 !important; border: 1px solid #222 !important; border-left: 3px solid #ff9900 !important; border-radius: 4px !important; overflow: hidden; min-width: 0; }
-    .bb-card-header { background: #1a1a1a !important; border-bottom: 1px solid #222 !important; }
-    .bb-btn { background: #ff9900 !important; color: #000 !important; font-weight: 700; border-radius: 2px !important; text-transform: uppercase; letter-spacing: 0.5px; }
-    .bb-btn:active { background: #cc7a00 !important; }
-    .bb-btn-secondary { background: #1a1a1a !important; color: #ff9900 !important; border: 1px solid #333 !important; border-radius: 2px !important; }
-    .bb-toggle-on { background: #0a2e0a !important; border-color: #00cc00 !important; color: #00ff00 !important; }
-    .bb-toggle-off { background: #1a1a1a !important; border-color: #333 !important; color: #666 !important; }
-    .bb-progress-track { background: #1a1a1a !important; border-radius: 2px !important; }
-    .bb-progress-fill { border-radius: 2px !important; }
-    .bb-vital-green { background: #0a1f0a !important; color: #00ff00 !important; }
-    .bb-vital-orange { background: #1f1a0a !important; color: #ff9900 !important; }
-    .bb-vital-red { background: #1f0a0a !important; color: #ff3333 !important; }
-    .bb-vital-gray { background: #1a1a1a !important; color: #555 !important; }
+    /* Clinical White card styles */
+    .bb-card { background: #fff !important; border: 1px solid #dde !important; border-left: 3px solid #1a73e8 !important; border-radius: 6px !important; overflow: hidden; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .bb-card-header { background: #f5f8ff !important; border-bottom: 1px solid #e8ecf0 !important; }
+    .bb-btn { background: #1a73e8 !important; color: #fff !important; font-weight: 700; border-radius: 4px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bb-btn:active { background: #1557b0 !important; }
+    .bb-btn-secondary { background: #f5f5f5 !important; color: #1a73e8 !important; border: 1px solid #d0d5dd !important; border-radius: 4px !important; }
+    .bb-toggle-on { background: #e6f4ea !important; border-color: #137333 !important; color: #137333 !important; }
+    .bb-toggle-off { background: #f5f5f5 !important; border-color: #d0d5dd !important; color: #999 !important; }
+    .bb-progress-track { background: #e8ecf0 !important; border-radius: 4px !important; }
+    .bb-progress-fill { border-radius: 4px !important; }
+    .bb-vital-green { background: #e6f4ea !important; color: #137333 !important; }
+    .bb-vital-orange { background: #fef7e0 !important; color: #e8710a !important; }
+    .bb-vital-red { background: #fce8e6 !important; color: #c5221f !important; }
+    .bb-vital-gray { background: #f5f5f5 !important; color: #999 !important; }
     /* Table overrides for weekly view */
     table { border-collapse: collapse; }
-    th, td { border-color: #333 !important; }
-    th { background: #1a1a1a !important; color: #ff9900 !important; }
-    td { background: #111 !important; }
+    th, td { border-color: #d0d5dd !important; }
+    th { background: #f5f8ff !important; color: #1a73e8 !important; }
+    td { background: #fff !important; }
     /* Scrollbar */
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #0a0a0a; }
-    ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: #f0f2f5; }
+    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
     /* Alert banner */
-    .bb-alert { background: #1f0a0a !important; border-left: 3px solid #ff3333 !important; }
-    .bb-setup { background: #1f1a0a !important; border-left: 3px solid #ff9900 !important; }
-    /* Global overrides for remaining Tailwind light classes */
-    .bg-white, .bg-gray-50, .bg-gray-100 { background: #111 !important; }
-    .bg-green-50, .bg-green-100 { background: #0a1f0a !important; }
-    .bg-amber-50, .bg-yellow-50 { background: #1f1a0a !important; }
-    .bg-red-50, .bg-red-100 { background: #1f0a0a !important; }
-    .bg-blue-50, .bg-indigo-50, .bg-purple-50 { background: #0a0a1f !important; }
-    .text-gray-800, .text-gray-700, .text-gray-600 { color: #ccc !important; }
-    .text-gray-500, .text-gray-400, .text-gray-300 { color: #888 !important; }
-    .text-green-500, .text-green-600, .text-green-700 { color: #00ff00 !important; }
-    .text-amber-600, .text-amber-700, .text-yellow-700 { color: #ff9900 !important; }
-    .text-red-500, .text-red-600, .text-red-800, .text-red-900 { color: #ff3333 !important; }
-    .text-blue-600, .text-blue-700, .text-violet-600 { color: #00ccff !important; }
-    .text-indigo-700, .text-purple-700 { color: #9999ff !important; }
-    .border-gray-200, .border-gray-300, .border-gray-100 { border-color: #333 !important; }
-    .border-green-500, .border-green-200 { border-color: #00cc00 !important; }
-    .border-amber-200 { border-color: #cc7a00 !important; }
-    .border-red-200 { border-color: #cc3333 !important; }
-    .bg-blue-500, .bg-blue-400, .bg-blue-600 { background: #ff9900 !important; color: #000 !important; }
-    .bg-green-500 { background: #00cc00 !important; color: #000 !important; }
-    .bg-purple-500 { background: #9966ff !important; color: #000 !important; }
-    .bg-amber-500 { background: #ff9900 !important; color: #000 !important; }
-    .bg-teal-500 { background: #00cc99 !important; color: #000 !important; }
-    .bg-gray-200 { background: #1a1a1a !important; }
-    .border-t { border-color: #333 !important; }
-    .border-b { border-color: #333 !important; }
-    .border { border-color: #333 !important; }
-    .rounded-lg, .rounded-xl { border-radius: 2px !important; }
-    .rounded-full { border-radius: 2px !important; }
-    .shadow-sm { box-shadow: none !important; }
-    label { color: #ccc; }
-    a { color: #00ccff !important; }
+    .bb-alert { background: #fce8e6 !important; border-left: 3px solid #c5221f !important; }
+    .bb-setup { background: #fef7e0 !important; border-left: 3px solid #e8710a !important; }
+    /* Global overrides for Tailwind classes */
+    .bg-white, .bg-gray-50, .bg-gray-100 { background: #fff !important; }
+    .bg-green-50, .bg-green-100 { background: #e6f4ea !important; }
+    .bg-amber-50, .bg-yellow-50 { background: #fef7e0 !important; }
+    .bg-red-50, .bg-red-100 { background: #fce8e6 !important; }
+    .bg-blue-50, .bg-indigo-50, .bg-purple-50 { background: #e8f0fe !important; }
+    .text-gray-800, .text-gray-700, .text-gray-600 { color: #333 !important; }
+    .text-gray-500, .text-gray-400, .text-gray-300 { color: #666 !important; }
+    .text-green-500, .text-green-600, .text-green-700 { color: #137333 !important; }
+    .text-amber-600, .text-amber-700, .text-yellow-700 { color: #e8710a !important; }
+    .text-red-500, .text-red-600, .text-red-800, .text-red-900 { color: #c5221f !important; }
+    .text-blue-600, .text-blue-700, .text-violet-600 { color: #1a73e8 !important; }
+    .text-indigo-700, .text-purple-700 { color: #7b1fa2 !important; }
+    .border-gray-200, .border-gray-300, .border-gray-100 { border-color: #d0d5dd !important; }
+    .border-green-500, .border-green-200 { border-color: #137333 !important; }
+    .border-amber-200 { border-color: #e8710a !important; }
+    .border-red-200 { border-color: #c5221f !important; }
+    .bg-blue-500, .bg-blue-400, .bg-blue-600 { background: #1a73e8 !important; color: #fff !important; }
+    .bg-green-500 { background: #137333 !important; color: #fff !important; }
+    .bg-purple-500 { background: #7b1fa2 !important; color: #fff !important; }
+    .bg-amber-500 { background: #e8710a !important; color: #fff !important; }
+    .bg-teal-500 { background: #00897b !important; color: #fff !important; }
+    .bg-gray-200 { background: #e8ecf0 !important; }
+    .border-t { border-color: #d0d5dd !important; }
+    .border-b { border-color: #d0d5dd !important; }
+    .border { border-color: #d0d5dd !important; }
+    .rounded-lg, .rounded-xl { border-radius: 6px !important; }
+    .rounded-full { border-radius: 6px !important; }
+    .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important; }
+    label { color: #444; }
+    a { color: #1a73e8 !important; }
     /* Font overrides */
     h1, h2, h3, p, span, button, label, td, th, div { font-family: 'JetBrains Mono', 'Courier New', monospace !important; }
     /* Settings modal */
-    .modal .sticky { background: #111 !important; border-color: #333 !important; }
-    .modal h2 { color: #ff9900 !important; }
-    .modal label { color: #ccc !important; }
+    .modal .sticky { background: #fff !important; border-color: #d0d5dd !important; }
+    .modal h2 { color: #1a73e8 !important; }
+    .modal label { color: #444 !important; }
   </style>
 </head>
-<body class="bg-black">
+<body class="bg-gray-100">
   <div id="app"></div>
 
   <script>
@@ -293,18 +293,18 @@
 
       // Header
       html += `
-        <div class="sticky top-0 z-30" style="background:#0a0a0a; border-bottom: 1px solid #333;">
+        <div class="sticky top-0 z-30" style="background:#f0f2f5; border-bottom: 1px solid #333;">
           <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <div>
-              <h1 class="text-lg font-bold" style="color:#ff9900; letter-spacing:2px;">AKRAM KHAN <span style="color:#00cc00;">PANEZAI</span></h1>
-              <p class="text-xs" style="color:#555;">HEALTH MONITORING SYSTEM</p>
+              <h1 class="text-lg font-bold" style="color:#1a73e8; letter-spacing:2px;">AKRAM KHAN <span style="color:#137333;">PANEZAI</span></h1>
+              <p class="text-xs" style="color:#999;">HEALTH MONITORING SYSTEM</p>
             </div>
-            <button id="settingsBtn" class="text-xl p-2" style="color:#ff9900;">⚙</button>
+            <button id="settingsBtn" class="text-xl p-2" style="color:#1a73e8;">⚙</button>
           </div>
           <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-1">
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'daily' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'daily' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="daily">Daily</button>
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'weekly' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'weekly' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="weekly">Weekly</button>
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'monthly' ? '#ff9900' : '#1a1a1a'}; color:${state.view === 'monthly' ? '#000' : '#ff9900'}; border:1px solid #333; border-radius:2px;" data-view="monthly">Monthly</button>
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'daily' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'daily' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="daily">Daily</button>
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'weekly' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'weekly' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="weekly">Weekly</button>
+            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'monthly' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'monthly' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="monthly">Monthly</button>
           </div>
         </div>
       `;
@@ -318,7 +318,7 @@
       if (flags.length > 0) {
         html += `
           <div class="bb-alert p-3 max-w-6xl mx-auto mt-2">
-            <p class="font-bold text-xs uppercase mb-2" style="color:#ff3333; letter-spacing:1px;">▸ ALERTS</p>
+            <p class="font-bold text-xs uppercase mb-2" style="color:#c5221f; letter-spacing:1px;">▸ ALERTS</p>
             <div class="space-y-1">
               ${flags.map(f => `<p class="text-xs" style="color:#ff6666;">${f.msg}</p>`).join('')}
             </div>
@@ -331,7 +331,7 @@
         html += `
           <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">◀ PREV</button>
-            <span class="font-bold text-sm" style="color:#ff9900;">${formatDate(state.currentDate)}</span>
+            <span class="font-bold text-sm" style="color:#1a73e8;">${formatDate(state.currentDate)}</span>
             <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed;" disabled' : ''}>NEXT ▶</button>
           </div>
         `;
@@ -357,7 +357,7 @@
             <div class="flex items-center gap-3 flex-1">
               <span class="text-2xl">⚙️</span>
               <div>
-                <p class="font-semibold" style="color:#ff9900;">SETUP REQUIRED: Firebase Not Configured</p>
+                <p class="font-semibold" style="color:#1a73e8;">SETUP REQUIRED: Firebase Not Configured</p>
                 <p class="text-sm text-amber-800">This app uses Firebase for real-time data sync. Click to configure.</p>
               </div>
             </div>
@@ -390,36 +390,36 @@
       return `
         <div class="modal-backdrop" id="settingsBackdrop"></div>
         <div class="modal">
-          <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#111; border-bottom:1px solid #333;">
-            <h2 class="text-sm font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">⚙ SETTINGS & ALERTS</h2>
-            <button id="closeSettingsBtn" style="color:#ff9900; font-size:20px;">✕</button>
+          <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#fff; border-bottom:1px solid #d0d5dd;">
+            <h2 class="text-sm font-bold uppercase" style="color:#1a73e8; letter-spacing:1px;">⚙ SETTINGS & ALERTS</h2>
+            <button id="closeSettingsBtn" style="color:#1a73e8; font-size:20px;">✕</button>
           </div>
           <div class="p-4 space-y-4 safe-area-pb">
-            <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">DAILY REPORT (WHATSAPP)</p>
+            <p class="text-xs font-bold uppercase" style="color:#1a73e8; letter-spacing:1px;">DAILY REPORT (WHATSAPP)</p>
             <div>
-              <label class="block text-xs font-semibold mb-1" style="color:#888;">Family Recipients (one per line: Name,Phone,APIKey)</label>
+              <label class="block text-xs font-semibold mb-1" style="color:#999;">Family Recipients (one per line: Name,Phone,APIKey)</label>
               <textarea id="recipientsInput" rows="4" placeholder="Sheryar,+923001234567,apikey123&#10;Ahmed,+923009876543,apikey456" class="w-full border rounded px-3 py-2 text-xs" style="font-family:monospace;">${state.alerts.recipients.map(r => r.name + ',' + r.phone + ',' + r.apiKey).join('\\n')}</textarea>
-              <p style="font-size:9px; color:#555; margin-top:4px;">Each person needs their own CallMeBot API key. Send "I allow callmebot to send me messages" to +34 644 71 98 38 on WhatsApp to get one.</p>
+              <p style="font-size:9px; color:#999; margin-top:4px;">Each person needs their own CallMeBot API key. Send "I allow callmebot to send me messages" to +34 644 71 98 38 on WhatsApp to get one.</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-1" style="color:#888;">Auto-send Report Time</label>
+              <label class="block text-xs font-semibold mb-1" style="color:#999;">Auto-send Report Time</label>
               <input type="time" id="reportTimeInput" value="${state.alerts.reportTime}" class="w-full border rounded px-3 py-2">
             </div>
-            <button id="sendReportNowBtn" class="w-full px-3 py-2 text-xs font-bold" style="background:#1a3a1a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer;">📤 SEND REPORT NOW</button>
+            <button id="sendReportNowBtn" class="w-full px-3 py-2 text-xs font-bold" style="background:#1a3a1a; border:1px solid #137333; border-radius:2px; color:#137333; cursor:pointer;">📤 SEND REPORT NOW</button>
 
-            <div style="border-top:1px solid #333; padding-top:12px;">
-              <p class="text-xs font-bold uppercase" style="color:#ff9900; letter-spacing:1px;">REMINDERS</p>
+            <div style="border-top:1px solid #d0d5dd; padding-top:12px;">
+              <p class="text-xs font-bold uppercase" style="color:#1a73e8; letter-spacing:1px;">REMINDERS</p>
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-1" style="color:#888;">Day Shift Vitals Reminder</label>
+              <label class="block text-xs font-semibold mb-1" style="color:#999;">Day Shift Vitals Reminder</label>
               <input type="time" id="vitalDayTimeInput" value="${state.alerts.vitalDayTime || '08:00'}" class="w-full border rounded px-3 py-2">
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-1" style="color:#888;">Night Shift Vitals Reminder</label>
+              <label class="block text-xs font-semibold mb-1" style="color:#999;">Night Shift Vitals Reminder</label>
               <input type="time" id="vitalNightTimeInput" value="${state.alerts.vitalNightTime || '20:00'}" class="w-full border rounded px-3 py-2">
             </div>
             <div>
-              <label class="block text-xs font-semibold mb-1" style="color:#888;">Medication Reminder</label>
+              <label class="block text-xs font-semibold mb-1" style="color:#999;">Medication Reminder</label>
               <input type="time" id="medTimeInput" value="${state.alerts.medTime}" class="w-full border rounded px-3 py-2">
             </div>
             <button id="saveSettingsBtn" class="bb-btn w-full px-3 py-2 text-xs">SAVE SETTINGS</button>
@@ -460,19 +460,19 @@
         <div class="bb-card">
           <div class="bb-card-header px-4 py-2 flex items-center gap-2">
             <span class="text-sm">${icon}</span>
-            <h3 class="font-bold text-xs uppercase" style="color:#ff9900; letter-spacing:1px;">${title}</h3>
+            <h3 class="font-bold text-xs uppercase" style="color:#1a73e8; letter-spacing:1px;">${title}</h3>
           </div>
-          <div class="p-3" style="color:#ccc; overflow:hidden; min-width:0;">${content}</div>
+          <div class="p-3" style="color:#444; overflow:hidden; min-width:0;">${content}</div>
         </div>
       `;
     }
 
     function renderComplianceBar(pct) {
-      const color = pct > 0.8 ? '#00ff00' : pct > 0.5 ? '#ff9900' : '#ff3333';
+      const color = pct > 0.8 ? '#137333' : pct > 0.5 ? '#1a73e8' : '#c5221f';
       return `
-        <div style="background:#111; border:1px solid #333; border-radius:2px; padding:8px 12px; display:flex; align-items:center; gap:12px;">
-          <span style="font-size:10px; font-weight:700; color:#888; letter-spacing:1px; white-space:nowrap;">COMPLIANCE</span>
-          <div style="flex:1; background:#1a1a1a; height:8px; border-radius:2px; overflow:hidden;">
+        <div style="background:#fff; border:1px solid #d0d5dd; border-radius:2px; padding:8px 12px; display:flex; align-items:center; gap:12px;">
+          <span style="font-size:10px; font-weight:700; color:#999; letter-spacing:1px; white-space:nowrap;">COMPLIANCE</span>
+          <div style="flex:1; background:#f5f5f5; height:8px; border-radius:2px; overflow:hidden;">
             <div style="height:100%; width:${Math.round(pct * 100)}%; background:${color}; border-radius:2px; transition:width 0.7s;"></div>
           </div>
           <span style="font-size:13px; font-weight:700; color:${color}; min-width:40px; text-align:right;">${Math.round(pct * 100)}%</span>
@@ -486,10 +486,10 @@
       const nightV = vitals.night || null;
 
       function renderShiftBlock(label, emoji, v) {
-        if (!v) return `<div style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#555;">${emoji} ${label} — NOT RECORDED</span></div>`;
+        if (!v) return `<div style="background:#f5f5f5; border:1px solid #dde; border-radius:2px; padding:8px; text-align:center;"><span style="font-size:11px; color:#999;">${emoji} ${label} — NOT RECORDED</span></div>`;
         return `
-          <div style="background:#111; border:1px solid #333; border-radius:2px; padding:8px;">
-            <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:4px;">${emoji} ${label} <span style="color:#555; font-weight:400;">${v.time || ''}</span></p>
+          <div style="background:#fff; border:1px solid #d0d5dd; border-radius:2px; padding:8px;">
+            <p style="font-size:11px; font-weight:700; color:#1a73e8; margin-bottom:4px;">${emoji} ${label} <span style="color:#999; font-weight:400;">${v.time || ''}</span></p>
             <div class="grid grid-cols-3 gap-1">
               ${renderVitalReading('BP', v.bp || '--', 'mmHg', getVitalStatus('bp', v.bp))}
               ${renderVitalReading('HR', v.hr || '0', 'bpm', getVitalStatus('hr', v.hr))}
@@ -504,7 +504,7 @@
         <div class="space-y-3">
           ${renderShiftBlock('Day Shift', '☀️', dayV)}
           ${renderShiftBlock('Night Shift', '🌙', nightV)}
-          <form id="vitalsForm" class="space-y-2 mt-3 pt-3" style="border-top:1px solid #333;">
+          <form id="vitalsForm" class="space-y-2 mt-3 pt-3" style="border-top:1px solid #d0d5dd;">
             <select id="vitals_shift" class="w-full border rounded px-2 py-2 text-xs font-bold">
               <option value="day"${dayV ? ' disabled' : ''}>☀️ DAY SHIFT${dayV ? ' (RECORDED)' : ''}</option>
               <option value="night"${nightV ? ' disabled' : ''}>🌙 NIGHT SHIFT${nightV ? ' (RECORDED)' : ''}</option>
@@ -524,9 +524,9 @@
       const cls = status === 'green' ? 'bb-vital-green' : status === 'orange' ? 'bb-vital-orange' : status === 'red' ? 'bb-vital-red' : 'bb-vital-gray';
       return `
         <div class="${cls}" style="border-radius:2px; padding:6px; display:flex; flex-direction:column; align-items:center; gap:1px;">
-          <span style="font-size:10px; color:#888;">${label}</span>
+          <span style="font-size:10px; color:#999;">${label}</span>
           <span style="font-size:13px; font-weight:700;">${value}</span>
-          <span style="font-size:9px; color:#555;">${unit}</span>
+          <span style="font-size:9px; color:#999;">${unit}</span>
         </div>
       `;
     }
@@ -542,11 +542,11 @@
       }
       function medWithStock(m) {
         const s = getStockForMed(m);
-        if (!s) return '<p style="font-size:10px; color:#ccc; padding:1px 0;">• ' + m + '</p>';
+        if (!s) return '<p style="font-size:10px; color:#444; padding:1px 0;">• ' + m + '</p>';
         const daysLeft = s.dailyUse > 0 ? Math.floor(s.qty / s.dailyUse) : null;
-        const qtyColor = s.qty <= 0 ? '#ff3333' : (daysLeft !== null && daysLeft <= 7) ? '#ff9900' : '#00ff00';
+        const qtyColor = s.qty <= 0 ? '#c5221f' : (daysLeft !== null && daysLeft <= 7) ? '#1a73e8' : '#137333';
         return '<div style="display:flex; justify-content:space-between; align-items:center; padding:1px 0;">' +
-          '<span style="font-size:10px; color:#ccc;">• ' + m + '</span>' +
+          '<span style="font-size:10px; color:#444;">• ' + m + '</span>' +
           '<span style="font-size:9px; font-weight:700; color:' + qtyColor + ';">' + s.qty + '</span>' +
           '</div>';
       }
@@ -562,39 +562,39 @@
           </div>
           <!-- Medicine List -->
           <div class="grid grid-cols-2 gap-2">
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
-              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">☀️ AM MEDICINES</p>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:6px;">
+              <p style="font-size:10px; font-weight:700; color:#1a73e8; margin-bottom:4px;">☀️ AM MEDICINES</p>
               ${amMeds.map(m => medWithStock(m)).join('')}
             </div>
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px;">
-              <p style="font-size:10px; font-weight:700; color:#ff9900; margin-bottom:4px;">🌙 PM MEDICINES</p>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:6px;">
+              <p style="font-size:10px; font-weight:700; color:#1a73e8; margin-bottom:4px;">🌙 PM MEDICINES</p>
               ${pmMeds.map(m => medWithStock(m)).join('')}
             </div>
           </div>
-          <div class="pt-3 space-y-3" style="border-top:1px solid #333;">
-            <p class="text-xs flex items-center gap-1" style="color:#888;">📷 PHOTO REQUIRED BEFORE MARKING</p>
+          <div class="pt-3 space-y-3" style="border-top:1px solid #d0d5dd;">
+            <p class="text-xs flex items-center gap-1" style="color:#999;">📷 PHOTO REQUIRED BEFORE MARKING</p>
             <!-- Morning Photo -->
-            <div class="p-2" style="border-radius:2px; background:${data.morningMedPhoto ? (data.morningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.morningMedPhoto ? (data.morningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
-              <p class="text-xs font-bold mb-1" style="color:#ff9900;">☀️ MORNING MEDS PHOTO</p>
+            <div class="p-2" style="border-radius:2px; background:${data.morningMedPhoto ? (data.morningMed ? '#e6f4ea' : '#fef7e0') : '#fce8e6'}; border:1px solid ${data.morningMedPhoto ? (data.morningMed ? '#137333' : '#1557b0') : '#c5221f'};">
+              <p class="text-xs font-bold mb-1" style="color:#1a73e8;">☀️ MORNING MEDS PHOTO</p>
               ${data.morningMedPhoto
                 ? `<div class="flex items-center gap-2">
-                    <img src="${data.morningMedPhoto}" alt="Morning meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
-                    <span class="text-xs" style="color:#555;">${data.morningMedPhotoTime || 'Uploaded'}</span>
+                    <img src="${data.morningMedPhoto}" alt="Morning meds" class="w-20 h-16 object-cover" style="border:1px solid #d0d5dd; border-radius:2px;">
+                    <span class="text-xs" style="color:#999;">${data.morningMedPhotoTime || 'Uploaded'}</span>
                   </div>`
-                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
-                    <span class="text-xs font-bold" style="color:#ff9900;">📷 TAKE / UPLOAD PHOTO</span>
+                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#f5f5f5; border:1px dashed #555; border-radius:2px;">
+                    <span class="text-xs font-bold" style="color:#1a73e8;">📷 TAKE / UPLOAD PHOTO</span>
                     <input type="file" id="morningMedPhoto" accept="image/*" capture="environment" class="hidden">
                   </label>`}
             </div>
             <!-- Evening Photo -->
-            <div class="p-2" style="border-radius:2px; background:${data.eveningMedPhoto ? (data.eveningMed ? '#0a1f0a' : '#1f1a0a') : '#1f0a0a'}; border:1px solid ${data.eveningMedPhoto ? (data.eveningMed ? '#00cc00' : '#cc7a00') : '#cc3333'};">
-              <p class="text-xs font-bold mb-1" style="color:#ff9900;">🌙 EVENING MEDS PHOTO</p>
+            <div class="p-2" style="border-radius:2px; background:${data.eveningMedPhoto ? (data.eveningMed ? '#e6f4ea' : '#fef7e0') : '#fce8e6'}; border:1px solid ${data.eveningMedPhoto ? (data.eveningMed ? '#137333' : '#1557b0') : '#c5221f'};">
+              <p class="text-xs font-bold mb-1" style="color:#1a73e8;">🌙 EVENING MEDS PHOTO</p>
               ${data.eveningMedPhoto
                 ? `<div class="flex items-center gap-2">
-                    <img src="${data.eveningMedPhoto}" alt="Evening meds" class="w-20 h-16 object-cover" style="border:1px solid #333; border-radius:2px;">
-                    <span class="text-xs" style="color:#555;">${data.eveningMedPhotoTime || 'Uploaded'}</span>
+                    <img src="${data.eveningMedPhoto}" alt="Evening meds" class="w-20 h-16 object-cover" style="border:1px solid #d0d5dd; border-radius:2px;">
+                    <span class="text-xs" style="color:#999;">${data.eveningMedPhotoTime || 'Uploaded'}</span>
                   </div>`
-                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#1a1a1a; border:1px dashed #555; border-radius:2px;">
+                : `<label class="flex items-center gap-2 px-3 py-2 cursor-pointer w-fit" style="background:#f5f5f5; border:1px dashed #555; border-radius:2px;">
                     <span class="text-xs font-medium text-violet-600">📷 Take / Upload Photo</span>
                     <input type="file" id="eveningMedPhoto" accept="image/*" capture="environment" class="hidden">
                   </label>`}
@@ -609,10 +609,10 @@
       return `
         <div class="space-y-2">
           <!-- K-Lyte -->
-          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
-            <p style="font-size:11px; font-weight:700; color:#ff9900;">K-LYTE</p>
+          <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
+            <p style="font-size:11px; font-weight:700; color:#1a73e8;">K-LYTE</p>
             <div style="display:flex; align-items:center; gap:6px;">
-              ${sup.klyte ? `<span style="font-size:14px; font-weight:700; color:#00ff00;">${sup.klyte} mL</span>` : ''}
+              ${sup.klyte ? `<span style="font-size:14px; font-weight:700; color:#137333;">${sup.klyte} mL</span>` : ''}
               <input type="number" id="sup_klyte" placeholder="mL" class="border rounded px-2 py-1 text-xs" style="width:70px;" value="${sup.klyte || ''}">
             </div>
           </div>
@@ -628,8 +628,8 @@
             <span>${sup.magnesium ? '✓ GIVEN' : '—'}</span>
           </button>
           <!-- Ensure -->
-          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
-            <p style="font-size:11px; font-weight:700; color:#ff9900; margin-bottom:6px;">ENSURE</p>
+          <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px;">
+            <p style="font-size:11px; font-weight:700; color:#1a73e8; margin-bottom:6px;">ENSURE</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
               <button id="toggleEnsureDay" class="font-bold text-xs ${sup.ensureDay ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
                 <span>☀️ DAY</span>
@@ -658,45 +658,45 @@
 
       return `
         <div class="space-y-3">
-          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">FLUID INTAKE</p>
+          <p class="text-xs font-bold uppercase" style="color:#999; letter-spacing:1px;">FLUID INTAKE</p>
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold" style="color:#00ccff;">💧 ${totalWater} / ${target} mL</span>
-            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
+            <span class="text-sm font-bold" style="color:#1a73e8;">💧 ${totalWater} / ${target} mL</span>
+            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#137333' : '#1a73e8'};">${Math.round(pct * 100)}%</span>
           </div>
           <div class="w-full h-3 bb-progress-track">
-            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#00ff00' : '#00ccff'};"></div>
+            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#137333' : '#1a73e8'};"></div>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
+              <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
               <input type="number" id="waterDayInput" placeholder="mL" value="${waterDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
+              <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
               <input type="number" id="waterNightInput" placeholder="mL" value="${waterNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
           </div>
 
-          <div class="pt-3 mt-2" style="border-top:1px solid #333;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE OUTPUT</p>
+          <div class="pt-3 mt-2" style="border-top:1px solid #d0d5dd;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">URINE OUTPUT</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">☀️ DAY (mL)</label>
                 <input type="number" id="urineDayInput" placeholder="mL" value="${urineDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🌙 NIGHT (mL)</label>
                 <input type="number" id="urineNightInput" placeholder="mL" value="${urineNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
             </div>
           </div>
 
           <!-- Urine Appearance -->
-          <div class="pt-2" style="border-top:1px solid #333;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE APPEARANCE</p>
+          <div class="pt-2" style="border-top:1px solid #d0d5dd;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">URINE APPEARANCE</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🎨 COLOR</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🎨 COLOR</label>
                 <select id="urineColorInput" class="w-full border rounded px-2 py-2 text-xs">
                   <option value="" ${!(data.urineColor) ? 'selected' : ''}>-- Select --</option>
                   <option value="clear" ${data.urineColor === 'clear' ? 'selected' : ''}>Clear</option>
@@ -710,7 +710,7 @@
                 </select>
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🧪 DEBRIS/SEDIMENT</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🧪 DEBRIS/SEDIMENT</label>
                 <select id="urineDebrisInput" class="w-full border rounded px-2 py-2 text-xs">
                   <option value="" ${!(data.urineDebris) ? 'selected' : ''}>-- Select --</option>
                   <option value="none" ${data.urineDebris === 'none' ? 'selected' : ''}>None</option>
@@ -726,28 +726,28 @@
 
           <!-- Urine Appearance Summary -->
           ${data.urineColor || data.urineDebris ? `
-          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
-            <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE APPEARANCE</span>
+          <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px;">
+            <span style="font-size:10px; color:#999; letter-spacing:1px;">URINE APPEARANCE</span>
             <div class="flex gap-2 mt-1 flex-wrap">
-              ${data.urineColor ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#1f0a0a' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#ff3333' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#ff9900' : '#00ff00'};">🎨 ${data.urineColor}</span>` : ''}
-              ${data.urineDebris ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineDebris === 'heavy' ? '#1f0a0a' : data.urineDebris === 'moderate' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineDebris === 'heavy' ? '#ff3333' : data.urineDebris === 'moderate' ? '#ff9900' : '#00ff00'};">🧪 ${data.urineDebris}</span>` : ''}
+              ${data.urineColor ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#fce8e6' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#fef7e0' : '#e6f4ea'}; border:1px solid #d0d5dd; border-radius:2px; color:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#c5221f' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#1a73e8' : '#137333'};">🎨 ${data.urineColor}</span>` : ''}
+              ${data.urineDebris ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineDebris === 'heavy' ? '#fce8e6' : data.urineDebris === 'moderate' ? '#fef7e0' : '#e6f4ea'}; border:1px solid #d0d5dd; border-radius:2px; color:${data.urineDebris === 'heavy' ? '#c5221f' : data.urineDebris === 'moderate' ? '#1a73e8' : '#137333'};">🧪 ${data.urineDebris}</span>` : ''}
             </div>
           </div>
           ` : ''}
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
-              <span style="font-size:10px; color:#888;">TOTAL INTAKE</span>
-              <p class="text-sm font-bold" style="color:${totalWater >= target ? '#00ff00' : totalWater > 0 ? '#00ccff' : '#555'};">${totalWater || '--'} mL</p>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px; text-align:center;">
+              <span style="font-size:10px; color:#999;">TOTAL INTAKE</span>
+              <p class="text-sm font-bold" style="color:${totalWater >= target ? '#137333' : totalWater > 0 ? '#1a73e8' : '#555'};">${totalWater || '--'} mL</p>
             </div>
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
-              <span style="font-size:10px; color:#888;">TOTAL OUTPUT</span>
-              <p class="text-sm font-bold" style="color:${totalUrine < 500 && totalUrine > 0 ? '#ff3333' : totalUrine >= 500 ? '#00ff00' : '#555'};">${totalUrine || '--'} mL</p>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px; text-align:center;">
+              <span style="font-size:10px; color:#999;">TOTAL OUTPUT</span>
+              <p class="text-sm font-bold" style="color:${totalUrine < 500 && totalUrine > 0 ? '#c5221f' : totalUrine >= 500 ? '#137333' : '#555'};">${totalUrine || '--'} mL</p>
             </div>
           </div>
-          <div style="background:${netBalance >= 0 ? '#0a1f0a' : '#1f0a0a'}; border:1px solid ${netBalance >= 0 ? '#00cc00' : '#cc3333'}; border-radius:2px; padding:8px; text-align:center;">
-            <span style="font-size:10px; color:#888;">NET FLUID BALANCE</span>
-            <p class="text-sm font-bold" style="color:${netBalance >= 0 ? '#00ff00' : '#ff3333'};">${netBalance >= 0 ? '+' : ''}${netBalance} mL</p>
+          <div style="background:${netBalance >= 0 ? '#e6f4ea' : '#fce8e6'}; border:1px solid ${netBalance >= 0 ? '#137333' : '#c5221f'}; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#999;">NET FLUID BALANCE</span>
+            <p class="text-sm font-bold" style="color:${netBalance >= 0 ? '#137333' : '#c5221f'};">${netBalance >= 0 ? '+' : ''}${netBalance} mL</p>
           </div>
         </div>
       `;
@@ -767,29 +767,29 @@
 
       return `
         <div class="space-y-3">
-          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
-            <span style="font-size:10px; color:#888;">MEALS RECORDED</span>
-            <p style="font-size:18px; font-weight:700; color:${recorded >= 3 ? '#00ff00' : recorded > 0 ? '#ff9900' : '#555'};">${recorded} / ${sections.length}</p>
+          <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#999;">MEALS RECORDED</span>
+            <p style="font-size:18px; font-weight:700; color:${recorded >= 3 ? '#137333' : recorded > 0 ? '#1a73e8' : '#555'};">${recorded} / ${sections.length}</p>
           </div>
           ${sections.map(s => {
             const m = meals[s.id];
             const hasPct = m && m.pct !== undefined;
-            const pctColor = !hasPct ? '#555' : m.pct >= 75 ? '#00ff00' : m.pct >= 50 ? '#ff9900' : '#ff3333';
+            const pctColor = !hasPct ? '#555' : m.pct >= 75 ? '#137333' : m.pct >= 50 ? '#1a73e8' : '#c5221f';
             return `
-              <div style="background:#111; border:1px solid ${hasPct ? '#333' : '#222'}; border-radius:2px; padding:8px;">
+              <div style="background:#fff; border:1px solid ${hasPct ? '#d0d5dd' : '#dde'}; border-radius:2px; padding:8px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-                  <p style="font-size:11px; font-weight:700; color:#ff9900;">${s.label}</p>
+                  <p style="font-size:11px; font-weight:700; color:#1a73e8;">${s.label}</p>
                   ${hasPct ? `<span style="font-size:11px; font-weight:700; color:${pctColor};">${m.pct}% ${m.time ? '· ' + m.time : ''}</span>` : ''}
                 </div>
                 ${hasPct ? `
-                  <div style="background:#1a1a1a; border-radius:2px; height:6px; overflow:hidden; margin-bottom:${m.note ? '6' : '0'}px;">
+                  <div style="background:#f5f5f5; border-radius:2px; height:6px; overflow:hidden; margin-bottom:${m.note ? '6' : '0'}px;">
                     <div style="height:100%; width:${m.pct}%; background:${pctColor}; border-radius:2px;"></div>
                   </div>
-                  ${m.note ? `<p style="font-size:10px; color:#888; margin-top:4px;">${m.note}</p>` : ''}
+                  ${m.note ? `<p style="font-size:10px; color:#999; margin-top:4px;">${m.note}</p>` : ''}
                 ` : `
                   <div style="display:flex; gap:4px; margin-bottom:6px;">
                     ${pctOptions.map(p => `
-                      <button type="button" class="mealPctBtn" data-meal="${s.id}" data-pct="${p}" style="flex:1; padding:6px 2px; font-size:${p === 0 ? '8px' : '10px'}; font-weight:700; background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ccc; cursor:pointer;">${pctLabels[p]}</button>
+                      <button type="button" class="mealPctBtn" data-meal="${s.id}" data-pct="${p}" style="flex:1; padding:6px 2px; font-size:${p === 0 ? '8px' : '10px'}; font-weight:700; background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; color:#444; cursor:pointer;">${pctLabels[p]}</button>
                     `).join('')}
                   </div>
                   <input type="text" id="meal_${s.id}_note" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs">
@@ -806,7 +806,7 @@
       return `
         <div class="space-y-3">
           <!-- Daily tasks -->
-          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">DAILY</p>
+          <p class="text-xs font-bold uppercase" style="color:#999; letter-spacing:1px;">DAILY</p>
           <div class="grid grid-cols-2 gap-1 text-xs">
             <button id="toggleOralCare" class="p-2 rounded border-2 ${hyg.oralCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🦷 Oral Care ${hyg.oralCare ? '✓' : ''}</button>
             <button id="toggleSkinCare" class="p-2 rounded border-2 ${hyg.skinCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💅 Skin Care ${hyg.skinCare ? '✓' : ''}</button>
@@ -831,7 +831,7 @@
 
           <!-- Periodic -->
           <div class="text-xs space-y-1 pt-2 border-t">
-            <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">PERIODIC</p>
+            <p class="text-xs font-bold uppercase" style="color:#999; letter-spacing:1px;">PERIODIC</p>
             <!-- Urine Bag countdown -->
             ${(() => {
               const lastBag = localStorage.getItem('lastUrineBagDate') || '2025-03-17';
@@ -839,13 +839,13 @@
               const today = new Date(state.currentDate + 'T00:00:00');
               const bagDiff = Math.floor((today - lastBagDate) / (1000 * 60 * 60 * 24));
               const bagRemaining = 7 - bagDiff;
-              const bagColor = bagRemaining <= 0 ? '#ff3333' : bagRemaining <= 2 ? '#ff9900' : '#00ff00';
+              const bagColor = bagRemaining <= 0 ? '#c5221f' : bagRemaining <= 2 ? '#1a73e8' : '#137333';
               const nextBag = new Date(lastBagDate); nextBag.setDate(nextBag.getDate() + 7);
               return `
-                <div style="background:#1a1a1a; border:1px solid ${bagRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; text-align:center; margin-bottom:6px;">
-                  <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE BAG CHANGE</span>
+                <div style="background:#f5f5f5; border:1px solid ${bagRemaining <= 1 ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:8px; text-align:center; margin-bottom:6px;">
+                  <span style="font-size:10px; color:#999; letter-spacing:1px;">URINE BAG CHANGE</span>
                   <p style="font-size:20px; font-weight:700; color:${bagColor};">${bagRemaining <= 0 ? 'OVERDUE' : bagRemaining + ' days'}</p>
-                  <span style="font-size:9px; color:#555;">Next: ${nextBag.getFullYear()}-${String(nextBag.getMonth()+1).padStart(2,'0')}-${String(nextBag.getDate()).padStart(2,'0')} · Last: ${lastBag}</span>
+                  <span style="font-size:9px; color:#999;">Next: ${nextBag.getFullYear()}-${String(nextBag.getMonth()+1).padStart(2,'0')}-${String(nextBag.getDate()).padStart(2,'0')} · Last: ${lastBag}</span>
                 </div>
                 <button id="toggleUrineBag" class="w-full p-2 font-bold text-xs ${hyg.urineBagChanged ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; margin-bottom:6px;">
                   🔄 URINE BAG CHANGED ${hyg.urineBagChanged ? '✓' : ''}
@@ -904,17 +904,17 @@
             ${exercises.map(ex => `
               <button id="togglePhysio_${ex.id}" class="p-2 text-left text-xs font-bold ${physio[ex.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
                 ${ex.label} ${physio[ex.id] ? '✓' : ''}
-                <p style="color:#555; font-weight:400; font-size:10px;">${ex.desc}</p>
+                <p style="color:#999; font-weight:400; font-size:10px;">${ex.desc}</p>
               </button>
             `).join('')}
           </div>
-          <div class="text-xs text-center" style="color:#888;">${Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length} / ${exercises.length} COMPLETED</div>
+          <div class="text-xs text-center" style="color:#999;">${Object.keys(physio).filter(k => k !== 'log' && k !== 'notes' && physio[k]).length} / ${exercises.length} COMPLETED</div>
           ${log.length > 0 ? `
             <div class="space-y-1 text-xs">
-              ${log.map(l => `<div class="p-1.5" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><strong style="color:#ff9900;">${l.time}</strong> <span style="color:#ccc;">— ${l.note}</span></div>`).join('')}
+              ${log.map(l => `<div class="p-1.5" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px;"><strong style="color:#1a73e8;">${l.time}</strong> <span style="color:#444;">— ${l.note}</span></div>`).join('')}
             </div>
           ` : ''}
-          <div class="pt-2" style="border-top:1px solid #333;">
+          <div class="pt-2" style="border-top:1px solid #d0d5dd;">
             <input type="text" id="physio_note" placeholder="Session notes (e.g., 15 min ROM, tolerated well)" class="w-full border rounded px-2 py-1 text-xs">
             <button type="button" id="addPhysioNoteBtn" class="bb-btn w-full mt-1 px-2 py-2 text-xs">ADD PHYSIO NOTE</button>
           </div>
@@ -933,37 +933,37 @@
       const totalSleep = sleepDay + sleepNight + (data.hoursSlept || 0);
       return `
         <div class="space-y-3">
-          <p class="text-xs font-bold uppercase" style="color:#888; letter-spacing:1px;">BIPAP</p>
+          <p class="text-xs font-bold uppercase" style="color:#999; letter-spacing:1px;">BIPAP</p>
           <div class="flex items-center justify-between">
-            <span class="text-sm font-bold" style="color:#9966ff;">🌬️ ${totalHrs} / ${target} hrs</span>
-            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#00ff00' : '#ff9900'};">${Math.round(pct * 100)}%</span>
+            <span class="text-sm font-bold" style="color:#7b1fa2;">🌬️ ${totalHrs} / ${target} hrs</span>
+            <span class="text-xs font-bold" style="color:${pct >= 1 ? '#137333' : '#1a73e8'};">${Math.round(pct * 100)}%</span>
           </div>
           <div class="w-full h-3 bb-progress-track">
-            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#00ff00' : '#9966ff'};"></div>
+            <div class="h-3 bb-progress-fill transition-all duration-300" style="width:${pct * 100}%; background:${pct >= 1 ? '#137333' : '#7b1fa2'};"></div>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
+              <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">☀️ DAY</label>
               <input type="number" id="bipapDayInput" placeholder="hrs" step="0.5" value="${bipapDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
             <div>
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
+              <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🌙 NIGHT</label>
               <input type="number" id="bipapNightInput" placeholder="hrs" step="0.5" value="${bipapNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
             </div>
           </div>
-          <div class="pt-3" style="border-top:1px solid #333;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">SLEEP</p>
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:10px; text-align:center; margin-bottom:8px;">
-              <span style="font-size:10px; color:#888;">TOTAL HOURS SLEPT</span>
-              <p style="font-size:20px; font-weight:700; color:${totalSleep >= 7 ? '#00ff00' : totalSleep >= 5 ? '#ff9900' : totalSleep > 0 ? '#ff3333' : '#555'};">${totalSleep || '--'} <span style="font-size:11px; color:#555;">hrs</span></p>
+          <div class="pt-3" style="border-top:1px solid #d0d5dd;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">SLEEP</p>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:10px; text-align:center; margin-bottom:8px;">
+              <span style="font-size:10px; color:#999;">TOTAL HOURS SLEPT</span>
+              <p style="font-size:20px; font-weight:700; color:${totalSleep >= 7 ? '#137333' : totalSleep >= 5 ? '#1a73e8' : totalSleep > 0 ? '#c5221f' : '#555'};">${totalSleep || '--'} <span style="font-size:11px; color:#999;">hrs</span></p>
             </div>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">☀️ DAY</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">☀️ DAY</label>
                 <input type="number" id="sleepDayInput" placeholder="hrs" step="0.5" value="${sleepDay || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🌙 NIGHT</label>
+                <label style="font-size:9px; color:#999; display:block; margin-bottom:4px;">🌙 NIGHT</label>
                 <input type="number" id="sleepNightInput" placeholder="hrs" step="0.5" value="${sleepNight || ''}" class="w-full border rounded px-2 py-2 text-xs">
               </div>
             </div>
@@ -971,8 +971,8 @@
           <button id="saveBiPAPBtn" class="bb-btn w-full px-2 py-1 text-xs">UPDATE</button>
 
           <!-- BiPAP Maintenance -->
-          <div class="pt-3" style="border-top:1px solid #333;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">BIPAP MAINTENANCE</p>
+          <div class="pt-3" style="border-top:1px solid #d0d5dd;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">BIPAP MAINTENANCE</p>
             <!-- Daily: Clean Mask -->
             <button id="toggleBipapCleanMask" class="w-full font-bold text-xs mb-1 ${data.bipapCleanMask ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
               <span>🧼 CLEAN MASK</span>
@@ -990,15 +990,15 @@
               const today = new Date(state.currentDate + 'T00:00:00');
               const washDiff = lastWashDate ? Math.floor((today - lastWashDate) / (1000 * 60 * 60 * 24)) : 999;
               const washRemaining = 5 - washDiff;
-              const washColor = washRemaining <= 0 ? '#ff3333' : washRemaining <= 2 ? '#ff9900' : '#00ff00';
+              const washColor = washRemaining <= 0 ? '#c5221f' : washRemaining <= 2 ? '#1a73e8' : '#137333';
               const washedToday = data.bipapWashMaskTube || false;
               return `
-                <div style="background:#1a1a1a; border:1px solid ${washRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:8px; margin-bottom:4px;">
+                <div style="background:#f5f5f5; border:1px solid ${washRemaining <= 1 ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:8px; margin-bottom:4px;">
                   <div style="display:flex; justify-content:space-between; align-items:center;">
-                    <span class="text-xs font-bold" style="color:#ff9900;">🚿 WASH MASK + TUBE</span>
+                    <span class="text-xs font-bold" style="color:#1a73e8;">🚿 WASH MASK + TUBE</span>
                     <span class="text-xs font-bold" style="color:${washColor};">${washRemaining <= 0 ? 'OVERDUE' : washRemaining + ' days'}</span>
                   </div>
-                  <p style="font-size:9px; color:#555; margin-top:2px;">${lastWashDate ? 'Last: ' + lastWash : 'Not recorded'} · Every 5 days</p>
+                  <p style="font-size:9px; color:#999; margin-top:2px;">${lastWashDate ? 'Last: ' + lastWash : 'Not recorded'} · Every 5 days</p>
                 </div>
                 <button id="logBipapWash" class="w-full font-bold text-xs ${washedToday ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:8px; display:flex; align-items:center; justify-content:space-between;">
                   <span>🚿 WASHED TODAY</span>
@@ -1021,7 +1021,7 @@
       const lastCathDate = new Date(lastCatheter + 'T00:00:00');
       const cathDiffDays = Math.floor((now - lastCathDate) / (1000 * 60 * 60 * 24));
       const cathRemaining = 28 - cathDiffDays;
-      const cathColor = cathRemaining <= 0 ? '#ff3333' : cathRemaining <= 3 ? '#ff3333' : cathRemaining <= 7 ? '#ff9900' : '#00ff00';
+      const cathColor = cathRemaining <= 0 ? '#c5221f' : cathRemaining <= 3 ? '#c5221f' : cathRemaining <= 7 ? '#1a73e8' : '#137333';
       const cathNextDate = new Date(lastCathDate);
       cathNextDate.setDate(cathNextDate.getDate() + 28);
       const cathNextStr = cathNextDate.getFullYear() + '-' + String(cathNextDate.getMonth()+1).padStart(2,'0') + '-' + String(cathNextDate.getDate()).padStart(2,'0');
@@ -1032,16 +1032,16 @@
         vitDTarget = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       }
       const vitDDiff = Math.floor((vitDTarget - now) / (1000 * 60 * 60 * 24));
-      const vitDColor = vitDDiff <= 0 ? '#ff3333' : vitDDiff <= 3 ? '#ff9900' : '#00ff00';
+      const vitDColor = vitDDiff <= 0 ? '#c5221f' : vitDDiff <= 3 ? '#1a73e8' : '#137333';
       const isVitDToday = vitDDiff === 0 || (now.getDate() === 1);
 
       return `
         <div class="space-y-3">
           <!-- Catheter -->
-          <div style="background:#1a1a1a; border:1px solid ${cathRemaining <= 3 ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center;">
-            <span style="font-size:10px; color:#888; letter-spacing:1px;">CATHETER CHANGE</span>
+          <div style="background:#f5f5f5; border:1px solid ${cathRemaining <= 3 ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:10px; text-align:center;">
+            <span style="font-size:10px; color:#999; letter-spacing:1px;">CATHETER CHANGE</span>
             <p style="font-size:24px; font-weight:700; color:${cathColor};">${cathRemaining <= 0 ? 'OVERDUE' : cathRemaining + ' days'}</p>
-            <span style="font-size:9px; color:#555;">Next: ${cathNextStr} &middot; Last: ${lastCatheter}</span>
+            <span style="font-size:9px; color:#999;">Next: ${cathNextStr} &middot; Last: ${lastCatheter}</span>
           </div>
           <button id="toggleCatheter" class="w-full p-2 font-bold text-xs ${tasks.catheter ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
             🔄 CATHETER CHANGED ${tasks.catheter ? '✓' : ''}
@@ -1054,28 +1054,28 @@
             const today = new Date(state.currentDate + 'T00:00:00');
             const flushDiff = lastFlushDate ? Math.floor((today - lastFlushDate) / (1000 * 60 * 60 * 24)) : 999;
             const flushRemaining = 7 - flushDiff;
-            const flushColor = flushRemaining <= 0 ? '#ff3333' : flushRemaining <= 2 ? '#ff9900' : '#00ff00';
+            const flushColor = flushRemaining <= 0 ? '#c5221f' : flushRemaining <= 2 ? '#1a73e8' : '#137333';
             return `
-              <div style="background:#1a1a1a; border:1px solid ${flushRemaining <= 1 ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center; margin-top:8px;">
-                <span style="font-size:10px; color:#888; letter-spacing:1px;">CATHETER FLUSH</span>
+              <div style="background:#f5f5f5; border:1px solid ${flushRemaining <= 1 ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:10px; text-align:center; margin-top:8px;">
+                <span style="font-size:10px; color:#999; letter-spacing:1px;">CATHETER FLUSH</span>
                 <p style="font-size:20px; font-weight:700; color:${flushColor};">${lastFlushDate ? (flushRemaining <= 0 ? 'OVERDUE' : flushRemaining + ' days') : 'NOT SET'}</p>
-                <span style="font-size:9px; color:#555;">${lastFlush ? 'Last: ' + lastFlush : 'No flush recorded'} · Weekly</span>
+                <span style="font-size:9px; color:#999;">${lastFlush ? 'Last: ' + lastFlush : 'No flush recorded'} · Weekly</span>
               </div>
               <button id="logCatheterFlush" class="w-full p-2 font-bold text-xs bb-btn" style="border-radius:2px; margin-top:4px;">
                 💉 LOG CATHETER FLUSH
               </button>
               ${flushLog.length > 0 ? `
                 <div class="flex gap-1 flex-wrap mt-1">
-                  ${flushLog.map(f => `<span class="px-2 py-0.5 text-xs font-mono" style="background:#0a0a1f; border:1px solid #333; border-radius:2px; color:#9999ff;">${f}</span>`).join('')}
+                  ${flushLog.map(f => `<span class="px-2 py-0.5 text-xs font-mono" style="background:#e8f0fe; border:1px solid #d0d5dd; border-radius:2px; color:#7b1fa2;">${f}</span>`).join('')}
                 </div>
               ` : ''}
             `;
           })()}
           <!-- Vitamin D -->
-          <div style="background:#1a1a1a; border:1px solid ${isVitDToday ? '#cc3333' : '#333'}; border-radius:2px; padding:10px; text-align:center;">
-            <span style="font-size:10px; color:#888; letter-spacing:1px;">VITAMIN D</span>
-            <p style="font-size:24px; font-weight:700; color:${isVitDToday ? '#ff3333' : vitDColor};">${isVitDToday ? 'TODAY' : vitDDiff + ' days'}</p>
-            <span style="font-size:9px; color:#555;">Due: 1st of every month</span>
+          <div style="background:#f5f5f5; border:1px solid ${isVitDToday ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:10px; text-align:center;">
+            <span style="font-size:10px; color:#999; letter-spacing:1px;">VITAMIN D</span>
+            <p style="font-size:24px; font-weight:700; color:${isVitDToday ? '#c5221f' : vitDColor};">${isVitDToday ? 'TODAY' : vitDDiff + ' days'}</p>
+            <span style="font-size:9px; color:#999;">Due: 1st of every month</span>
           </div>
           <button id="toggleVitaminD" class="w-full p-2 font-bold text-xs ${tasks.vitaminD ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px;">
             💊 VITAMIN D GIVEN ${tasks.vitaminD ? '✓' : ''}
@@ -1096,9 +1096,9 @@
       const doneCount = items.filter(i => act[i.id]).length;
       return `
         <div class="space-y-3">
-          <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px; text-align:center;">
-            <span style="font-size:10px; color:#888;">TODAY'S ACTIVITIES</span>
-            <p style="font-size:18px; font-weight:700; color:${doneCount > 0 ? '#00ff00' : '#555'};">${doneCount}</p>
+          <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:8px; text-align:center;">
+            <span style="font-size:10px; color:#999;">TODAY'S ACTIVITIES</span>
+            <p style="font-size:18px; font-weight:700; color:${doneCount > 0 ? '#137333' : '#555'};">${doneCount}</p>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
             ${items.map(i => {
@@ -1106,7 +1106,7 @@
               return `
               <button id="toggleActivity_${i.id}" class="w-full font-bold text-xs ${act[i.id] ? 'bb-toggle-on' : 'bb-toggle-off'}" style="border-width:2px; border-radius:2px; padding:10px; display:flex; align-items:center; justify-content:space-between;">
                 <span>${i.label}</span>
-                <span>${act[i.id] ? '✓' + (time ? ' <span style="font-size:9px; font-weight:400; color:#888;">' + time + '</span>' : '') : '—'}</span>
+                <span>${act[i.id] ? '✓' + (time ? ' <span style="font-size:9px; font-weight:400; color:#999;">' + time + '</span>' : '') : '—'}</span>
               </button>`;
             }).join('')}
           </div>
@@ -1114,7 +1114,7 @@
             <input type="text" id="activityNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-2 text-xs" value="${act.note || ''}">
             <button id="saveActivityNote" class="bb-btn w-full px-2 py-2 text-xs mt-2">SAVE NOTE</button>
           </div>
-          ${act.note ? `<p style="font-size:10px; color:#888; background:#1a1a1a; border-radius:2px; padding:6px;">${act.note}${act.noteTime ? ' <span style="color:#555;">· ' + act.noteTime + '</span>' : ''}</p>` : ''}
+          ${act.note ? `<p style="font-size:10px; color:#999; background:#f5f5f5; border-radius:2px; padding:6px;">${act.note}${act.noteTime ? ' <span style="color:#999;">· ' + act.noteTime + '</span>' : ''}</p>` : ''}
         </div>
       `;
     }
@@ -1130,44 +1130,44 @@
         <div class="space-y-3">
           <!-- Stock Alerts -->
           ${outItems.length > 0 ? `
-            <div style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff3333;">🚨 OUT OF STOCK</span>
-              <div class="mt-1">${outItems.map(s => `<span class="text-xs" style="color:#ff3333;">${s.name}</span>`).join(', ')}</div>
+            <div style="background:#fce8e6; border:1px solid #c5221f; border-radius:2px; padding:8px;">
+              <span class="text-xs font-bold" style="color:#c5221f;">🚨 OUT OF STOCK</span>
+              <div class="mt-1">${outItems.map(s => `<span class="text-xs" style="color:#c5221f;">${s.name}</span>`).join(', ')}</div>
             </div>
           ` : ''}
           ${lowItems.length > 0 ? `
-            <div style="background:#1f1a0a; border:1px solid #cc7a00; border-radius:2px; padding:8px;">
-              <span class="text-xs font-bold" style="color:#ff9900;">⚠ LOW STOCK (≤${lowStockThreshold} days)</span>
-              <div class="mt-1">${lowItems.map(s => `<span class="text-xs" style="color:#ff9900;">${s.name} (${s.qty})</span>`).join(', ')}</div>
+            <div style="background:#fef7e0; border:1px solid #e8710a; border-radius:2px; padding:8px;">
+              <span class="text-xs font-bold" style="color:#1a73e8;">⚠ LOW STOCK (≤${lowStockThreshold} days)</span>
+              <div class="mt-1">${lowItems.map(s => `<span class="text-xs" style="color:#1a73e8;">${s.name} (${s.qty})</span>`).join(', ')}</div>
             </div>
           ` : ''}
 
           <!-- Medicine Stock -->
           <div>
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">💊 MEDICINE STOCK</p>
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">💊 MEDICINE STOCK</p>
             ${stock.length > 0 ? `
               <div class="space-y-1" style="max-height:200px; overflow-y:auto;">
                 ${stock.map((s, i) => {
                   const daysLeft = s.dailyUse > 0 ? Math.floor(s.qty / s.dailyUse) : null;
-                  const qtyColor = s.qty <= 0 ? '#ff3333' : (daysLeft !== null && daysLeft <= lowStockThreshold) ? '#ff9900' : '#00ff00';
+                  const qtyColor = s.qty <= 0 ? '#c5221f' : (daysLeft !== null && daysLeft <= lowStockThreshold) ? '#1a73e8' : '#137333';
                   return `
-                    <div class="text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px; padding:6px 8px;">
+                    <div class="text-xs" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px; padding:6px 8px;">
                       <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <span style="color:#ff9900; font-weight:600;">${s.name}</span>
+                        <span style="color:#1a73e8; font-weight:600;">${s.name}</span>
                         <div style="display:flex; align-items:center; gap:4px;">
-                          <button class="stockDecBtn" data-idx="${i}" style="width:22px; height:22px; background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer; font-size:12px; line-height:1;">−</button>
+                          <button class="stockDecBtn" data-idx="${i}" style="width:22px; height:22px; background:#fce8e6; border:1px solid #c5221f; border-radius:2px; color:#c5221f; cursor:pointer; font-size:12px; line-height:1;">−</button>
                           <span style="color:${qtyColor}; font-weight:700; min-width:28px; text-align:center;">${s.qty}</span>
-                          <button class="stockIncBtn" data-idx="${i}" style="width:22px; height:22px; background:#0a1f0a; border:1px solid #00cc00; border-radius:2px; color:#00ff00; cursor:pointer; font-size:12px; line-height:1;">+</button>
+                          <button class="stockIncBtn" data-idx="${i}" style="width:22px; height:22px; background:#e6f4ea; border:1px solid #137333; border-radius:2px; color:#137333; cursor:pointer; font-size:12px; line-height:1;">+</button>
                         </div>
                       </div>
                       <div style="display:flex; justify-content:space-between; margin-top:2px;">
-                        <span style="color:#555; font-size:9px;">${s.unit || 'units'}${s.dailyUse ? ' · ' + s.dailyUse + '/day' : ''}</span>
+                        <span style="color:#999; font-size:9px;">${s.unit || 'units'}${s.dailyUse ? ' · ' + s.dailyUse + '/day' : ''}</span>
                         ${daysLeft !== null ? `<span style="color:${qtyColor}; font-size:9px; font-weight:600;">~${daysLeft} days</span>` : ''}
                       </div>
                     </div>`;
                 }).join('')}
               </div>
-            ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No medicines tracked</p>'}
+            ` : '<p class="text-xs" style="color:#999; text-align:center; padding:4px;">No medicines tracked</p>'}
             <div class="mt-2" style="display:flex; flex-direction:column; gap:4px;">
               <select id="stockMedSelect" class="w-full border rounded px-2 py-1 text-xs" style="min-width:0;">
                 <option value="">-- Select Medicine --</option>
@@ -1192,33 +1192,33 @@
               <button id="addStockBtn" class="bb-btn w-full px-2 py-1 text-xs">+ ADD MEDICINE</button>
             </div>
             ${stock.length > 0 ? `
-              <button id="openStockOrderBtn" class="w-full mt-2 p-2 text-xs font-bold" style="background:#0a0a1f; border:1px solid #9999ff; border-radius:2px; color:#9999ff; cursor:pointer;">📋 GENERATE ORDER LIST</button>
+              <button id="openStockOrderBtn" class="w-full mt-2 p-2 text-xs font-bold" style="background:#e8f0fe; border:1px solid #9999ff; border-radius:2px; color:#7b1fa2; cursor:pointer;">📋 GENERATE ORDER LIST</button>
             ` : ''}
           </div>
 
           <!-- Supplies Needed -->
-          <div style="border-top:1px solid #333; padding-top:8px;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">🛒 SUPPLIES NEEDED</p>
+          <div style="border-top:1px solid #d0d5dd; padding-top:8px;">
+            <p class="text-xs font-bold uppercase mb-2" style="color:#999; letter-spacing:1px;">🛒 SUPPLIES NEEDED</p>
             ${items.length > 0 ? `
               <div class="space-y-1 text-xs">
                 ${items.map((item, i) => `
-                  <div style="background:#1a1a1a; border:1px solid ${item.urgent ? '#cc3333' : '#333'}; border-radius:2px; padding:6px 8px; display:flex; align-items:center; justify-content:space-between;">
+                  <div style="background:#f5f5f5; border:1px solid ${item.urgent ? '#c5221f' : '#d0d5dd'}; border-radius:2px; padding:6px 8px; display:flex; align-items:center; justify-content:space-between;">
                     <div style="flex:1;">
-                      <span style="color:${item.urgent ? '#ff3333' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
-                      ${item.note ? `<p style="font-size:9px; color:#666; margin-top:2px;">${item.note}</p>` : ''}
-                      <p style="font-size:9px; color:#555;">${item.author} · ${item.time}</p>
+                      <span style="color:${item.urgent ? '#c5221f' : '#ccc'}; font-weight:${item.urgent ? '700' : '400'};">${item.urgent ? '🔴 ' : ''}${item.name}</span>
+                      ${item.note ? `<p style="font-size:9px; color:#999; margin-top:2px;">${item.note}</p>` : ''}
+                      <p style="font-size:9px; color:#999;">${item.author} · ${item.time}</p>
                     </div>
                     <button class="removePharmacyItem bb-btn px-2 py-1 text-xs" data-idx="${i}" style="font-size:9px;">✕</button>
                   </div>
                 `).join('')}
               </div>
-            ` : '<p class="text-xs" style="color:#555; text-align:center; padding:4px;">No items needed</p>'}
+            ` : '<p class="text-xs" style="color:#999; text-align:center; padding:4px;">No items needed</p>'}
             <div class="mt-2">
               <input type="text" id="pharmacyItem" placeholder="Item name" class="w-full border rounded px-2 py-1 text-xs mb-1">
               <input type="text" id="pharmacyNote" placeholder="Notes (optional)" class="w-full border rounded px-2 py-1 text-xs mb-1">
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
                 <button id="addPharmacyBtn" class="bb-btn w-full px-2 py-1 text-xs">+ ADD</button>
-                <button id="addPharmacyUrgentBtn" class="w-full px-2 py-1 text-xs font-bold" style="background:#1f0a0a; border:1px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">🔴 URGENT</button>
+                <button id="addPharmacyUrgentBtn" class="w-full px-2 py-1 text-xs font-bold" style="background:#fce8e6; border:1px solid #c5221f; border-radius:2px; color:#c5221f; cursor:pointer;">🔴 URGENT</button>
               </div>
             </div>
           </div>
@@ -1228,9 +1228,9 @@
         <div id="stockOrderModal" style="display:none;">
           <div class="modal-backdrop" id="stockOrderBackdrop"></div>
           <div class="modal" style="max-height:90vh; padding:0;">
-            <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
-              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📋 Order List</h2>
-              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
+            <div class="sticky top-0 px-4 py-3" style="background:#fff; border-bottom:2px solid #1a73e8; z-index:51; display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="font-bold text-sm uppercase" style="color:#1a73e8; letter-spacing:1px;">📋 Order List</h2>
+              <button id="closeStockOrderBtn" class="px-3 py-1 text-xs font-bold" style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; color:#1a73e8; cursor:pointer;">✕ CLOSE</button>
             </div>
             <div id="stockOrderContent" class="p-4" style="max-height:calc(90vh - 50px); overflow-y:auto;"></div>
           </div>
@@ -1243,15 +1243,15 @@
       return `
         <div class="space-y-2">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="text-xs font-semibold" style="color:#888;">Today's Notes</span>
-            <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #ff9900; border-radius:2px; color:#ff9900; cursor:pointer;">📖 JOURNAL</button>
+            <span class="text-xs font-semibold" style="color:#999;">Today's Notes</span>
+            <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#f5f5f5; border:1px solid #e8710a; border-radius:2px; color:#1a73e8; cursor:pointer;">📖 JOURNAL</button>
           </div>
           ${notes.length > 0 ? `
             <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
-              ${notes.map((n, i) => `<div class="p-2" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;"><div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:#ff9900;">${n.author}</strong><span style="font-size:9px; color:#555;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span></div><span style="color:#ccc;">${n.text}</span></div>`).join('')}
+              ${notes.map((n, i) => `<div class="p-2" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px;"><div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:#1a73e8;">${n.author}</strong><span style="font-size:9px; color:#999;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span></div><span style="color:#444;">${n.text}</span></div>`).join('')}
             </div>
-          ` : '<p class="text-xs" style="color:#555;">No notes yet</p>'}
-          <form id="notesForm" class="space-y-1 pt-2" style="border-top:1px solid #333;">
+          ` : '<p class="text-xs" style="color:#999;">No notes yet</p>'}
+          <form id="notesForm" class="space-y-1 pt-2" style="border-top:1px solid #d0d5dd;">
             <select id="notes_author" class="w-full border rounded px-2 py-1 text-xs">
               <option>Day Nurse</option>
               <option>Night Nurse</option>
@@ -1266,9 +1266,9 @@
         <div id="journalModal" style="display:none;">
           <div class="modal-backdrop" id="journalBackdrop"></div>
           <div class="modal" style="max-height:90vh; padding:0;">
-            <div class="sticky top-0 px-4 py-3" style="background:#111; border-bottom:2px solid #ff9900; z-index:51; display:flex; justify-content:space-between; align-items:center;">
-              <h2 class="font-bold text-sm uppercase" style="color:#ff9900; letter-spacing:1px;">📖 Nursing Journal</h2>
-              <button id="closeJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; color:#ff9900; cursor:pointer;">✕ CLOSE</button>
+            <div class="sticky top-0 px-4 py-3" style="background:#fff; border-bottom:2px solid #1a73e8; z-index:51; display:flex; justify-content:space-between; align-items:center;">
+              <h2 class="font-bold text-sm uppercase" style="color:#1a73e8; letter-spacing:1px;">📖 Nursing Journal</h2>
+              <button id="closeJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; color:#1a73e8; cursor:pointer;">✕ CLOSE</button>
             </div>
             <div id="journalContent" class="p-4 space-y-3 overflow-y-auto" style="max-height:calc(90vh - 50px);"></div>
           </div>
@@ -1300,26 +1300,26 @@
     function renderJournalContent() {
       const allDays = loadJournalNotes();
       if (allDays.length === 0) {
-        return '<p class="text-xs" style="color:#555;">No nursing notes found in any date.</p>';
+        return '<p class="text-xs" style="color:#999;">No nursing notes found in any date.</p>';
       }
       const today = (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })();
       return allDays.map(day => {
         const isToday = day.date === today;
         const dayLabel = isToday ? 'TODAY' : getDayOfWeek(day.date);
         return `
-          <div style="border:1px solid #333; border-radius:2px; overflow:hidden;">
-            <div style="background:#1a1a1a; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333;">
-              <span class="font-bold text-xs" style="color:#ff9900;">${day.date} · ${dayLabel}</span>
-              <span class="text-xs" style="color:#555;">${day.notes.length} note${day.notes.length !== 1 ? 's' : ''}</span>
+          <div style="border:1px solid #d0d5dd; border-radius:2px; overflow:hidden;">
+            <div style="background:#f5f5f5; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #d0d5dd;">
+              <span class="font-bold text-xs" style="color:#1a73e8;">${day.date} · ${dayLabel}</span>
+              <span class="text-xs" style="color:#999;">${day.notes.length} note${day.notes.length !== 1 ? 's' : ''}</span>
             </div>
             <div class="space-y-1 p-2">
               ${day.notes.map(n => `
-                <div class="p-2" style="background:#0a0a0a; border:1px solid #222; border-radius:2px;">
+                <div class="p-2" style="background:#f0f2f5; border:1px solid #dde; border-radius:2px;">
                   <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <strong class="text-xs" style="color:#ff9900;">${n.author || 'Unknown'}</strong>
-                    <span style="font-size:9px; color:#555;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span>
+                    <strong class="text-xs" style="color:#1a73e8;">${n.author || 'Unknown'}</strong>
+                    <span style="font-size:9px; color:#999;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span>
                   </div>
-                  <span class="text-xs" style="color:#ccc;">${n.text}</span>
+                  <span class="text-xs" style="color:#444;">${n.text}</span>
                 </div>
               `).join('')}
             </div>
@@ -1338,25 +1338,25 @@
       return `
         <div class="space-y-2">
           ${activeShift ? `
-            <div style="background:#0a2e0a; border:1px solid #00cc00; border-radius:2px; padding:10px;">
+            <div style="background:#e6f4ea; border:1px solid #137333; border-radius:2px; padding:10px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span class="text-xs font-bold" style="color:#00ff00;">🟢 SHIFT ACTIVE</span>
-                <span class="text-xs" style="color:#888;">${startTime}</span>
+                <span class="text-xs font-bold" style="color:#137333;">🟢 SHIFT ACTIVE</span>
+                <span class="text-xs" style="color:#999;">${startTime}</span>
               </div>
-              <p class="text-sm font-bold mt-1" style="color:#ff9900;">${nurseName}</p>
+              <p class="text-sm font-bold mt-1" style="color:#1a73e8;">${nurseName}</p>
             </div>
-            <div class="pt-2 space-y-2" style="border-top:1px solid #333;">
-              <label class="block text-xs font-bold" style="color:#888;">END SHIFT</label>
-              <button id="endShiftBtn" class="w-full p-2 font-bold text-xs" style="background:#1f0a0a; border:2px solid #cc3333; border-radius:2px; color:#ff3333; cursor:pointer;">
+            <div class="pt-2 space-y-2" style="border-top:1px solid #d0d5dd;">
+              <label class="block text-xs font-bold" style="color:#999;">END SHIFT</label>
+              <button id="endShiftBtn" class="w-full p-2 font-bold text-xs" style="background:#fce8e6; border:2px solid #cc3333; border-radius:2px; color:#c5221f; cursor:pointer;">
                 🔴 END SHIFT & CONFIRM DATA
               </button>
             </div>
           ` : `
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:10px; text-align:center;">
-              <span class="text-xs" style="color:#555;">No active shift</span>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:10px; text-align:center;">
+              <span class="text-xs" style="color:#999;">No active shift</span>
             </div>
-            <div class="space-y-2 pt-2" style="border-top:1px solid #333;">
-              <label class="block text-xs font-bold" style="color:#888;">START SHIFT</label>
+            <div class="space-y-2 pt-2" style="border-top:1px solid #d0d5dd;">
+              <label class="block text-xs font-bold" style="color:#999;">START SHIFT</label>
               <select id="nurseNameSelect" class="w-full border rounded px-2 py-2 text-xs">
                 <option value="">-- Select Nurse --</option>
                 <option value="Farhad">Farhad</option>
@@ -1368,15 +1368,15 @@
             </div>
           `}
           ${(shift.history || []).length > 0 ? `
-            <div class="pt-2 space-y-1" style="border-top:1px solid #333;">
-              <span class="text-xs font-bold" style="color:#888;">TODAY'S SHIFTS</span>
+            <div class="pt-2 space-y-1" style="border-top:1px solid #d0d5dd;">
+              <span class="text-xs font-bold" style="color:#999;">TODAY'S SHIFTS</span>
               ${shift.history.map(h => `
-                <div class="p-2 text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;">
+                <div class="p-2 text-xs" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px;">
                   <div style="display:flex; justify-content:space-between;">
-                    <strong style="color:#ff9900;">${h.name}</strong>
-                    <span style="color:#555;">${h.start} - ${h.end || 'ongoing'}</span>
+                    <strong style="color:#1a73e8;">${h.name}</strong>
+                    <span style="color:#999;">${h.start} - ${h.end || 'ongoing'}</span>
                   </div>
-                  <span style="color:${h.dataConfirmed ? '#00ff00' : '#ff3333'};">${h.dataConfirmed ? '✓ Data confirmed' : '✗ Missing data'}</span>
+                  <span style="color:${h.dataConfirmed ? '#137333' : '#c5221f'};">${h.dataConfirmed ? '✓ Data confirmed' : '✗ Missing data'}</span>
                 </div>
               `).join('')}
             </div>
@@ -1392,18 +1392,18 @@
           ${tasks.length > 0 ? `
             <div class="space-y-1">
               ${tasks.map((t, i) => `
-                <div class="flex items-center gap-2 p-2 text-xs" style="background:#1a1a1a; border:1px solid #222; border-radius:2px;">
-                  <button class="customTaskToggle" data-idx="${i}" style="width:24px; height:24px; border:2px solid ${t.done ? '#00cc00' : '#333'}; border-radius:2px; background:${t.done ? '#0a2e0a' : '#1a1a1a'}; color:${t.done ? '#00ff00' : '#555'}; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${t.done ? '✓' : ''}</button>
+                <div class="flex items-center gap-2 p-2 text-xs" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px;">
+                  <button class="customTaskToggle" data-idx="${i}" style="width:24px; height:24px; border:2px solid ${t.done ? '#137333' : '#d0d5dd'}; border-radius:2px; background:${t.done ? '#e6f4ea' : '#f5f5f5'}; color:${t.done ? '#137333' : '#555'}; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${t.done ? '✓' : ''}</button>
                   <span style="color:${t.done ? '#555; text-decoration:line-through' : '#ccc'}; flex:1;">${t.text}</span>
-                  <button class="removeCustomTask" data-idx="${i}" style="color:#ff3333; background:none; border:none; cursor:pointer; font-size:12px; min-height:24px; padding:0 4px;">✕</button>
+                  <button class="removeCustomTask" data-idx="${i}" style="color:#c5221f; background:none; border:none; cursor:pointer; font-size:12px; min-height:24px; padding:0 4px;">✕</button>
                 </div>
               `).join('')}
             </div>
-            <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:6px; text-align:center;">
-              <span style="font-size:10px; color:#888;">${tasks.filter(t => t.done).length} / ${tasks.length} COMPLETED</span>
+            <div style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; padding:6px; text-align:center;">
+              <span style="font-size:10px; color:#999;">${tasks.filter(t => t.done).length} / ${tasks.length} COMPLETED</span>
             </div>
-          ` : '<p class="text-xs" style="color:#555;">No tasks for today</p>'}
-          <div class="pt-2 space-y-1" style="border-top:1px solid #333;">
+          ` : '<p class="text-xs" style="color:#999;">No tasks for today</p>'}
+          <div class="pt-2 space-y-1" style="border-top:1px solid #d0d5dd;">
             <input type="text" id="customTaskInput" placeholder="Add task for today..." class="w-full border rounded px-2 py-2 text-xs">
             <button id="addCustomTaskBtn" class="bb-btn w-full px-2 py-2 text-xs">+ ADD TASK</button>
           </div>
@@ -1419,11 +1419,11 @@
 
       return `
         <div class="max-w-6xl mx-auto px-4 py-4 overflow-x-auto">
-          <table class="w-full text-xs border-collapse" style="border:1px solid #333;">
+          <table class="w-full text-xs border-collapse" style="border:1px solid #d0d5dd;">
             <thead>
               <tr>
-                <th class="p-2 font-bold uppercase" style="background:#1a1a1a; color:#ff9900; border:1px solid #333;">METRIC</th>
-                ${days.map(d => `<th class="p-2 font-bold" style="background:#1a1a1a; color:#ff9900; border:1px solid #333;">${getDayOfWeek(d)}<br><span style="color:#888;">${d.substring(5)}</span></th>`).join('')}
+                <th class="p-2 font-bold uppercase" style="background:#f5f5f5; color:#1a73e8; border:1px solid #d0d5dd;">METRIC</th>
+                ${days.map(d => `<th class="p-2 font-bold" style="background:#f5f5f5; color:#1a73e8; border:1px solid #d0d5dd;">${getDayOfWeek(d)}<br><span style="color:#999;">${d.substring(5)}</span></th>`).join('')}
               </tr>
             </thead>
             <tbody>
@@ -1471,7 +1471,7 @@
     function renderWeeklyRow(label, path, days) {
       return `
         <tr>
-          <td style="border:1px solid #333; padding:4px; font-weight:700; font-size:11px; white-space:nowrap; color:#ff9900; background:#1a1a1a;">${label}</td>
+          <td style="border:1px solid #d0d5dd; padding:4px; font-weight:700; font-size:11px; white-space:nowrap; color:#1a73e8; background:#f5f5f5;">${label}</td>
           ${days.map(d => {
             const dd = getWeekDayData(d);
             let val = '-';
@@ -1496,7 +1496,7 @@
               val = obj;
             }
 
-            return '<td style="border:1px solid #333; padding:4px; text-align:center; font-size:11px; font-weight:600; background:#111;" class="' + color + '">' + val + '</td>';
+            return '<td style="border:1px solid #d0d5dd; padding:4px; text-align:center; font-size:11px; font-weight:600; background:#fff;" class="' + color + '">' + val + '</td>';
           }).join('')}
         </tr>
       `;
@@ -1529,17 +1529,17 @@
 
       calendarHtml = `
         <div class="max-w-6xl mx-auto px-4 py-4">
-          <h3 class="text-sm font-bold mb-4 uppercase" style="color:#ff9900; letter-spacing:1px;">${new Date(state.currentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
+          <h3 class="text-sm font-bold mb-4 uppercase" style="color:#1a73e8; letter-spacing:1px;">${new Date(state.currentDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>
           <div class="grid grid-cols-7 gap-1 mb-4">
-            ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="text-center font-bold text-xs p-2" style="color:#888;">${d}</div>`).join('')}
+            ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => `<div class="text-center font-bold text-xs p-2" style="color:#999;">${d}</div>`).join('')}
           </div>
           <div class="grid grid-cols-7 gap-1">
             ${weeks.map(w => w.map(d => {
-              if (!d) return '<div style="background:#0a0a0a; border:1px solid #1a1a1a; border-radius:2px;" class="aspect-square"></div>';
+              if (!d) return '<div style="background:#f0f2f5; border:1px solid #1a1a1a; border-radius:2px;" class="aspect-square"></div>';
               return `
-                <button class="monthly-day aspect-square flex flex-col items-center justify-center text-xs font-bold" style="background:#111; border:1px solid #333; border-radius:2px; color:#ff9900;" data-date="${d}">
+                <button class="monthly-day aspect-square flex flex-col items-center justify-center text-xs font-bold" style="background:#fff; border:1px solid #d0d5dd; border-radius:2px; color:#1a73e8;" data-date="${d}">
                   <span>${d.substring(8)}</span>
-                  <span style="font-size:9px; color:#555;">--%</span>
+                  <span style="font-size:9px; color:#999;">--%</span>
                 </button>
               `;
             }).join('')).join('')}
@@ -2283,13 +2283,13 @@
             const lowItems = stock.filter(s => s.qty <= 7);
             content.innerHTML = `
               <div class="space-y-2">
-                <p class="text-xs" style="color:#888;">Items to order (≤7 days supply):</p>
+                <p class="text-xs" style="color:#999;">Items to order (≤7 days supply):</p>
                 ${lowItems.length > 0 ? lowItems.map(s => `
-                  <div class="p-2 text-xs" style="background:#1a1a1a; border:1px solid #333; border-radius:2px; display:flex; justify-content:space-between;">
-                    <strong style="color:#ff9900;">${s.name}</strong>
-                    <span style="color:${s.qty <= 0 ? '#ff3333' : '#ff9900'};">Stock: ${s.qty} ${s.unit}</span>
+                  <div class="p-2 text-xs" style="background:#f5f5f5; border:1px solid #d0d5dd; border-radius:2px; display:flex; justify-content:space-between;">
+                    <strong style="color:#1a73e8;">${s.name}</strong>
+                    <span style="color:${s.qty <= 0 ? '#c5221f' : '#1a73e8'};">Stock: ${s.qty} ${s.unit}</span>
                   </div>
-                `).join('') : '<p class="text-xs" style="color:#00ff00;">All medicines well stocked!</p>'}
+                `).join('') : '<p class="text-xs" style="color:#137333;">All medicines well stocked!</p>'}
               </div>
             `;
             modal.style.display = 'block';
