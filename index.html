@@ -442,37 +442,41 @@
       const compliance = calculateCompliance();
       const t = state.activeTab;
 
-      // Tab definitions
+      // Tab definitions — matches actual daily nursing workflow
       const tabs = [
         { id: 'shift', label: 'Shift' },
         { id: 'meds', label: 'Medications' },
-        { id: 'dailycare', label: 'Daily Care' },
-        { id: 'activities', label: 'Activities' }
+        { id: 'meals', label: 'Meals & Fluids' },
+        { id: 'care', label: 'Care' }
       ];
 
       // Tab content mapping
       const tabContent = {
+        // Shift handoff: nurse arrives → start shift → vitals → notes → check tasks/events
         shift: `
           ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
           ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
           ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+          ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
+          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
         `,
+        // All medicine-related: AM meds → PM meds + supplements → stock/pharmacy
         meds: `
           ${renderCard('Medications', '💊', renderMedicationsCard(data))}
           ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
           ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
         `,
-        dailycare: `
-          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+        // Meals throughout the day + fluid/urine tracking
+        meals: `
           ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
           ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
-          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
-          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
         `,
-        activities: `
+        // Body care routines: diaper/hygiene → physio → lounge/activities → BiPAP at night
+        care: `
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
           ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
-          ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
-          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
+          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
         `
       };
 
