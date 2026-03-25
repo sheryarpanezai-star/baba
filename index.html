@@ -859,13 +859,26 @@
             <button id="toggleOralCare" class="p-2 rounded border-2 ${hyg.oralCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🦷 Oral Care ${hyg.oralCare ? '✓' : ''}</button>
             <button id="toggleSkinCare" class="p-2 rounded border-2 ${hyg.skinCare ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">💅 Skin Care ${hyg.skinCare ? '✓' : ''}</button>
           </div>
-          <!-- Diaper Change -->
-          <div class="text-xs space-y-1 pt-2 border-t">
-            <label class="block font-semibold">🩹 Diaper Change</label>
-            <div class="flex gap-1">
-              <button id="toggleDiaperAM" class="flex-1 p-2 rounded border-2 ${hyg.diaperAM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">☀️ AM ${hyg.diaperAM ? '✓' : ''}</button>
-              <button id="toggleDiaperPM" class="flex-1 p-2 rounded border-2 ${hyg.diaperPM ? 'border-green-500 bg-green-50' : 'border-gray-300'} font-semibold">🌙 PM ${hyg.diaperPM ? '✓' : ''}</button>
+          <!-- Diaper Changes (log-based, multiple per day) -->
+          <div class="text-xs space-y-2 pt-2 border-t">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label class="block font-semibold">🩹 Diaper Changes</label>
+              <span style="font-size:10px; color:#666;">${(hyg.diaperLog || []).length} today</span>
             </div>
+            <button id="logDiaperChange" class="w-full p-2 font-bold text-xs bb-btn" style="border-radius:8px;">+ LOG DIAPER CHANGE</button>
+            ${(hyg.diaperLog || []).length > 0 ? `
+              <div style="background:#f5f8ff; border:1px solid #e8ecf0; border-radius:8px; padding:8px;">
+                ${(hyg.diaperLog || []).map((entry, i) => `
+                  <div style="display:flex; justify-content:space-between; align-items:center; padding:4px 0;${i > 0 ? ' border-top:1px solid #e8ecf0;' : ''}">
+                    <span style="font-size:11px; color:#333;">🩹 Change #${i + 1}</span>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                      <span style="font-size:11px; color:#1a73e8; font-weight:600;">${entry.time}</span>
+                      <button class="removeDiaperLog" data-idx="${i}" style="font-size:10px; color:#c5221f; background:none; border:none; cursor:pointer; min-height:24px; padding:0 4px;">✕</button>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
           </div>
 
           <!-- Brush Teeth -->
@@ -1496,8 +1509,7 @@
               ${renderWeeklyRow('💊 K-Lyte', 'supplements.klyte', days)}
               ${renderWeeklyRow('💊 Mg', 'supplements.magnesium', days)}
               ${renderWeeklyRow('💊 Omega3', 'supplements.omega3', days)}
-              ${renderWeeklyRow('🩹 Diaper AM', 'hygiene.diaperAM', days)}
-              ${renderWeeklyRow('🩹 Diaper PM', 'hygiene.diaperPM', days)}
+              ${renderWeeklyRow('🩹 Diapers', 'hygiene.diaperLog.length', days)}
               ${renderWeeklyRow('🪥 Brush', 'hygiene.brushCount', days)}
               ${renderWeeklyRow('🪒 Shave', 'hygiene.shaved', days)}
               ${renderWeeklyRow('🛁 Bath', 'hygiene.fullBath', days)}
@@ -1533,6 +1545,11 @@
               const count = (hyg.brushAM ? 1 : 0) + (hyg.brushPM ? 1 : 0);
               val = count + '/2';
               color = count === 2 ? 'text-green-600' : count === 1 ? 'text-amber-600' : 'text-red-500';
+            } else if (path === 'hygiene.diaperLog.length') {
+              const hyg = dd.hygiene || {};
+              const count = (hyg.diaperLog || []).length;
+              val = count || '—';
+              color = count >= 2 ? 'text-green-600' : count === 1 ? 'text-amber-600' : 'text-gray-300';
             } else if (typeof obj === 'boolean') {
               val = obj ? '✓' : '—';
               color = obj ? 'text-green-600' : 'text-gray-300';
@@ -1845,21 +1862,27 @@
         });
       });
 
-      // Hygiene
-      if (document.getElementById('toggleDiaperAM')) {
-        document.getElementById('toggleDiaperAM').addEventListener('click', () => {
+      // Hygiene — Diaper change log
+      if (document.getElementById('logDiaperChange')) {
+        document.getElementById('logDiaperChange').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
-          state.dailyData.hygiene.diaperAM = !state.dailyData.hygiene.diaperAM;
+          if (!state.dailyData.hygiene.diaperLog) state.dailyData.hygiene.diaperLog = [];
+          const now = new Date();
+          const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+          state.dailyData.hygiene.diaperLog.push({ time: timeStr });
           saveDayData();
+          render();
         });
       }
-      if (document.getElementById('toggleDiaperPM')) {
-        document.getElementById('toggleDiaperPM').addEventListener('click', () => {
-          if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
-          state.dailyData.hygiene.diaperPM = !state.dailyData.hygiene.diaperPM;
+      document.querySelectorAll('.removeDiaperLog').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const idx = parseInt(e.target.dataset.idx);
+          if (!state.dailyData.hygiene || !state.dailyData.hygiene.diaperLog) return;
+          state.dailyData.hygiene.diaperLog.splice(idx, 1);
           saveDayData();
+          render();
         });
-      }
+      });
 
       if (document.getElementById('toggleOralCare')) {
         document.getElementById('toggleOralCare').addEventListener('click', () => {
@@ -2608,8 +2631,7 @@
       // Hygiene
       const hyg = d.hygiene || {};
       const hygDone = [];
-      if (hyg.diaperAM) hygDone.push('Diaper AM');
-      if (hyg.diaperPM) hygDone.push('Diaper PM');
+      if (hyg.diaperLog && hyg.diaperLog.length > 0) hygDone.push('Diaper x' + hyg.diaperLog.length + ' (' + hyg.diaperLog.map(e => e.time).join(', ') + ')');
       if (hyg.oralCare) hygDone.push('Oral Care');
       if (hyg.skinCare) hygDone.push('Skin Care');
       if (hyg.brushAM) hygDone.push('Brush AM');
