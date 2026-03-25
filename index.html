@@ -146,7 +146,18 @@
       const n = nowPKT();
       return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0');
     }
-    function pktISO() { return pktISO(); }
+    function pktISO() { return nowPKT().toISOString(); }
+
+    // ============= AUTO-JOURNAL =============
+    function logJournal(emoji, msg) {
+      if (!state.dailyData) return;
+      if (!state.dailyData.journal) state.dailyData.journal = [];
+      const t = pktTimeStr();
+      // Avoid duplicate entries within 5 seconds (same message)
+      const last = state.dailyData.journal[state.dailyData.journal.length - 1];
+      if (last && last.msg === msg && last.time === t) return;
+      state.dailyData.journal.push({ time: t, emoji, msg });
+    }
 
     // ============= STATE MANAGEMENT =============
     const state = {
@@ -1457,27 +1468,51 @@
 
     function renderNursingNotesCard(data) {
       const notes = data.notes || [];
+      const journal = data.journal || [];
+      const recentJournal = journal.slice(-8).reverse();
       return `
         <div class="space-y-2">
+          <!-- Activity Journal Feed -->
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="text-xs font-semibold" style="color:#999;">Today's Notes</span>
-            <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#f5f5f5; border:1px solid #e8710a; border-radius:2px; color:#1a73e8; cursor:pointer;">📖 JOURNAL</button>
-          </div>
-          ${notes.length > 0 ? `
-            <div class="space-y-1 text-xs max-h-32 overflow-y-auto">
-              ${notes.map((n, i) => `<div class="p-2" style="background:#f5f5f5; border:1px solid #dde; border-radius:2px;"><div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:#1a73e8;">${n.author}</strong><span style="font-size:9px; color:#999;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span></div><span style="color:#444;">${n.text}</span></div>`).join('')}
+            <span class="text-xs font-semibold" style="color:#1a73e8;">Activity Log</span>
+            <div style="display:flex; gap:6px;">
+              <span style="font-size:10px; color:#888;">${journal.length} events</span>
+              <button id="openJournalBtn" class="px-3 py-1 text-xs font-bold" style="background:#f5f5f5; border:1px solid #1a73e8; border-radius:6px; color:#1a73e8; cursor:pointer;">📖 FULL LOG</button>
             </div>
-          ` : '<p class="text-xs" style="color:#999;">No notes yet</p>'}
-          <form id="notesForm" class="space-y-1 pt-2" style="border-top:1px solid #d0d5dd;">
-            <select id="notes_author" class="w-full border rounded px-2 py-1 text-xs">
-              <option>Day Nurse</option>
-              <option>Night Nurse</option>
-              <option>Family</option>
-              <option>Doctor</option>
-            </select>
-            <textarea id="notes_text" placeholder="Add note..." class="w-full border rounded px-2 py-1 text-xs" rows="2"></textarea>
-            <button type="button" id="addNoteBtn" class="bb-btn w-full px-2 py-1 text-xs">ADD NOTE</button>
-          </form>
+          </div>
+          ${recentJournal.length > 0 ? `
+            <div style="background:#f8fafc; border:1px solid #e8ecf0; border-radius:8px; padding:8px; max-height:180px; overflow-y:auto;">
+              ${recentJournal.map(j => `
+                <div style="display:flex; align-items:flex-start; gap:6px; padding:4px 0; border-bottom:1px solid #f0f0f0;">
+                  <span style="font-size:12px; flex-shrink:0;">${j.emoji}</span>
+                  <div style="flex:1; min-width:0;">
+                    <span style="font-size:11px; color:#333;">${j.msg}</span>
+                  </div>
+                  <span style="font-size:9px; color:#999; flex-shrink:0; padding-top:2px;">${j.time}</span>
+                </div>
+              `).join('')}
+            </div>
+          ` : '<p class="text-xs" style="color:#999;">No activity yet today</p>'}
+
+          <!-- Manual Notes -->
+          <div style="border-top:1px solid #e8ecf0; padding-top:8px; margin-top:4px;">
+            <span class="text-xs font-semibold" style="color:#999;">Nurse Notes</span>
+            ${notes.length > 0 ? `
+              <div class="space-y-1 text-xs max-h-32 overflow-y-auto" style="margin-top:4px;">
+                ${notes.map((n, i) => `<div class="p-2" style="background:#f5f5f5; border:1px solid #dde; border-radius:6px;"><div style="display:flex; justify-content:space-between; align-items:center;"><strong style="color:#1a73e8;">${n.author}</strong><span style="font-size:9px; color:#999;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span></div><span style="color:#444;">${n.text}</span></div>`).join('')}
+              </div>
+            ` : ''}
+            <form id="notesForm" class="space-y-1 pt-2">
+              <select id="notes_author" class="w-full border rounded px-2 py-1 text-xs">
+                <option>Day Nurse</option>
+                <option>Night Nurse</option>
+                <option>Family</option>
+                <option>Doctor</option>
+              </select>
+              <textarea id="notes_text" placeholder="Add note..." class="w-full border rounded px-2 py-1 text-xs" rows="2"></textarea>
+              <button type="button" id="addNoteBtn" class="bb-btn w-full px-2 py-1 text-xs">ADD NOTE</button>
+            </form>
+          </div>
         </div>
         <!-- Journal Modal -->
         <div id="journalModal" style="display:none;">
@@ -1515,28 +1550,53 @@
     }
 
     function renderJournalContent() {
-      const allDays = loadJournalNotes();
+      // Collect journal + notes from all days
+      const allDays = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('day_')) {
+          try {
+            const dayData = JSON.parse(localStorage.getItem(key));
+            const dateKey = key.replace('day_', '');
+            const dateStr = dateKey.substring(0, 4) + '-' + dateKey.substring(4, 6) + '-' + dateKey.substring(6, 8);
+            const journal = dayData.journal || [];
+            const notes = dayData.notes || [];
+            if (journal.length > 0 || notes.length > 0) {
+              allDays.push({ date: dateStr, journal, notes });
+            }
+          } catch(e) {}
+        }
+      }
+      allDays.sort((a, b) => b.date.localeCompare(a.date));
+
       if (allDays.length === 0) {
-        return '<p class="text-xs" style="color:#999;">No nursing notes found in any date.</p>';
+        return '<p class="text-xs" style="color:#999;">No activity recorded yet.</p>';
       }
       const today = pktDateStr();
       return allDays.map(day => {
         const isToday = day.date === today;
         const dayLabel = isToday ? 'TODAY' : getDayOfWeek(day.date);
+        // Merge journal entries and notes into one timeline sorted by time
+        const combined = [];
+        day.journal.forEach(j => combined.push({ type: 'auto', time: j.time, emoji: j.emoji, msg: j.msg }));
+        day.notes.forEach(n => {
+          const t = n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', hour12:false}) : '??:??';
+          combined.push({ type: 'note', time: t, emoji: '📝', msg: n.author + ': ' + n.text });
+        });
+        combined.sort((a, b) => a.time.localeCompare(b.time));
+
         return `
-          <div style="border:1px solid #d0d5dd; border-radius:2px; overflow:hidden;">
-            <div style="background:#f5f5f5; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #d0d5dd;">
+          <div style="border:1px solid #e8ecf0; border-radius:10px; overflow:hidden; margin-bottom:8px;">
+            <div style="background:#f8fafc; padding:8px 12px; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #e8ecf0;">
               <span class="font-bold text-xs" style="color:#1a73e8;">${day.date} · ${dayLabel}</span>
-              <span class="text-xs" style="color:#999;">${day.notes.length} note${day.notes.length !== 1 ? 's' : ''}</span>
+              <span class="text-xs" style="color:#999;">${combined.length} events</span>
             </div>
-            <div class="space-y-1 p-2">
-              ${day.notes.map(n => `
-                <div class="p-2" style="background:#f0f2f5; border:1px solid #dde; border-radius:2px;">
-                  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-                    <strong class="text-xs" style="color:#1a73e8;">${n.author || 'Unknown'}</strong>
-                    <span style="font-size:9px; color:#999;">${n.timestamp ? new Date(n.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : ''}</span>
-                  </div>
-                  <span class="text-xs" style="color:#444;">${n.text}</span>
+            <div style="padding:6px 10px;">
+              ${combined.map(e => `
+                <div style="display:flex; align-items:flex-start; gap:6px; padding:4px 0; border-bottom:1px solid #f5f5f5;">
+                  <span style="font-size:11px; flex-shrink:0;">${e.emoji}</span>
+                  <span style="font-size:11px; color:${e.type === 'note' ? '#1a73e8' : '#333'}; flex:1;">${e.msg}</span>
+                  <span style="font-size:9px; color:#999; flex-shrink:0;">${e.time}</span>
                 </div>
               `).join('')}
             </div>
@@ -1923,6 +1983,7 @@
             if (!state.dailyData.vitals) state.dailyData.vitals = {};
             const now = nowPKT();
             state.dailyData.vitals[shift] = { bp, hr, o2, temp, sugar, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+            logJournal('♥️', 'Vitals recorded (' + shift + ' shift): BP ' + bp + ', HR ' + hr + ', O₂ ' + o2);
             saveDayData();
           }
         });
@@ -1937,6 +1998,7 @@
             return;
           }
           state.dailyData.morningMed = !state.dailyData.morningMed;
+          logJournal('💊', state.dailyData.morningMed ? 'AM medications given' : 'AM medications unmarked');
           saveDayData();
           render();
         });
@@ -1950,6 +2012,7 @@
             return;
           }
           state.dailyData.eveningMed = !state.dailyData.eveningMed;
+          logJournal('💊', state.dailyData.eveningMed ? 'PM medications given' : 'PM medications unmarked');
           saveDayData();
           render();
         });
@@ -1974,6 +2037,7 @@
           if (!state.dailyData.supplements) state.dailyData.supplements = {};
           const klyte = parseFloat(document.getElementById('sup_klyte').value) || 0;
           if (klyte) state.dailyData.supplements.klyte = klyte;
+          logJournal('💊', 'Supplements saved' + (klyte ? ' (K-Lyte: ' + klyte + ' mL)' : ''));
           saveDayData();
         });
       }
@@ -1981,6 +2045,7 @@
         document.getElementById('toggleOmega3').addEventListener('click', () => {
           if (!state.dailyData.supplements) state.dailyData.supplements = {};
           state.dailyData.supplements.omega3 = !state.dailyData.supplements.omega3;
+          logJournal('💊', state.dailyData.supplements.omega3 ? 'Omega 3 given' : 'Omega 3 unmarked');
           saveDayData();
         });
       }
@@ -1988,6 +2053,7 @@
         document.getElementById('toggleMagnesium').addEventListener('click', () => {
           if (!state.dailyData.supplements) state.dailyData.supplements = {};
           state.dailyData.supplements.magnesium = !state.dailyData.supplements.magnesium;
+          logJournal('💊', state.dailyData.supplements.magnesium ? 'Magnesium given' : 'Magnesium unmarked');
           saveDayData();
         });
       }
@@ -1995,6 +2061,7 @@
         document.getElementById('toggleEnsureDay').addEventListener('click', () => {
           if (!state.dailyData.supplements) state.dailyData.supplements = {};
           state.dailyData.supplements.ensureDay = !state.dailyData.supplements.ensureDay;
+          logJournal('🥛', state.dailyData.supplements.ensureDay ? 'Ensure (day) given' : 'Ensure (day) unmarked');
           saveDayData();
         });
       }
@@ -2002,6 +2069,7 @@
         document.getElementById('toggleEnsureNight').addEventListener('click', () => {
           if (!state.dailyData.supplements) state.dailyData.supplements = {};
           state.dailyData.supplements.ensureNight = !state.dailyData.supplements.ensureNight;
+          logJournal('🥛', state.dailyData.supplements.ensureNight ? 'Ensure (night) given' : 'Ensure (night) unmarked');
           saveDayData();
         });
       }
@@ -2018,6 +2086,7 @@
           const debrisEl = document.getElementById('urineDebrisInput');
           if (colorEl) state.dailyData.urineColor = colorEl.value || '';
           if (debrisEl) state.dailyData.urineDebris = debrisEl.value || '';
+          logJournal('💧', 'Fluid balance saved (Water Day: ' + state.dailyData.waterDay + ' mL, Urine Day: ' + state.dailyData.urineDay + ' mL)');
           saveDayData();
           render();
         });
@@ -2033,6 +2102,7 @@
           const note = noteEl ? noteEl.value.trim() : '';
           const now = nowPKT();
           state.dailyData.meals[mealId] = { pct, note, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) };
+          logJournal('🍽️', mealId.charAt(0).toUpperCase() + mealId.slice(1) + ' recorded: ' + pct + '% eaten');
           saveDayData();
         });
       });
@@ -2045,6 +2115,7 @@
           const now = nowPKT();
           const timeStr = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
           state.dailyData.hygiene.diaperLog.push({ time: timeStr });
+          logJournal('🩹', 'Diaper changed at ' + timeStr);
           saveDayData();
           render();
         });
@@ -2063,6 +2134,7 @@
         document.getElementById('toggleOralCare').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.oralCare = !state.dailyData.hygiene.oralCare;
+          logJournal('🪥', state.dailyData.hygiene.oralCare ? 'Oral care done' : 'Oral care unmarked');
           saveDayData();
         });
       }
@@ -2071,6 +2143,7 @@
         document.getElementById('toggleSkinCare').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.skinCare = !state.dailyData.hygiene.skinCare;
+          logJournal('🧴', state.dailyData.hygiene.skinCare ? 'Skin care done' : 'Skin care unmarked');
           saveDayData();
         });
       }
@@ -2079,6 +2152,7 @@
         document.getElementById('toggleBrushAM').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.brushAM = !state.dailyData.hygiene.brushAM;
+          logJournal('🪥', state.dailyData.hygiene.brushAM ? 'AM brushing done' : 'AM brushing unmarked');
           saveDayData();
         });
       }
@@ -2087,6 +2161,7 @@
         document.getElementById('toggleBrushPM').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.brushPM = !state.dailyData.hygiene.brushPM;
+          logJournal('🪥', state.dailyData.hygiene.brushPM ? 'PM brushing done' : 'PM brushing unmarked');
           saveDayData();
         });
       }
@@ -2095,6 +2170,7 @@
         document.getElementById('toggleUrineBag').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.urineBagChanged = !state.dailyData.hygiene.urineBagChanged;
+          logJournal('🚰', state.dailyData.hygiene.urineBagChanged ? 'Urine bag changed' : 'Urine bag change unmarked');
           if (state.dailyData.hygiene.urineBagChanged) {
             // Store previous date before overwriting so we can revert on untoggle
             const prev = localStorage.getItem('lastUrineBagDate') || '2025-03-17';
@@ -2113,6 +2189,7 @@
         document.getElementById('toggleShave').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.shaved = !state.dailyData.hygiene.shaved;
+          logJournal('🪒', state.dailyData.hygiene.shaved ? 'Shaved' : 'Shave unmarked');
           saveDayData();
         });
       }
@@ -2121,6 +2198,7 @@
         document.getElementById('toggleFullBath').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.fullBath = !state.dailyData.hygiene.fullBath;
+          logJournal('🛁', state.dailyData.hygiene.fullBath ? 'Full bath done' : 'Full bath unmarked');
           saveDayData();
         });
       }
@@ -2129,6 +2207,7 @@
         document.getElementById('toggleCleanNoseEars').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.cleanNoseEars = !state.dailyData.hygiene.cleanNoseEars;
+          logJournal('👃', state.dailyData.hygiene.cleanNoseEars ? 'Nose & ears cleaned' : 'Nose & ears unmarked');
           saveDayData();
         });
       }
@@ -2137,6 +2216,7 @@
         document.getElementById('toggleTrimNails').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.trimNails = !state.dailyData.hygiene.trimNails;
+          logJournal('✂️', state.dailyData.hygiene.trimNails ? 'Nails trimmed' : 'Nails trimmed unmarked');
           saveDayData();
         });
       }
@@ -2145,6 +2225,7 @@
         document.getElementById('toggleHaircut').addEventListener('click', () => {
           if (!state.dailyData.hygiene) state.dailyData.hygiene = {};
           state.dailyData.hygiene.haircut = !state.dailyData.hygiene.haircut;
+          logJournal('💇', state.dailyData.hygiene.haircut ? 'Haircut done' : 'Haircut unmarked');
           saveDayData();
         });
       }
@@ -2155,6 +2236,7 @@
           if (!state.dailyData.hygiene.repositioning) state.dailyData.hygiene.repositioning = [];
           const now = pktTime12();
           state.dailyData.hygiene.repositioning.push(now);
+          logJournal('🔄', 'Patient repositioned');
           saveDayData();
           render();
         });
@@ -2166,6 +2248,7 @@
           if (!state.dailyData.hygiene.handCleaning) state.dailyData.hygiene.handCleaning = [];
           const now = pktTime12();
           state.dailyData.hygiene.handCleaning.push(now);
+          logJournal('🧼', 'Hand cleaning done');
           saveDayData();
           render();
         });
@@ -2178,6 +2261,7 @@
           btn.addEventListener('click', () => {
             if (!state.dailyData.physio) state.dailyData.physio = {};
             state.dailyData.physio[id] = !state.dailyData.physio[id];
+            logJournal('🏋️', (state.dailyData.physio[id] ? 'Physio: ' : 'Physio unmarked: ') + id);
             saveDayData();
           });
         }
@@ -2190,6 +2274,7 @@
             if (!state.dailyData.physio.log) state.dailyData.physio.log = [];
             const now = nowPKT();
             state.dailyData.physio.log.push({ time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), note });
+            logJournal('🏋️', 'Physio note: ' + note);
             saveDayData();
           }
         });
@@ -2202,6 +2287,7 @@
           state.dailyData.bipapNight = parseFloat(document.getElementById('bipapNightInput').value) || 0;
           state.dailyData.sleepDay = parseFloat(document.getElementById('sleepDayInput').value) || 0;
           state.dailyData.sleepNight = parseFloat(document.getElementById('sleepNightInput').value) || 0;
+          logJournal('🌬️', 'BiPAP/Sleep saved (BiPAP: ' + (state.dailyData.bipapDay + state.dailyData.bipapNight) + ' hrs)');
           saveDayData();
         });
       }
@@ -2210,6 +2296,7 @@
       if (document.getElementById('toggleBipapCleanMask')) {
         document.getElementById('toggleBipapCleanMask').addEventListener('click', () => {
           state.dailyData.bipapCleanMask = !state.dailyData.bipapCleanMask;
+          logJournal('🌬️', state.dailyData.bipapCleanMask ? 'BiPAP mask cleaned' : 'BiPAP mask clean unmarked');
           saveDayData();
           render();
         });
@@ -2217,6 +2304,7 @@
       if (document.getElementById('toggleBipapCheckWater')) {
         document.getElementById('toggleBipapCheckWater').addEventListener('click', () => {
           state.dailyData.bipapCheckWater = !state.dailyData.bipapCheckWater;
+          logJournal('🌬️', state.dailyData.bipapCheckWater ? 'BiPAP water checked' : 'BiPAP water check unmarked');
           saveDayData();
           render();
         });
@@ -2224,6 +2312,7 @@
       if (document.getElementById('logBipapWash')) {
         document.getElementById('logBipapWash').addEventListener('click', () => {
           state.dailyData.bipapWashMaskTube = !state.dailyData.bipapWashMaskTube;
+          logJournal('🌬️', state.dailyData.bipapWashMaskTube ? 'BiPAP mask & tube washed' : 'BiPAP wash unmarked');
           if (state.dailyData.bipapWashMaskTube) {
             localStorage.setItem('lastBipapWashDate', state.currentDate);
           }
@@ -2259,6 +2348,7 @@
           if (!state.dailyData.catheterFlush) state.dailyData.catheterFlush = [];
           const now = pktTime12();
           state.dailyData.catheterFlush.push(now);
+          logJournal('🚰', 'Catheter flushed');
           localStorage.setItem('lastCatheterFlushDate', state.currentDate);
           saveDayData();
           render();
@@ -2284,8 +2374,10 @@
             state.dailyData.activities[id] = !state.dailyData.activities[id];
             if (state.dailyData.activities[id]) {
               state.dailyData.activities[id + '_time'] = pktTime12();
+              logJournal('🌳', 'Activity: ' + id);
             } else {
               delete state.dailyData.activities[id + '_time'];
+              logJournal('🌳', 'Activity unmarked: ' + id);
             }
             saveDayData();
           });
@@ -2310,6 +2402,7 @@
         const hr = now.getHours();
         const author = hr >= 8 && hr < 20 ? 'Day Nurse' : 'Night Nurse';
         state.dailyData.pharmacy.push({ name, note, urgent, author, time: now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) });
+        logJournal('🏥', (urgent ? '🔴 URGENT: ' : '') + 'Pharmacy item added: ' + name);
         saveDayData();
       }
       if (document.getElementById('addPharmacyBtn')) {
@@ -2338,6 +2431,7 @@
           if (text) {
             if (!state.dailyData.notes) state.dailyData.notes = [];
             state.dailyData.notes.push({ author, text, timestamp: pktISO() });
+            logJournal('📝', author + ': ' + text);
             saveDayData();
             render();
           }
@@ -2386,6 +2480,7 @@
           state.dailyData.nurseShift.active = true;
           state.dailyData.nurseShift.nurseName = name;
           state.dailyData.nurseShift.startTime = pktTime12();
+          logJournal('👩‍⚕️', name + ' started shift');
           saveDayData();
           render();
         });
@@ -2412,6 +2507,7 @@
           });
           shift.active = false;
           shift.endTime = endTime;
+          logJournal('👩‍⚕️', shift.nurseName + ' ended shift' + (missing.length > 0 ? ' (missing: ' + missing.join(', ') + ')' : ''));
           saveDayData();
           render();
         });
@@ -2425,6 +2521,7 @@
           if (!text) return;
           if (!state.dailyData.customTasks) state.dailyData.customTasks = [];
           state.dailyData.customTasks.push({ text, done: false, time: pktTime12() });
+          logJournal('✅', 'Task added: ' + text);
           saveDayData();
           render();
         });
