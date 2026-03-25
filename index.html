@@ -691,9 +691,9 @@
             </div>
           </div>
 
-          <!-- Urine Quality -->
+          <!-- Urine Appearance -->
           <div class="pt-2" style="border-top:1px solid #333;">
-            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE QUALITY</p>
+            <p class="text-xs font-bold uppercase mb-2" style="color:#888; letter-spacing:1px;">URINE APPEARANCE</p>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
               <div>
                 <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🎨 COLOR</label>
@@ -710,37 +710,26 @@
                 </select>
               </div>
               <div>
-                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🔬 OPACITY/CLOTS</label>
-                <select id="urineOpacityInput" class="w-full border rounded px-2 py-2 text-xs">
-                  <option value="" ${!(data.urineOpacity) ? 'selected' : ''}>-- Select --</option>
-                  <option value="clear" ${data.urineOpacity === 'clear' ? 'selected' : ''}>Clear</option>
-                  <option value="+" ${data.urineOpacity === '+' ? 'selected' : ''}>+ (Slight)</option>
-                  <option value="++" ${data.urineOpacity === '++' ? 'selected' : ''}>++ (Moderate)</option>
-                  <option value="+++" ${data.urineOpacity === '+++' ? 'selected' : ''}>+++ (Heavy)</option>
+                <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🧪 DEBRIS/SEDIMENT</label>
+                <select id="urineDebrisInput" class="w-full border rounded px-2 py-2 text-xs">
+                  <option value="" ${!(data.urineDebris) ? 'selected' : ''}>-- Select --</option>
+                  <option value="none" ${data.urineDebris === 'none' ? 'selected' : ''}>None</option>
+                  <option value="trace" ${data.urineDebris === 'trace' ? 'selected' : ''}>Trace</option>
+                  <option value="moderate" ${data.urineDebris === 'moderate' ? 'selected' : ''}>Moderate</option>
+                  <option value="heavy" ${data.urineDebris === 'heavy' ? 'selected' : ''}>Heavy</option>
                 </select>
               </div>
-            </div>
-            <div class="mt-2">
-              <label style="font-size:9px; color:#888; display:block; margin-bottom:4px;">🧪 DEBRIS/SEDIMENT</label>
-              <select id="urineDebrisInput" class="w-full border rounded px-2 py-2 text-xs">
-                <option value="" ${!(data.urineDebris) ? 'selected' : ''}>-- Select --</option>
-                <option value="none" ${data.urineDebris === 'none' ? 'selected' : ''}>None</option>
-                <option value="trace" ${data.urineDebris === 'trace' ? 'selected' : ''}>Trace</option>
-                <option value="moderate" ${data.urineDebris === 'moderate' ? 'selected' : ''}>Moderate</option>
-                <option value="heavy" ${data.urineDebris === 'heavy' ? 'selected' : ''}>Heavy</option>
-              </select>
             </div>
           </div>
 
           <button id="saveFluidBtn" class="bb-btn w-full px-2 py-2 text-xs">SAVE</button>
 
-          <!-- Urine Quality Summary -->
-          ${data.urineColor || data.urineOpacity || data.urineDebris ? `
+          <!-- Urine Appearance Summary -->
+          ${data.urineColor || data.urineDebris ? `
           <div style="background:#1a1a1a; border:1px solid #333; border-radius:2px; padding:8px;">
-            <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE QUALITY</span>
+            <span style="font-size:10px; color:#888; letter-spacing:1px;">URINE APPEARANCE</span>
             <div class="flex gap-2 mt-1 flex-wrap">
               ${data.urineColor ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#1f0a0a' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineColor === 'red/bloody' || data.urineColor === 'brown' ? '#ff3333' : data.urineColor === 'dark yellow' || data.urineColor === 'amber' ? '#ff9900' : '#00ff00'};">🎨 ${data.urineColor}</span>` : ''}
-              ${data.urineOpacity ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineOpacity === '+++' ? '#1f0a0a' : data.urineOpacity === '++' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineOpacity === '+++' ? '#ff3333' : data.urineOpacity === '++' ? '#ff9900' : '#00ff00'};">🔬 ${data.urineOpacity}</span>` : ''}
               ${data.urineDebris ? `<span class="text-xs px-2 py-0.5" style="background:${data.urineDebris === 'heavy' ? '#1f0a0a' : data.urineDebris === 'moderate' ? '#1f1a0a' : '#0a1f0a'}; border:1px solid #333; border-radius:2px; color:${data.urineDebris === 'heavy' ? '#ff3333' : data.urineDebris === 'moderate' ? '#ff9900' : '#00ff00'};">🧪 ${data.urineDebris}</span>` : ''}
             </div>
           </div>
@@ -1776,12 +1765,10 @@
           state.dailyData.waterNight = parseInt(document.getElementById('waterNightInput').value) || 0;
           state.dailyData.urineDay = parseInt(document.getElementById('urineDayInput').value) || 0;
           state.dailyData.urineNight = parseInt(document.getElementById('urineNightInput').value) || 0;
-          // Urine quality
+          // Urine appearance
           const colorEl = document.getElementById('urineColorInput');
-          const opacityEl = document.getElementById('urineOpacityInput');
           const debrisEl = document.getElementById('urineDebrisInput');
           if (colorEl) state.dailyData.urineColor = colorEl.value || '';
-          if (opacityEl) state.dailyData.urineOpacity = opacityEl.value || '';
           if (debrisEl) state.dailyData.urineDebris = debrisEl.value || '';
           saveDayData();
           render();
