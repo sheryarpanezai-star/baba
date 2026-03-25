@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="Akram Khan Panezai">
   <meta name="theme-color" content="#f0f2f5">
   <title>Akram Khan Panezai</title>
@@ -13,55 +13,57 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
-    * { -webkit-user-select: none; user-select: none; font-family: 'JetBrains Mono', 'Courier New', monospace; box-sizing: border-box; }
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { -webkit-user-select: none; user-select: none; font-family: 'Inter', -apple-system, sans-serif; box-sizing: border-box; }
     input, textarea, select { -webkit-user-select: text; user-select: text; }
-    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #f0f2f5 !important; color: #1a73e8; }
+    body { padding-top: env(safe-area-inset-top); padding-bottom: env(safe-area-inset-bottom); background: #f5f7fa !important; color: #333; }
     .safe-area-pb { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
     @supports (padding: max(0px)) {
       body { padding-left: max(0px, env(safe-area-inset-left)); padding-right: max(0px, env(safe-area-inset-right)); }
     }
     button { min-height: 44px; }
-    input, textarea, select { min-height: 44px; font-size: 16px !important; background: #fff !important; color: #333 !important; border-color: #d0d5dd !important; }
-    input::placeholder, textarea::placeholder { color: #999 !important; }
+    input, textarea, select { min-height: 44px; font-size: 16px !important; background: #fff !important; color: #333 !important; border: 1.5px solid #d0d5dd !important; border-radius: 8px !important; }
+    input:focus, textarea:focus, select:focus { border-color: #1a73e8 !important; outline: none; box-shadow: 0 0 0 3px rgba(26,115,232,0.12); }
+    input::placeholder, textarea::placeholder { color: #aaa !important; }
     .compliance-ring { display: flex; align-items: center; justify-content: center; }
     .pulse { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
     @keyframes pulse {
       0%, 100% { opacity: 1; }
       50% { opacity: .5; }
     }
-    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 40; }
-    .modal { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 0.5rem 0.5rem 0 0; max-height: 90vh; overflow-y: auto; z-index: 50; border-top: 2px solid #1a73e8; box-shadow: 0 -4px 20px rgba(0,0,0,0.15); }
-    .grid-responsive { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 0.75rem; }
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.35); z-index: 40; backdrop-filter: blur(4px); }
+    .modal { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 16px 16px 0 0; max-height: 90vh; overflow-y: auto; z-index: 50; box-shadow: 0 -8px 30px rgba(0,0,0,0.12); }
+    .grid-responsive { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 10px; }
     @media (max-width: 768px) {
       .grid-responsive { grid-template-columns: 1fr; }
     }
-    /* Clinical White card styles */
-    .bb-card { background: #fff !important; border: 1px solid #dde !important; border-left: 3px solid #1a73e8 !important; border-radius: 6px !important; overflow: hidden; min-width: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
-    .bb-card-header { background: #f5f8ff !important; border-bottom: 1px solid #e8ecf0 !important; }
-    .bb-btn { background: #1a73e8 !important; color: #fff !important; font-weight: 700; border-radius: 4px !important; text-transform: uppercase; letter-spacing: 0.5px; }
-    .bb-btn:active { background: #1557b0 !important; }
-    .bb-btn-secondary { background: #f5f5f5 !important; color: #1a73e8 !important; border: 1px solid #d0d5dd !important; border-radius: 4px !important; }
-    .bb-toggle-on { background: #e6f4ea !important; border-color: #137333 !important; color: #137333 !important; }
-    .bb-toggle-off { background: #f5f5f5 !important; border-color: #d0d5dd !important; color: #999 !important; }
-    .bb-progress-track { background: #e8ecf0 !important; border-radius: 4px !important; }
-    .bb-progress-fill { border-radius: 4px !important; }
+    /* Clean Medical card styles */
+    .bb-card { background: #fff !important; border: 1px solid #e8ecf0 !important; border-left: none !important; border-radius: 12px !important; overflow: hidden; min-width: 0; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+    .bb-card-header { background: #fff !important; border-bottom: 1px solid #f0f2f5 !important; }
+    .bb-btn { background: #1a73e8 !important; color: #fff !important; font-weight: 600; border-radius: 8px !important; text-transform: uppercase; letter-spacing: 0.3px; font-size: 12px; }
+    .bb-btn:active { background: #1557b0 !important; transform: scale(0.98); }
+    .bb-btn-secondary { background: #fff !important; color: #1a73e8 !important; border: 1.5px solid #d0d5dd !important; border-radius: 8px !important; font-weight: 600; }
+    .bb-btn-secondary:active { background: #f5f7fa !important; }
+    .bb-toggle-on { background: #e6f4ea !important; border: 1.5px solid #137333 !important; color: #137333 !important; border-radius: 8px !important; }
+    .bb-toggle-off { background: #fff !important; border: 1.5px solid #e0e0e0 !important; color: #999 !important; border-radius: 8px !important; }
+    .bb-progress-track { background: #e8ecf0 !important; border-radius: 6px !important; }
+    .bb-progress-fill { border-radius: 6px !important; }
     .bb-vital-green { background: #e6f4ea !important; color: #137333 !important; }
     .bb-vital-orange { background: #fef7e0 !important; color: #e8710a !important; }
     .bb-vital-red { background: #fce8e6 !important; color: #c5221f !important; }
     .bb-vital-gray { background: #f5f5f5 !important; color: #999 !important; }
     /* Table overrides for weekly view */
     table { border-collapse: collapse; }
-    th, td { border-color: #d0d5dd !important; }
-    th { background: #f5f8ff !important; color: #1a73e8 !important; }
+    th, td { border-color: #e8ecf0 !important; }
+    th { background: #f5f8ff !important; color: #1a73e8 !important; font-weight: 600; }
     td { background: #fff !important; }
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-track { background: #f0f2f5; }
-    ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #d0d5dd; border-radius: 4px; }
     /* Alert banner */
-    .bb-alert { background: #fce8e6 !important; border-left: 3px solid #c5221f !important; }
-    .bb-setup { background: #fef7e0 !important; border-left: 3px solid #e8710a !important; }
+    .bb-alert { background: #fce8e6 !important; border-left: none !important; border-radius: 12px !important; border: 1px solid #f5c6c2 !important; }
+    .bb-setup { background: #fef7e0 !important; border-left: none !important; border-radius: 12px !important; border: 1px solid #f5e6b8 !important; }
     /* Global overrides for Tailwind classes */
     .bg-white, .bg-gray-50, .bg-gray-100 { background: #fff !important; }
     .bg-green-50, .bg-green-100 { background: #e6f4ea !important; }
@@ -75,7 +77,7 @@
     .text-red-500, .text-red-600, .text-red-800, .text-red-900 { color: #c5221f !important; }
     .text-blue-600, .text-blue-700, .text-violet-600 { color: #1a73e8 !important; }
     .text-indigo-700, .text-purple-700 { color: #7b1fa2 !important; }
-    .border-gray-200, .border-gray-300, .border-gray-100 { border-color: #d0d5dd !important; }
+    .border-gray-200, .border-gray-300, .border-gray-100 { border-color: #e8ecf0 !important; }
     .border-green-500, .border-green-200 { border-color: #137333 !important; }
     .border-amber-200 { border-color: #e8710a !important; }
     .border-red-200 { border-color: #c5221f !important; }
@@ -85,20 +87,26 @@
     .bg-amber-500 { background: #e8710a !important; color: #fff !important; }
     .bg-teal-500 { background: #00897b !important; color: #fff !important; }
     .bg-gray-200 { background: #e8ecf0 !important; }
-    .border-t { border-color: #d0d5dd !important; }
-    .border-b { border-color: #d0d5dd !important; }
-    .border { border-color: #d0d5dd !important; }
-    .rounded-lg, .rounded-xl { border-radius: 6px !important; }
-    .rounded-full { border-radius: 6px !important; }
-    .shadow-sm { box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important; }
-    label { color: #444; }
+    .border-t { border-color: #e8ecf0 !important; }
+    .border-b { border-color: #e8ecf0 !important; }
+    .border { border-color: #e8ecf0 !important; }
+    .rounded-lg, .rounded-xl { border-radius: 12px !important; }
+    .rounded-full { border-radius: 12px !important; }
+    .shadow-sm { box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important; }
+    label { color: #555; }
     a { color: #1a73e8 !important; }
     /* Font overrides */
-    h1, h2, h3, p, span, button, label, td, th, div { font-family: 'JetBrains Mono', 'Courier New', monospace !important; }
+    h1, h2, h3, p, span, button, label, td, th, div { font-family: 'Inter', -apple-system, sans-serif !important; }
     /* Settings modal */
-    .modal .sticky { background: #fff !important; border-color: #d0d5dd !important; }
+    .modal .sticky { background: #fff !important; border-color: #e8ecf0 !important; }
     .modal h2 { color: #1a73e8 !important; }
-    .modal label { color: #444 !important; }
+    .modal label { color: #555 !important; }
+    /* Tab navigation */
+    .care-tabs { display: flex; background: #fff; border-bottom: 2px solid #e8ecf0; padding: 0 12px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    .care-tabs::-webkit-scrollbar { display: none; }
+    .care-tab { padding: 10px 14px; font-size: 12px; font-weight: 600; color: #888; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; white-space: nowrap; transition: all 0.2s; background: none; border-left: none; border-right: none; border-top: none; min-height: 38px; }
+    .care-tab.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+    .care-tab:hover:not(.active) { color: #1a73e8; }
   </style>
 </head>
 <body class="bg-gray-100">
@@ -109,6 +117,7 @@
     const state = {
       currentDate: (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })(),
       view: 'daily', // 'daily', 'weekly', 'monthly'
+      activeTab: 'care', // 'care', 'vitals', 'meds', 'fluids', 'equipment', 'notes'
       firebase: { configured: false, db: null },
       alerts: {
         phone: localStorage.getItem('alerts_phone') || '',
@@ -293,18 +302,18 @@
 
       // Header
       html += `
-        <div class="sticky top-0 z-30" style="background:#f0f2f5; border-bottom: 1px solid #333;">
+        <div class="sticky top-0 z-30" style="background:#fff; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
           <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
             <div>
-              <h1 class="text-lg font-bold" style="color:#1a73e8; letter-spacing:2px;">AKRAM KHAN <span style="color:#137333;">PANEZAI</span></h1>
-              <p class="text-xs" style="color:#999;">HEALTH MONITORING SYSTEM</p>
+              <h1 class="font-bold" style="color:#1a1a1a; font-size:16px;">Akram Khan Panezai</h1>
+              <p style="font-size:11px; color:#888; margin-top:1px;">${formatDate(state.currentDate)} · Age 87</p>
             </div>
-            <button id="settingsBtn" class="text-xl p-2" style="color:#1a73e8;">⚙</button>
+            <button id="settingsBtn" class="p-2" style="color:#888; font-size:20px; background:none; border:none; min-height:36px;">⚙</button>
           </div>
-          <div class="max-w-6xl mx-auto px-4 pb-3 flex gap-1">
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'daily' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'daily' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="daily">Daily</button>
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'weekly' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'weekly' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="weekly">Weekly</button>
-            <button class="tab-btn px-4 py-1 text-xs font-bold uppercase" style="background:${state.view === 'monthly' ? '#1a73e8' : '#f5f5f5'}; color:${state.view === 'monthly' ? '#fff' : '#1a73e8'}; border:1px solid #d0d5dd; border-radius:2px;" data-view="monthly">Monthly</button>
+          <div class="max-w-6xl mx-auto px-4 pb-2 flex gap-2">
+            <button class="tab-btn px-4 py-1.5 text-xs font-semibold" style="background:${state.view === 'daily' ? '#1a73e8' : '#fff'}; color:${state.view === 'daily' ? '#fff' : '#666'}; border:1.5px solid ${state.view === 'daily' ? '#1a73e8' : '#d0d5dd'}; border-radius:20px; min-height:32px;" data-view="daily">Daily</button>
+            <button class="tab-btn px-4 py-1.5 text-xs font-semibold" style="background:${state.view === 'weekly' ? '#1a73e8' : '#fff'}; color:${state.view === 'weekly' ? '#fff' : '#666'}; border:1.5px solid ${state.view === 'weekly' ? '#1a73e8' : '#d0d5dd'}; border-radius:20px; min-height:32px;" data-view="weekly">Weekly</button>
+            <button class="tab-btn px-4 py-1.5 text-xs font-semibold" style="background:${state.view === 'monthly' ? '#1a73e8' : '#fff'}; color:${state.view === 'monthly' ? '#fff' : '#666'}; border:1.5px solid ${state.view === 'monthly' ? '#1a73e8' : '#d0d5dd'}; border-radius:20px; min-height:32px;" data-view="monthly">Monthly</button>
           </div>
         </div>
       `;
@@ -329,10 +338,10 @@
       // Date navigation for daily view
       if (state.view === 'daily') {
         html += `
-          <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-            <button id="prevDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold">◀ PREV</button>
-            <span class="font-bold text-sm" style="color:#1a73e8;">${formatDate(state.currentDate)}</span>
-            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-2 text-xs font-bold" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed;" disabled' : ''}>NEXT ▶</button>
+          <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between" style="background:#fff; margin-top:1px;">
+            <button id="prevDayBtn" class="bb-btn-secondary px-3 py-1.5 text-xs font-semibold" style="min-height:34px; border-radius:20px;">◀ Prev</button>
+            <span style="font-size:13px; font-weight:600; color:#333;">${formatDate(state.currentDate)}</span>
+            <button id="nextDayBtn" class="bb-btn-secondary px-3 py-1.5 text-xs font-semibold" style="min-height:34px; border-radius:20px;" ${state.currentDate >= ((() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })()) ? 'style="opacity:0.3; cursor:not-allowed; min-height:34px; border-radius:20px;" disabled' : ''}>Next ▶</button>
           </div>
         `;
         html += renderDailyView();
@@ -390,9 +399,9 @@
       return `
         <div class="modal-backdrop" id="settingsBackdrop"></div>
         <div class="modal">
-          <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#fff; border-bottom:1px solid #d0d5dd;">
-            <h2 class="text-sm font-bold uppercase" style="color:#1a73e8; letter-spacing:1px;">⚙ SETTINGS & ALERTS</h2>
-            <button id="closeSettingsBtn" style="color:#1a73e8; font-size:20px;">✕</button>
+          <div class="sticky top-0 p-4 flex items-center justify-between" style="background:#fff; border-bottom:1px solid #e8ecf0;">
+            <h2 style="font-size:14px; font-weight:700; color:#1a1a1a;">Settings & Alerts</h2>
+            <button id="closeSettingsBtn" style="color:#888; font-size:20px; background:none; border:none; min-height:36px; cursor:pointer;">✕</button>
           </div>
           <div class="p-4 space-y-4 safe-area-pb">
             <p class="text-xs font-bold uppercase" style="color:#1a73e8; letter-spacing:1px;">DAILY REPORT (WHATSAPP)</p>
@@ -431,26 +440,57 @@
     function renderDailyView() {
       const data = state.dailyData || {};
       const compliance = calculateCompliance();
+      const t = state.activeTab;
+
+      // Tab definitions
+      const tabs = [
+        { id: 'care', label: 'Care' },
+        { id: 'vitals', label: 'Vitals' },
+        { id: 'meds', label: 'Meds' },
+        { id: 'fluids', label: 'Fluids' },
+        { id: 'equipment', label: 'Equipment' },
+        { id: 'notes', label: 'Notes' }
+      ];
+
+      // Tab content mapping
+      const tabContent = {
+        care: `
+          ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
+          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
+          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
+          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
+        `,
+        vitals: `
+          ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
+          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
+        `,
+        meds: `
+          ${renderCard('Medications', '💊', renderMedicationsCard(data))}
+          ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
+        `,
+        fluids: `
+          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
+        `,
+        equipment: `
+          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
+          ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
+        `,
+        notes: `
+          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+          ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
+          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
+        `
+      };
 
       return `
         <div class="max-w-6xl mx-auto px-4 pt-3">
           ${renderComplianceBar(compliance)}
         </div>
+        <div class="care-tabs max-w-6xl mx-auto" style="margin-top:8px;">
+          ${tabs.map(tab => `<div class="care-tab ${t === tab.id ? 'active' : ''}" data-care-tab="${tab.id}">${tab.label}</div>`).join('')}
+        </div>
         <div class="max-w-6xl mx-auto px-4 py-3 grid-responsive">
-          ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
-          ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
-          ${renderCard('Medications', '💊', renderMedicationsCard(data))}
-          ${renderCard('Supplements', '💊', renderSupplementsCard(data))}
-          ${renderCard('Fluid Balance', '💧', renderFluidBalanceCard(data))}
-          ${renderCard('Nutrition', '🍽️', renderNutritionCard(data))}
-          ${renderCard('Hygiene', '🚿', renderHygieneCard(data))}
-          ${renderCard('Physiotherapy', '🏋️', renderPhysioCard(data))}
-          ${renderCard('BiPAP & Sleep', '🌬️', renderBiPAPCard(data))}
-          ${renderCard('Activities', '🌳', renderActivitiesCard(data))}
-          ${renderCard('Upcoming Events', '📅', renderMonthlyTasksCard(data))}
-          ${renderCard('Pharmacy & Supplies', '🏥', renderPharmacyCard(data))}
-          ${renderCard('Custom Tasks', '✅', renderCustomTasksCard(data))}
-          ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
+          ${tabContent[t] || tabContent.care}
         </div>
       `;
     }
@@ -458,9 +498,9 @@
     function renderCard(title, icon, content, accent = '') {
       return `
         <div class="bb-card">
-          <div class="bb-card-header px-4 py-2 flex items-center gap-2">
-            <span class="text-sm">${icon}</span>
-            <h3 class="font-bold text-xs uppercase" style="color:#1a73e8; letter-spacing:1px;">${title}</h3>
+          <div class="bb-card-header px-4 py-3 flex items-center gap-2">
+            <span style="font-size:14px;">${icon}</span>
+            <h3 style="font-size:11px; font-weight:700; color:#1a73e8; text-transform:uppercase; letter-spacing:0.5px;">${title}</h3>
           </div>
           <div class="p-3" style="color:#444; overflow:hidden; min-width:0;">${content}</div>
         </div>
@@ -469,11 +509,17 @@
 
     function renderComplianceBar(pct) {
       const color = pct > 0.8 ? '#137333' : pct > 0.5 ? '#1a73e8' : '#c5221f';
+      const pctNum = Math.round(pct * 100);
       return `
-        <div style="background:#fff; border:1px solid #d0d5dd; border-radius:2px; padding:8px 12px; display:flex; align-items:center; gap:12px;">
-          <span style="font-size:10px; font-weight:700; color:#999; letter-spacing:1px; white-space:nowrap;">COMPLIANCE</span>
-          <div style="flex:1; background:#f5f5f5; height:8px; border-radius:2px; overflow:hidden;">
-            <div style="height:100%; width:${Math.round(pct * 100)}%; background:${color}; border-radius:2px; transition:width 0.7s;"></div>
+        <div style="background:#fff; border:1px solid #e8ecf0; border-radius:12px; padding:10px 14px; display:flex; align-items:center; gap:12px; box-shadow:0 1px 4px rgba(0,0,0,0.06);">
+          <div style="width:36px; height:36px; border-radius:50%; border:3px solid ${color}; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+            <span style="font-size:10px; font-weight:700; color:${color};">${pctNum}%</span>
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:11px; color:#555; margin-bottom:4px;">Daily tasks</div>
+            <div style="background:#e8ecf0; height:6px; border-radius:6px; overflow:hidden;">
+              <div style="height:100%; width:${pctNum}%; background:${color}; border-radius:6px; transition:width 0.7s;"></div>
+            </div>
           </div>
           <span style="font-size:13px; font-weight:700; color:${color}; min-width:40px; text-align:right;">${Math.round(pct * 100)}%</span>
         </div>
@@ -1561,10 +1607,18 @@
         return clone;
       }
 
-      // Tab navigation
+      // Tab navigation (Daily/Weekly/Monthly)
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
           state.view = e.target.dataset.view;
+          render();
+        });
+      });
+
+      // Care tab navigation (Care/Vitals/Meds/Fluids/Equipment/Notes)
+      document.querySelectorAll('.care-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          state.activeTab = e.target.dataset.careTab;
           render();
         });
       });
