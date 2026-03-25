@@ -117,7 +117,7 @@
     const state = {
       currentDate: (() => { const n = new Date(); return n.getFullYear() + '-' + String(n.getMonth()+1).padStart(2,'0') + '-' + String(n.getDate()).padStart(2,'0'); })(),
       view: 'daily', // 'daily', 'weekly', 'monthly'
-      activeTab: 'shift', // 'shift', 'meds', 'dailycare', 'activities'
+      activeTab: 'overview', // 'overview', 'meds', 'meals', 'care'
       firebase: { configured: false, db: null },
       alerts: {
         phone: localStorage.getItem('alerts_phone') || '',
@@ -444,7 +444,7 @@
 
       // Tab definitions — matches actual daily nursing workflow
       const tabs = [
-        { id: 'shift', label: 'Shift' },
+        { id: 'overview', label: 'Overview' },
         { id: 'meds', label: 'Medications' },
         { id: 'meals', label: 'Meals & Fluids' },
         { id: 'care', label: 'Care' }
@@ -452,8 +452,8 @@
 
       // Tab content mapping
       const tabContent = {
-        // Shift handoff: nurse arrives → start shift → vitals → notes → check tasks/events
-        shift: `
+        // Overview: nurse arrives → start shift → vitals → notes → check tasks/events
+        overview: `
           ${renderCard('Nurse Shift', '👩‍⚕️', renderNurseShiftCard(data))}
           ${renderCard('Vitals', '♥️', renderVitalsCard(data))}
           ${renderCard('Nursing Notes', '📝', renderNursingNotesCard(data))}
@@ -488,7 +488,7 @@
           ${tabs.map(tab => `<div class="care-tab ${t === tab.id ? 'active' : ''}" data-care-tab="${tab.id}">${tab.label}</div>`).join('')}
         </div>
         <div class="max-w-6xl mx-auto px-4 py-3 grid-responsive">
-          ${tabContent[t] || tabContent.shift}
+          ${tabContent[t] || tabContent.overview}
         </div>
       `;
     }
@@ -1392,7 +1392,7 @@
             <div class="pt-2 space-y-2" style="border-top:1px solid #d0d5dd;">
               <label class="block text-xs font-bold" style="color:#999;">END SHIFT</label>
               <button id="endShiftBtn" class="w-full p-2 font-bold text-xs" style="background:#fce8e6; border:2px solid #cc3333; border-radius:2px; color:#c5221f; cursor:pointer;">
-                🔴 END SHIFT & CONFIRM DATA
+                🔴 END SHIFT
               </button>
             </div>
           ` : `
